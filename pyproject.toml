@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fedmed"
+version = "0.1.0"
+description = "Cross-Silo Federated Learning Engine for Medical Image Segmentation"
+authors = [
+    {name = "Author Placeholder"}
+]
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "torch>=2.0.0",
+    "monai>=1.3.0",
+    "flwr>=1.7.0",
+    "fastapi>=0.104.0",
+    "uvicorn>=0.23.2",
+    "tenseal>=0.3.14",
+    "opencv-python>=4.8.0",
+    "numpy>=1.26.0",
+    "nibabel>=5.1.0",
+    "tensorboard>=2.14.0",
+    "pydantic>=2.4.2",
+    "pydantic-settings>=2.0.3",
+    "websockets>=11.0.3"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.2",
+    "black>=23.9.1",
+    "flake8>=6.1.0",
+    "mypy>=1.5.1",
+    "isort>=5.12.0"
+]
+
+[tool.setuptools.packages.find]
+include = ["client*", "server*", "model*", "privacy*", "configs*", "common*", "utils*"]
+
+[tool.black]
+line-length = 88
+target-version = ['py310']
+
+[tool.isort]
+profile = "black"

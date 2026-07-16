@@ -1,50 +1,140 @@
-# 🧠 FedMed – Cross-Silo Federated Learning Engine
+# FedMed
 
-> **Privacy-Preserving Federated Learning for Brain Tumor MRI Segmentation**
+![FedMed Banner](https://via.placeholder.com/800x200.png?text=FedMed:+Cross-Silo+Federated+Learning)
 
-FedMed is a Privacy-Preserving Machine Learning (PPML) project that enables multiple hospitals to collaboratively train a deep learning model for brain tumor segmentation without sharing sensitive patient data.
+## Project Description
 
-Instead of transferring MRI scans to a central server, each participating hospital trains the model locally on its own infrastructure. Only encrypted model updates are shared with a central aggregation server, ensuring that patient data never leaves the hospital while still allowing all participants to benefit from a globally improved model.
+**FedMed** is a Privacy-Preserving Machine Learning (PPML) engine designed to enable multiple hospitals to collaboratively train deep learning models for Medical Image Segmentation without ever sharing sensitive patient data. 
 
-By combining **Federated Learning**, **Homomorphic Encryption**, and **Differential Privacy**, FedMed provides a secure and scalable framework for collaborative healthcare AI while maintaining compliance with regulations such as **HIPAA** and **GDPR**.
+By leveraging **Federated Learning** and **Homomorphic Encryption**, FedMed addresses the critical bottleneck in healthcare AI: the inability to aggregate sufficient, diverse datasets due to strict privacy regulations (HIPAA, GDPR). Federated learning matters because it moves the *model* to the *data*, not the data to the model.
 
----
+## Problem Statement
 
-## 📌 Problem Statement
+Developing highly accurate AI models for rare diseases, such as Brain Tumors, requires massive datasets. Hospitals cannot legally share patient MRI data. As a result, hospitals train isolated models that become less accurate because each institution has limited data.
 
-Developing accurate AI models for medical imaging requires large and diverse datasets collected from multiple healthcare institutions. However, strict privacy regulations and data ownership policies prevent hospitals from sharing sensitive patient information.
+## Real World Use Case
 
-As a result, institutions often train models independently on limited datasets, leading to reduced model performance and poor generalization.
+Three hospitals (Hospital A, B, and C) collaborate to train a Brain Tumor Segmentation model. Each hospital owns private MRI scans.
+1. The central server initializes a PyTorch 3D U-Net model.
+2. The model is sent to every hospital.
+3. Hospitals train locally on their private data.
+4. Weights are encrypted.
+5. Encrypted updates are transmitted to the central server.
+6. The server aggregates them using Federated Averaging.
+7. A new global model is generated, and the process repeats until convergence.
 
-FedMed addresses this challenge by enabling hospitals to collaboratively train a shared deep learning model without exchanging raw patient data. Each institution performs local training on its private MRI scans and securely shares only encrypted model updates, preserving patient privacy throughout the training process.
+No MRI image ever leaves the hospital.
 
----
+## System Architecture
 
-## 💡 Proposed Solution
+```mermaid
+graph TD
+    Dashboard[React Dashboard] -->|WebSockets / REST| API[FastAPI Backend]
+    API -->|Metrics| Server[Flower Server]
+    
+    Server -->|Global Model| ClientA[Hospital A]
+    Server -->|Global Model| ClientB[Hospital B]
+    Server -->|Global Model| ClientC[Hospital C]
+    
+    subgraph Hospital A
+        DataA[Local MRI] --> UNetA[3D U-Net]
+        UNetA -->|Local Training| EncryptA[Encrypted Updates]
+    end
+    
+    subgraph Hospital B
+        DataB[Local MRI] --> UNetB[3D U-Net]
+        UNetB -->|Local Training| EncryptB[Encrypted Updates]
+    end
+    
+    subgraph Hospital C
+        DataC[Local MRI] --> UNetC[3D U-Net]
+        UNetC -->|Local Training| EncryptC[Encrypted Updates]
+    end
+    
+    EncryptA -->|Send| FedAvg[Federated Averaging]
+    EncryptB -->|Send| FedAvg
+    EncryptC -->|Send| FedAvg
+    
+    FedAvg --> Server
+```
 
-FedMed follows a **Cross-Silo Federated Learning** architecture in which multiple hospitals jointly train a global model while retaining complete control over their local datasets.
+## Core Technologies
 
-The central server initializes a global model and distributes it to each participating hospital. Every hospital trains the model locally using its private MRI dataset before encrypting the updated model parameters. These encrypted updates are securely transmitted to the central server, where they are aggregated without accessing any patient data. The updated global model is then redistributed for the next training round until convergence is achieved.
-
-This decentralized approach enables collaborative model training while ensuring that sensitive medical information remains within each institution's secure environment.
-
----
-## ✨ Key Features
-
-- 🏥 **Cross-Silo Federated Learning** enabling multiple hospitals to collaboratively train a shared model without exchanging raw patient data.
-- 🧠 **3D U-Net for Medical Image Segmentation** using PyTorch and MONAI for accurate brain tumor segmentation from MRI scans.
-- 🔒 **Homomorphic Encryption** with TenSEAL to encrypt model updates and preserve data privacy during collaborative training.
-- 🛡️ **Differential Privacy** to protect model updates against potential privacy attacks.
-- 📊 **Interactive Training Dashboard** built with React and Recharts to visualize training progress, loss, and accuracy in real time.
-
----
-
-## 🛠️ Tech Stack
-
-| Category | Technologies |
-|----------|--------------|
-| **Programming Language** | Python |
+| Module | Technologies |
+|---|---|
+| **Federated Learning** | Flower (flwr), gRPC |
 | **Deep Learning** | PyTorch, MONAI |
-| **Federated Learning** | Flower |
-| **Privacy & Security** | TenSEAL, Differential Privacy |
-| **Frontend** | React, Recharts |
+| **Data Processing** | NumPy, OpenCV, Nibabel |
+| **Privacy & Encryption** | TenSEAL |
+| **Backend & APIs** | FastAPI, Uvicorn, WebSockets |
+| **Frontend Dashboard** | React, Tailwind CSS, Recharts |
+| **Database (Monitoring)** | SQLite |
+
+## Project Modules
+
+- **Federated Learning:** Core orchestration using Flower. Manages training rounds, gRPC communication, and FedAvg weight aggregation.
+- **Medical Imaging:** PyTorch/MONAI implementation of the 3D U-Net for Brain Tumor MRI Segmentation (BraTS dataset).
+- **Privacy:** Homomorphic encryption wrapper using TenSEAL to encrypt weight updates, ensuring the central server cannot reverse-engineer patient data.
+- **Dashboard:** A real-time monitoring interface for experiment tracking, hospital connection status, and training metrics.
+
+## Repository Structure
+
+- `client/`: Federated learning client node implementation.
+- `server/`: Centralized Flower server and aggregation logic.
+- `model/`: Neural network architectures, loss functions, and evaluation metrics.
+- `privacy/`: Encryption algorithms and differential privacy wrappers.
+- `dashboard/`: Full-stack monitoring application (React frontend, FastAPI backend).
+- `configs/`: Centralized configuration management and hyperparameters.
+- `common/`: Shared schemas, types, and generic functions used across modules.
+- `utils/`: Domain-specific processing utilities.
+- `docs/`: Technical documentation and project guidelines.
+- `tests/`: Unit and integration testing suites.
+- `scripts/`: Helper bash/python scripts for environment setup.
+
+## Development Roadmap
+
+- **Phase 1:** Foundation - Repository architecture, packaging, and standards established.
+- **Phase 2:** FL Core - Basic Flower server/client orchestration with mock data.
+- **Phase 3:** Deep Learning - Integration of 3D U-Net and BraTS data loader.
+- **Phase 4:** Privacy - TenSEAL integration for secure aggregation.
+- **Phase 5:** Monitoring - Full-stack Dashboard deployment.
+
+## Git Workflow
+
+The project uses a standard Gitflow-inspired branching model:
+- `main`: Production-ready releases only.
+- `development`: Main integration branch. All features target this branch.
+- `feature/*` (e.g., `feature/federated-learning`, `feature/medical-model`): Feature branches branched off `development`.
+
+## Getting Started
+
+*(Placeholders for future setup instructions once Phase 2 is complete)*
+```bash
+# Clone the repository
+# Create virtual environment
+# pip install -e .
+# Start Server
+# Start Clients
+```
+
+## Current Progress
+
+- ✅ Project Architecture Completed
+- ⬜ Medical Model
+- ⬜ Federated Learning
+- ⬜ Privacy Layer
+- ⬜ Dashboard
+
+## Future Scope
+
+- Integration with Kubernetes for distributed large-scale simulation.
+- Support for Differential Privacy alongside Homomorphic Encryption.
+- Expanding segmentation models to vision transformers (ViT).
+
+## Contributors
+
+- [Contributor Placeholders]
+
+## License
+
+- [License Placeholder]
