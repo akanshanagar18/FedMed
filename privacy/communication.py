@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 
+=======
+>>>>>>> e21892a (Update communication module)
 def serialize_update(update):
    
 def serialize_update(update):
