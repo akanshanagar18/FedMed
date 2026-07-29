@@ -1,8 +1,13 @@
-# Testing
+# Testing Plan
 
-This folder will contain test cases for:
+This project will include unit tests for:
 
 - Dataset loading
+- Image preprocessing
 - Model inference
-- Evaluation metrics
-- Visualization module
+- Prediction pipeline
+- Visualization utilities
+
+Testing framework:
+
+- pytest
