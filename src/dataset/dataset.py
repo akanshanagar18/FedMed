@@ -10,21 +10,25 @@ class BraTSDataset(Dataset):
     Dataset class for BraTS MRI images.
     """
 
-    def __init__(self, image_paths=None, mask_paths=None, transforms=None):
-        self.image_paths = image_paths or []
-        self.mask_paths = mask_paths or []
+    def __init__(self, image_paths, mask_paths, transforms=None):
+        self.image_paths = image_paths
+        self.mask_paths = mask_paths
         self.transforms = transforms
 
     def __len__(self):
         return len(self.image_paths)
 
     def __getitem__(self, index):
-        """
-        Returns one MRI scan and its mask.
-        Actual loading logic will be added later.
-        """
 
-        image = None
-        mask = None
+        image_path = self.image_paths[index]
+        mask_path = self.mask_paths[index]
 
-        return image, mask
+        sample = {
+            "image": image_path,
+            "mask": mask_path
+        }
+
+        if self.transforms:
+            sample = self.transforms(sample)
+
+        return sample
