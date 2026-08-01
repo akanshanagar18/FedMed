@@ -1,50 +1,58 @@
-# 🧠 FedMed – Cross-Silo Federated Learning Engine
+# Federated Brain Tumor Classification
 
-> **Privacy-Preserving Federated Learning for Brain Tumor MRI Segmentation**
+This module implements synchronous **Federated Averaging (FedAvg)** for the BRISC MRI classification dataset. The central Flower server coordinates rounds and aggregates client model updates weighted by local sample count. It never receives or stores raw MRI images, labels, or local test sets.
 
-FedMed is a Privacy-Preserving Machine Learning (PPML) project that enables multiple hospitals to collaboratively train a deep learning model for brain tumor segmentation without sharing sensitive patient data.
+## Files
 
-Instead of transferring MRI scans to a central server, each participating hospital trains the model locally on its own infrastructure. Only encrypted model updates are shared with a central aggregation server, ensuring that patient data never leaves the hospital while still allowing all participants to benefit from a globally improved model.
+- `server.py` — Flower/gRPC coordinator.
+- `client.py` — one hospital participant, run separately by Hospital A, B, and C.
+- `strategy.py` — FedAvg configuration and weighted metric aggregation.
+- `model.py` — shared PyTorch brain-tumor CNN.
+- `data.py` — local BRISC loading and demo-only three-way partitioning.
 
-By combining **Federated Learning**, **Homomorphic Encryption**, and **Differential Privacy**, FedMed provides a secure and scalable framework for collaborative healthcare AI while maintaining compliance with regulations such as **HIPAA** and **GDPR**.
+## Setup
 
----
+Create a virtual environment and install the dependencies:
 
-## 📌 Problem Statement
+```powershell
+py -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+```
 
-Developing accurate AI models for medical imaging requires large and diverse datasets collected from multiple healthcare institutions. However, strict privacy regulations and data ownership policies prevent hospitals from sharing sensitive patient information.
+Extract `archive (4).zip` so that the dataset root is `brisc2025`. It should contain `classification_task/train` and `classification_task/test`. In a real deployment each hospital instead places only its authorized images on its own machine and passes its own `--data-root`.
 
-As a result, institutions often train models independently on limited datasets, leading to reduced model performance and poor generalization.
+## Smoke test (no MRI data required)
 
-FedMed addresses this challenge by enabling hospitals to collaboratively train a shared deep learning model without exchanging raw patient data. Each institution performs local training on its private MRI scans and securely shares only encrypted model updates, preserving patient privacy throughout the training process.
+Open four terminals. In terminal one:
 
----
+```powershell
+python server.py --rounds 2
+```
 
-## 💡 Proposed Solution
+Then start these three clients, one per terminal:
 
-FedMed follows a **Cross-Silo Federated Learning** architecture in which multiple hospitals jointly train a global model while retaining complete control over their local datasets.
+```powershell
+python client.py --hospital A --synthetic
+python client.py --hospital B --synthetic
+python client.py --hospital C --synthetic
+```
 
-The central server initializes a global model and distributes it to each participating hospital. Every hospital trains the model locally using its private MRI dataset before encrypting the updated model parameters. These encrypted updates are securely transmitted to the central server, where they are aggregated without accessing any patient data. The updated global model is then redistributed for the next training round until convergence is achieved.
+The server waits for all three clients, broadcasts the global model, receives only trained weights and example counts, applies FedAvg, and broadcasts the updated global model for the next round.
 
-This decentralized approach enables collaborative model training while ensuring that sensitive medical information remains within each institution's secure environment.
+## Train with BRISC data
 
----
-## ✨ Key Features
+```powershell
+python server.py --rounds 10
+python client.py --hospital A --data-root .\brisc2025
+python client.py --hospital B --data-root .\brisc2025
+python client.py --hospital C --data-root .\brisc2025
+```
 
-- 🏥 **Cross-Silo Federated Learning** enabling multiple hospitals to collaboratively train a shared model without exchanging raw patient data.
-- 🧠 **3D U-Net for Medical Image Segmentation** using PyTorch and MONAI for accurate brain tumor segmentation from MRI scans.
-- 🔒 **Homomorphic Encryption** with TenSEAL to encrypt model updates and preserve data privacy during collaborative training.
-- 🛡️ **Differential Privacy** to protect model updates against potential privacy attacks.
-- 📊 **Interactive Training Dashboard** built with React and Recharts to visualize training progress, loss, and accuracy in real time.
+Using the same root on all three processes is solely a local demonstration: `data.py` assigns disjoint deterministic shards. Do **not** do this with confidential hospital data. In deployment, run a client at each hospital and configure each client with its own local, access-controlled data path.
 
----
+## Notes for review
 
-## 🛠️ Tech Stack
-
-| Category | Technologies |
-|----------|--------------|
-| **Programming Language** | Python |
-| **Deep Learning** | PyTorch, MONAI |
-| **Federated Learning** | Flower |
-| **Privacy & Security** | TenSEAL, Differential Privacy |
-| **Frontend** | React, Recharts |
+- Transport is Flower's gRPC transport. For any network beyond a trusted lab, deploy it behind TLS and authenticated network controls.
+- `min_available_clients=3` ensures a round cannot start until Hospitals A, B, and C are registered.
+- The baseline CNN can be replaced by a pretrained or custom CV architecture as long as every client uses exactly the same model definition.
