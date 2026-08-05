@@ -1,0 +1,9 @@
+# FedMed v2.0 Privacy Template Configuration
+
+privacy:
+  dp_enabled: true
+  target_epsilon: 3.0
+  target_delta: 0.00001
+  max_grad_norm: 1.0
+  he_enabled: true
+  scheme: "CKKS"

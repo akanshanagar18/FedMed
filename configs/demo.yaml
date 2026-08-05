@@ -1,0 +1,16 @@
+# FedMed v2.0 Live Demonstration Configuration
+# Optimised for fast 3-minute live demonstration walk-throughs.
+
+server:
+  host: "127.0.0.1"
+  port: 8000
+
+federated:
+  strategy: "FedAvg"
+  num_rounds: 3
+  min_clients: 2
+  local_epochs: 1
+
+logging:
+  log_level: "INFO"
+  log_interval: 5

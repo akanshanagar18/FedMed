@@ -1,0 +1,6 @@
+# FedAvg Strategy Configuration Override
+
+federated:
+  strategy: "FedAvg"
+  learning_rate: 0.0001
+  proximal_mu: 0.0

@@ -1,0 +1,65 @@
+# FedMed v2.0 Primary Default Configuration
+# Base configuration specification for local and distributed executions.
+
+server:
+  host: "127.0.0.1"
+  port: 8000
+  fl_server_address: "127.0.0.1:8080"
+  api_url: "http://127.0.0.1:8000"
+  cors_origins:
+    - "http://localhost:3000"
+    - "http://127.0.0.1:3000"
+    - "http://127.0.0.1:8000"
+
+federated:
+  strategy: "FedAvg"
+  num_rounds: 3
+  min_clients: 2
+  min_available_clients: 2
+  learning_rate: 0.0001
+  batch_size: 2
+  local_epochs: 1
+  optimizer: "adam"
+  weight_decay: 0.00001
+  proximal_mu: 0.01
+  seed: 42
+
+data:
+  dataset_name: "BraTS2021"
+  partition_strategy: "IID"
+  dirichlet_alpha: 0.5
+  image_size: [128, 128, 128]
+  in_channels: 4
+  out_channels: 3
+
+privacy:
+  dp_enabled: false
+  target_epsilon: 3.0
+  target_delta: 0.00001
+  max_grad_norm: 1.0
+  he_enabled: false
+  scheme: "CKKS"
+
+logging:
+  log_level: "INFO"
+  log_interval: 10
+  export_tensorboard: false
+  export_mlflow: false
+
+checkpoint:
+  save_dir: "checkpoints"
+  best_model_name: "best_model.pth"
+  save_frequency: 1
+
+benchmark:
+  strategies:
+    - "FedAvg"
+    - "FedProx"
+  partitions:
+    - "IID"
+    - "NonIID(alpha=0.5)"
+    - "NonIID(alpha=0.2)"
+  seeds:
+    - 42
+    - 123
+    - 999

@@ -3,11 +3,11 @@ Module: scripts.run_benchmarks
 
 Purpose:
 Production-Grade Automated Benchmark Framework for FedMed v2.0.
-Expands hyperparameter matrices (strategies, partitions, seeds), executes FL runs sequentially,
-persists metadata, and generates publication-grade result artifacts under results/benchmark_<id>/.
+Supports loading matrix parameters from YAML via --config flag, executing FL runs sequentially,
+persisting metadata, and generating publication-grade result artifacts under results/benchmark_<id>/.
 
 Usage:
-  python scripts/run_benchmarks.py --name "FedAvg vs FedProx Benchmark" --quick
+  python scripts/run_benchmarks.py --config configs/benchmark.yaml --quick
 """
 
 import argparse
@@ -17,11 +17,14 @@ import itertools
 import json
 import logging
 import os
+import subprocess
 import sys
 import time
 import urllib.request
 from datetime import datetime
 from typing import Any, Dict, List, Tuple
+
+from configs.loader import load_config, AppConfig, ConfigValidationError
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - [BENCHMARK] - %(message)s")
 logger = logging.getLogger("benchmark")
@@ -215,11 +218,21 @@ def generate_benchmark_artifacts(
 
 def main():
     parser = argparse.ArgumentParser(description="FedMed v2.0 Benchmark Framework")
+    parser.add_argument("--config", type=str, default=None, help="Path to modular YAML config file")
     parser.add_argument("--name", type=str, default="FedMed Strategy Benchmark", help="Benchmark suite name")
-    parser.add_argument("--api-url", type=str, default="http://127.0.0.1:8000", help="Backend API URL")
+    parser.add_argument("--api-url", type=str, default=None, help="Backend API URL override")
     parser.add_argument("--quick", action="store_true", help="Run a quick 2-experiment matrix sweep for testing")
     args = parser.parse_args()
 
+    # Load YAML config
+    try:
+        app_cfg: AppConfig = load_config(args.config)
+        logger.info(f"Loaded configuration cleanly for Benchmark Engine: {args.config or 'configs/default.yaml'}")
+    except ConfigValidationError as e:
+        logger.error(f"CRITICAL: Configuration error:\n{e}")
+        sys.exit(1)
+
+    api_url = args.api_url or app_cfg.server.api_url
     benchmark_id = f"bm_{int(time.time())}"
     output_dir = os.path.join(RESULTS_DIR, f"benchmark_{benchmark_id}")
 
@@ -228,12 +241,16 @@ def main():
             strategies=["FedAvg", "FedProx"],
             partitions=["IID"],
             seeds=[42],
+            num_rounds=app_cfg.federated.num_rounds,
+            num_clients=app_cfg.federated.min_clients,
         )
     else:
         matrix_cfg = MatrixConfig(
-            strategies=["FedAvg", "FedProx"],
-            partitions=["IID", "NonIID(alpha=0.5)", "NonIID(alpha=0.2)"],
-            seeds=[42, 123, 999],
+            strategies=app_cfg.benchmark.strategies,
+            partitions=app_cfg.benchmark.partitions,
+            seeds=app_cfg.benchmark.seeds,
+            num_rounds=app_cfg.federated.num_rounds,
+            num_clients=app_cfg.federated.min_clients,
         )
 
     matrix = generate_experiment_matrix(matrix_cfg, benchmark_id)
@@ -242,11 +259,11 @@ def main():
     logger.info(f" Matrix Size: {len(matrix)} Experiments")
     logger.info("==========================================================")
 
-    register_benchmark_backend(args.api_url, benchmark_id, args.name, len(matrix))
+    register_benchmark_backend(api_url, benchmark_id, args.name, len(matrix))
 
     results = []
     for exp_cfg in matrix:
-        res = execute_single_experiment(exp_cfg, args.api_url)
+        res = execute_single_experiment(exp_cfg, api_url)
         results.append(res)
 
     generate_benchmark_artifacts(benchmark_id, args.name, results, output_dir)
