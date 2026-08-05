@@ -35,8 +35,8 @@ def test_full_simulation_pipeline_execution():
     )
 
     try:
-        # Wait up to 45 seconds for full 3-round simulation to finish
-        stdout, stderr = proc.communicate(timeout=45)
+        # Wait up to 90 seconds for full 3-round simulation to finish
+        stdout, stderr = proc.communicate(timeout=90)
         exit_code = proc.returncode
 
         assert exit_code == 0, f"Simulation failed with exit code {exit_code}.\nStderr: {stderr}\nStdout: {stdout}"

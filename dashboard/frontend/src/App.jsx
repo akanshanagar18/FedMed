@@ -7,13 +7,13 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-  ResponsiveContainer,
-  AreaChart,
-  Area
+  ResponsiveContainer
 } from 'recharts';
 
 export default function App() {
   const [metrics, setMetrics] = useState([]);
+  const [experiments, setExperiments] = useState([]);
+  const [currentExp, setCurrentExp] = useState(null);
   const [connectionStatus, setConnectionStatus] = useState('CONNECTING');
   const [wsConnected, setWsConnected] = useState(false);
   const [latestRound, setLatestRound] = useState(0);
@@ -21,7 +21,7 @@ export default function App() {
   const [latestDice, setLatestDice] = useState('N/A');
 
   useEffect(() => {
-    // Initial fetch of persisted metrics
+    // Initial fetch of metrics
     fetch('/api/v1/metrics/default')
       .then((res) => res.json())
       .then((res) => {
@@ -37,7 +37,18 @@ export default function App() {
       })
       .catch((err) => console.log('Initial metrics fetch error:', err));
 
-    // WebSocket telemetry connection with reconnect
+    // Initial fetch of experiments
+    fetch('/api/v1/experiments')
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.data && Array.isArray(res.data) && res.data.length > 0) {
+          setExperiments(res.data);
+          setCurrentExp(res.data[0]);
+        }
+      })
+      .catch((err) => console.log('Experiments fetch error:', err));
+
+    // WebSocket telemetry stream
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const wsUrl = `${protocol}//${window.location.host}/api/v1/telemetry/ws`;
     const ws = new WebSocket(wsUrl);
@@ -59,6 +70,17 @@ export default function App() {
           setLatestRound(newMetric.round_number);
           setLatestLoss(newMetric.training_loss ? newMetric.training_loss.toFixed(4) : 'N/A');
           setLatestDice(newMetric.dice_score ? newMetric.dice_score.toFixed(4) : 'N/A');
+
+          // Refresh experiments metadata
+          fetch('/api/v1/experiments')
+            .then((r) => r.json())
+            .then((res) => {
+              if (res.data && Array.isArray(res.data) && res.data.length > 0) {
+                setExperiments(res.data);
+                setCurrentExp(res.data[0]);
+              }
+            })
+            .catch(() => {});
         }
       } catch (err) {
         console.error('Error parsing WS telemetry message:', err);
@@ -73,6 +95,8 @@ export default function App() {
     return () => ws.close();
   }, []);
 
+  const expStatus = currentExp?.status?.toUpperCase() || 'RUNNING';
+
   return (
     <div className="dashboard-container">
       {/* Platform Header */}
@@ -80,14 +104,15 @@ export default function App() {
         <div className="header-title-group">
           <div className="logo-badge">FM</div>
           <div>
-            <h1>FedMed Monitoring Engine</h1>
+            <h1>FedMed Research Dashboard</h1>
             <p className="header-subtitle">
-              Cross-Silo Federated Learning Platform for Medical Image Segmentation
+              Cross-Silo Federated Learning Engine for Medical Image Segmentation
             </p>
             <div className="meta-tags">
-              <span className="tag">EXP: default</span>
+              <span className="tag">EXP: {currentExp?.experiment_id || 'default'}</span>
+              <span className="tag">STATUS: {expStatus}</span>
               <span className="tag">MODEL: 3D U-Net (BraTS)</span>
-              <span className="tag">STRATEGY: FedAvg</span>
+              <span className="tag">STRATEGY: {currentExp?.strategy_name || 'FedAvg'}</span>
             </div>
           </div>
         </div>
@@ -119,7 +144,7 @@ export default function App() {
         </div>
         <div className="status-indicator">
           <div className="dot green"></div>
-          <span>HOSPITALS: 2/2 Active</span>
+          <span>EXPERIMENTS: {experiments.length} Active</span>
         </div>
       </div>
 
@@ -129,7 +154,7 @@ export default function App() {
           <div className="kpi-title">Completed FL Round</div>
           <div className="kpi-value-row">
             <div className="kpi-value">{latestRound}</div>
-            <div className="kpi-trend neutral">3 Max Rounds</div>
+            <div className="kpi-trend neutral">{currentExp?.num_rounds || 3} Max Rounds</div>
           </div>
         </div>
 
@@ -157,7 +182,7 @@ export default function App() {
           <div className="kpi-title">Participating Silos</div>
           <div className="kpi-value-row">
             <div className="kpi-value" style={{ color: 'var(--accent-green)' }}>
-              2
+              {currentExp?.num_clients || 2}
             </div>
             <div className="kpi-trend positive">100% Online</div>
           </div>
@@ -220,45 +245,50 @@ export default function App() {
           </div>
         </div>
 
-        {/* Experiment & Infrastructure Metadata Panel */}
+        {/* Experiment Specs & Hyperparameters Panel */}
         <div className="panel-card">
           <div className="panel-header">
             <div className="panel-title">
               <div className="panel-title-icon" style={{ backgroundColor: 'var(--accent-purple)' }}></div>
-              Experiment Specs
+              Experiment Management
             </div>
+            <div className="tag">{expStatus}</div>
           </div>
 
           <div className="info-list">
             <div className="info-item">
               <span className="info-key">Experiment ID</span>
-              <span className="info-value">default</span>
+              <span className="info-value">{currentExp?.experiment_id || 'default'}</span>
             </div>
             <div className="info-item">
-              <span className="info-key">Architecture</span>
-              <span className="info-value">MONAI 3D U-Net</span>
-            </div>
-            <div className="info-item">
-              <span className="info-key">Input Dimensions</span>
-              <span className="info-value">4 x 32 x 32 x 32</span>
-            </div>
-            <div className="info-item">
-              <span className="info-key">Privacy Preserving</span>
-              <span className="info-value" style={{ color: 'var(--accent-green)' }}>
-                TenSEAL CKKS HE
+              <span className="info-key">Lifecycle Status</span>
+              <span className="info-value" style={{ color: expStatus === 'COMPLETED' ? 'var(--accent-green)' : 'var(--accent-cyan)' }}>
+                {expStatus}
               </span>
             </div>
             <div className="info-item">
-              <span className="info-key">Aggregation</span>
-              <span className="info-value">FedAvg</span>
+              <span className="info-key">Strategy</span>
+              <span className="info-value">{currentExp?.strategy_name || 'FedAvg'}</span>
             </div>
             <div className="info-item">
-              <span className="info-key">Communication</span>
-              <span className="info-value">gRPC (Port 8080)</span>
+              <span className="info-key">Learning Rate</span>
+              <span className="info-value">{currentExp?.learning_rate || '1e-4'}</span>
             </div>
             <div className="info-item">
-              <span className="info-key">Persistence</span>
-              <span className="info-value">SQLite (fedmed.db)</span>
+              <span className="info-key">Batch Size / Epochs</span>
+              <span className="info-value">{currentExp?.batch_size || 2} / {currentExp?.local_epochs || 1}</span>
+            </div>
+            <div className="info-item">
+              <span className="info-key">Random Seed</span>
+              <span className="info-value">{currentExp?.seed || 42}</span>
+            </div>
+            <div className="info-item">
+              <span className="info-key">Differential Privacy</span>
+              <span className="info-value">{currentExp?.dp_enabled ? 'Enabled' : 'Disabled (Standard)'}</span>
+            </div>
+            <div className="info-item">
+              <span className="info-key">Homomorphic Enc.</span>
+              <span className="info-value">{currentExp?.he_enabled ? 'Enabled' : 'Disabled (Standard)'}</span>
             </div>
           </div>
         </div>
@@ -271,7 +301,7 @@ export default function App() {
             <div className="panel-title-icon" style={{ backgroundColor: 'var(--accent-green)' }}></div>
             Hospital Client Silos
           </div>
-          <div className="tag">2 SILOS REGISTERED</div>
+          <div className="tag">{currentExp?.num_clients || 2} SILOS REGISTERED</div>
         </div>
 
         <table className="data-table">

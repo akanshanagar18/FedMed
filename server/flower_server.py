@@ -3,7 +3,7 @@ Module: server.flower_server
 
 Purpose:
 Flower server with custom FedAvg strategy that reports aggregation metrics
-to the FedMed Dashboard API after each round.
+and registers experiment lifecycle metadata to the FedMed Dashboard API.
 
 Usage:
     python -m server.flower_server --api-url http://127.0.0.1:8000 --rounds 3
@@ -19,8 +19,6 @@ from flwr.common import (
     FitRes,
     Parameters,
     Scalar,
-    ndarrays_to_parameters,
-    parameters_to_ndarrays,
 )
 from flwr.server.client_proxy import ClientProxy
 from flwr.server.strategy import FedAvg
@@ -33,10 +31,8 @@ logger = logging.getLogger(__name__)
 
 class MetricsReporterStrategy(FedAvg):
     """
-    Custom FedAvg strategy that reports round metrics to the Dashboard API.
-
-    After each aggregation round, it POSTs a TrainingMetric payload to
-    POST /api/v1/metrics on the monitoring backend.
+    Custom FedAvg strategy that reports round metrics and experiment status
+    to the Dashboard API.
     """
 
     def __init__(self, api_url: str = "http://127.0.0.1:8000", experiment_id: str = "default", **kwargs):
@@ -44,6 +40,8 @@ class MetricsReporterStrategy(FedAvg):
         self.api_url = api_url.rstrip("/")
         self.experiment_id = experiment_id
         self.current_round = 0
+        self.best_dice_score = 0.0
+        self.best_round = 0
 
     def aggregate_fit(
         self,
@@ -81,6 +79,10 @@ class MetricsReporterStrategy(FedAvg):
 
         avg_loss = total_loss / max(total_samples, 1)
         avg_dice = total_dice / max(total_samples, 1)
+
+        if avg_dice > self.best_dice_score:
+            self.best_dice_score = avg_dice
+            self.best_round = server_round
 
         logger.info(
             f"Round {server_round} aggregation complete — "
@@ -126,6 +128,50 @@ class MetricsReporterStrategy(FedAvg):
             logger.error(f"Error reporting metrics: {e}")
 
 
+def _register_experiment_start(api_url: str, experiment_id: str, num_rounds: int, min_clients: int):
+    """Registers experiment metadata and transitions status to RUNNING."""
+    payload = {
+        "experiment_id": experiment_id,
+        "name": f"Federated Run ({experiment_id})",
+        "description": "Cross-silo 3D UNet Brain Tumor MRI Segmentation",
+        "status": "running",
+        "strategy_name": "FedAvg",
+        "num_clients": min_clients,
+        "learning_rate": 1e-4,
+        "batch_size": 2,
+        "local_epochs": 1,
+        "num_rounds": num_rounds,
+        "seed": 42,
+        "dp_enabled": False,
+        "he_enabled": False,
+        "dataset_name": "BraTS2021",
+        "partition_strategy": "IID",
+    }
+    try:
+        url = f"{api_url.rstrip('/')}/api/v1/experiments"
+        requests.post(url, json=payload, timeout=5)
+        logger.info(f"Registered experiment '{experiment_id}' as RUNNING")
+    except Exception as e:
+        logger.warning(f"Could not register experiment start: {e}")
+
+
+def _register_experiment_complete(api_url: str, experiment_id: str, best_dice: float, best_round: int):
+    """Updates experiment status to COMPLETED upon FL training completion."""
+    payload = {
+        "experiment_id": experiment_id,
+        "name": f"Federated Run ({experiment_id})",
+        "status": "completed",
+        "best_dice_score": best_dice,
+        "best_round": best_round,
+    }
+    try:
+        url = f"{api_url.rstrip('/')}/api/v1/experiments"
+        requests.post(url, json=payload, timeout=5)
+        logger.info(f"Updated experiment '{experiment_id}' status to COMPLETED")
+    except Exception as e:
+        logger.warning(f"Could not update experiment completion: {e}")
+
+
 def start_server(
     server_address: str = "0.0.0.0:8080",
     num_rounds: int = 3,
@@ -135,6 +181,8 @@ def start_server(
     experiment_id: str = "default",
 ):
     """Start the Flower server with the MetricsReporter strategy."""
+    _register_experiment_start(api_url, experiment_id, num_rounds, min_fit_clients)
+
     strategy = MetricsReporterStrategy(
         api_url=api_url,
         experiment_id=experiment_id,
@@ -152,6 +200,8 @@ def start_server(
         config=fl.server.ServerConfig(num_rounds=num_rounds),
         strategy=strategy,
     )
+
+    _register_experiment_complete(api_url, experiment_id, strategy.best_dice_score, strategy.best_round)
 
 
 if __name__ == "__main__":

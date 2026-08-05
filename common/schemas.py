@@ -40,10 +40,12 @@ class RoundStatus(str, Enum):
 
 
 class ExperimentStatus(str, Enum):
-    """Experiment lifecycle states."""
+    """Experiment lifecycle states for FedMed v2.0."""
+    CREATED = "created"
     RUNNING = "running"
     COMPLETED = "completed"
-    ABORTED = "aborted"
+    FAILED = "failed"
+    STOPPED = "stopped"
 
 
 # ---------------------------------------------------------------------------
@@ -93,15 +95,36 @@ class NodeHealth(BaseModel):
 
 
 class Experiment(BaseModel):
-    """Metadata for a federated learning experiment."""
+    """Metadata contract for a research-grade federated learning experiment."""
     experiment_id: str
     name: str
     description: str = ""
+    status: ExperimentStatus = ExperimentStatus.CREATED
+    
+    # Federated & ML Hyperparameters
+    strategy_name: str = "FedAvg"
+    num_clients: int = 2
+    learning_rate: float = 1e-4
+    batch_size: int = 2
+    local_epochs: int = 1
+    num_rounds: int = 3
+    seed: int = 42
+    
+    # Privacy & Dataset Flags
+    dp_enabled: bool = False
+    he_enabled: bool = False
+    dataset_name: str = "BraTS2021"
+    partition_strategy: str = "IID"
+    notes: Optional[str] = None
+    
+    # Checkpoint Metadata
+    checkpoint_path: Optional[str] = None
+    best_dice_score: Optional[float] = None
+    best_round: Optional[int] = None
+    
+    # Timestamps
     start_time: datetime = Field(default_factory=datetime.utcnow)
     end_time: Optional[datetime] = None
-    status: ExperimentStatus = ExperimentStatus.RUNNING
-    hyperparameters: Dict[str, Any] = Field(default_factory=dict)
-    encryption_status: str = "active"
 
 
 # ---------------------------------------------------------------------------

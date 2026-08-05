@@ -2,23 +2,9 @@
 Module: dashboard.backend.app.schemas.experiment
 
 Purpose:
-Contract for Experiment metadata. Tracks hyperparameter setups and run configurations.
-
-TODO:
-- [ ] Align hyperparameter fields with actual PyTorch/Flower configs.
+Contract for Experiment metadata re-exported from canonical schemas.
 """
 
-from pydantic import BaseModel
-from typing import Dict, Any, Optional
-from datetime import datetime
+from common.schemas import Experiment, ExperimentStatus
 
-
-class Experiment(BaseModel):
-    experiment_id: str
-    name: str
-    description: str
-    start_time: datetime
-    end_time: Optional[datetime] = None
-    status: str  # "running", "completed", "aborted"
-    hyperparameters: Dict[str, Any]
-    encryption_status: str = "active"
+__all__ = ["Experiment", "ExperimentStatus"]

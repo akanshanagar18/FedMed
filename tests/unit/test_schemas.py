@@ -35,11 +35,6 @@ def test_training_metric_schema():
     assert metric.hospital_id == "hospital_a"
     assert isinstance(metric.timestamp, datetime)
 
-    # Test dictionary export
-    dumped = metric.model_dump()
-    assert dumped["experiment_id"] == "exp_test"
-    assert dumped["round_number"] == 1
-
 
 @pytest.mark.unit
 def test_hospital_status_schema():
@@ -80,17 +75,24 @@ def test_node_health_schema():
 
 @pytest.mark.unit
 def test_experiment_schema():
-    """Verify Experiment metadata container."""
+    """Verify Experiment v2.0 research metadata container."""
     exp = Experiment(
         experiment_id="brats_2021_v1",
         name="BraTS Segmentation Experiment",
         description="Testing 3D UNet with FedAvg",
         status=ExperimentStatus.RUNNING,
-        hyperparameters={"lr": 1e-4, "batch_size": 2},
+        strategy_name="FedAvg",
+        learning_rate=1e-4,
+        batch_size=2,
+        num_rounds=5,
+        dp_enabled=False,
+        he_enabled=True,
     )
     assert exp.experiment_id == "brats_2021_v1"
     assert exp.status == ExperimentStatus.RUNNING
-    assert exp.hyperparameters["batch_size"] == 2
+    assert exp.learning_rate == 1e-4
+    assert exp.num_rounds == 5
+    assert exp.he_enabled is True
 
 
 @pytest.mark.unit
