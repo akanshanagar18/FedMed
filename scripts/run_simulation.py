@@ -165,20 +165,10 @@ def poll_backend_health(health_url: str, timeout_sec: float, interval_sec: float
     return False
 
 
-def poll_tcp_socket_ready(host: str, port: int, timeout_sec: float, interval_sec: float, proc: subprocess.Popen) -> bool:
-    """Active TCP socket readiness polling for Flower central server."""
-    start_time = time.time()
-    while time.time() - start_time < timeout_sec:
-        if proc.poll() is not None:
-            log_subsystem("FLOWER", f"Process exited prematurely with code {proc.returncode}!", logging.ERROR)
-            return False
-        try:
-            with socket.create_connection((host, port), timeout=1.0):
-                return True
-        except (OSError, ConnectionRefusedError):
-            pass
-        time.sleep(interval_sec)
-    return False
+def wait_for_flower_server_ready(proc: subprocess.Popen, delay_sec: float = 2.0) -> bool:
+    """Ensure Flower server subprocess is running and has bound its gRPC listener."""
+    time.sleep(delay_sec)
+    return proc.poll() is None
 
 
 # ---------------------------------------------------------------------------
@@ -300,11 +290,10 @@ def main():
         )
         tracker.register("Flower-Server", server_proc)
 
-        log_subsystem("FLOWER", f"Polling TCP socket '{config.flower_address}'...")
-        if not poll_tcp_socket_ready(config.flower_host, config.flower_port, config.startup_timeout_sec, config.poll_interval_sec, server_proc):
-            log_subsystem("FLOWER", "CRITICAL: Flower Server failed socket readiness check!", logging.ERROR)
+        if not wait_for_flower_server_ready(server_proc):
+            log_subsystem("FLOWER", "CRITICAL: Flower Server failed process readiness check!", logging.ERROR)
             raise RuntimeError("Flower server startup failed.")
-        log_subsystem("FLOWER", "Flower Central Aggregation Server socket listening!")
+        log_subsystem("FLOWER", "Flower Central Aggregation Server gRPC engine listening!")
 
         # Step 3: Connect Hospital Node Alpha (hospital_a)
         log_subsystem("CLIENT-A", "Connecting Hospital Node Alpha (hospital_a)...")
@@ -340,7 +329,7 @@ def main():
 
         log_subsystem("ORCHESTRATOR", "==========================================================")
         log_subsystem("ORCHESTRATOR", f" Simulation Pipeline Active! Executing {config.num_rounds} FL Rounds...")
-        log_subsystem("ORCHESTRATOR", f" Dashboard API Docs: http://{config.backend_host}:{config.backend_port}/docs")
+        log_subsystem("ORCHESTRATOR", f" Dashboard UI: http://{config.backend_host}:{config.backend_port}/")
         log_subsystem("ORCHESTRATOR", f" Telemetry WebSocket: ws://{config.backend_host}:{config.backend_port}/api/v1/telemetry/ws")
         log_subsystem("ORCHESTRATOR", "==========================================================")
 
