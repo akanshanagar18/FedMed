@@ -1,23 +1,16 @@
-from typing import List
+from typing import List, Any
 
 
-def receive_updates():
+def receive_encrypted_updates() -> List[Any]:
     """
-    Receive encrypted model updates from clients.
-    """
-    pass
-
-
-def aggregate_encrypted(encrypted_updates: List):
-    """
-    Aggregate encrypted model updates.
+    Receive encrypted model updates from all federated clients.
     """
     pass
 
 
-def send_global_model(global_model):
+def send_global_model(global_model: Any) -> None:
     """
-    Send encrypted global model to all clients.
+    Send the aggregated global model back to all connected clients.
     """
     pass
 
