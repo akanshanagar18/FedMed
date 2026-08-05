@@ -12,6 +12,7 @@ from app.core.logging import setup_logging
 from app.core.exceptions import register_exception_handlers
 from app.middleware.cors import register_cors
 from app.api.v1.router import api_router
+from app.database.session import init_db
 import logging
 
 # Initialize logging
@@ -41,9 +42,9 @@ app = create_app()
 @app.on_event("startup")
 async def startup_event():
     logger.info("Starting up FedMed Backend...")
-    # TODO: Initialize database connection pools or Redis here.
+    init_db()
+    logger.info("Database tables initialized.")
 
 @app.on_event("shutdown")
 async def shutdown_event():
     logger.info("Shutting down FedMed Backend...")
-    # TODO: Clean up database connections and WebSocket active pools.

@@ -1,0 +1,81 @@
+"""
+Module: model.trainer
+
+Purpose:
+Minimal PyTorch training loop for the 3D U-Net.
+Called by the Flower client during local training rounds.
+"""
+
+import torch
+import torch.nn as nn
+from torch.utils.data import DataLoader
+from typing import Dict
+
+
+def train_one_epoch(
+    model: nn.Module,
+    dataloader: DataLoader,
+    optimizer: torch.optim.Optimizer,
+    loss_fn: nn.Module,
+    device: str = "cpu",
+) -> Dict[str, float]:
+    """
+    Trains the model for one epoch.
+
+    Args:
+        model: PyTorch model (UNet3D).
+        dataloader: DataLoader yielding {"image": Tensor, "mask": Tensor}.
+        optimizer: PyTorch optimizer.
+        loss_fn: Loss function (e.g., DiceLoss).
+        device: "cpu" or "cuda".
+
+    Returns:
+        Dict with "training_loss" and "dice_score" (averaged over batches).
+    """
+    model.train()
+    model.to(device)
+
+    total_loss = 0.0
+    total_dice = 0.0
+    num_batches = 0
+
+    for batch in dataloader:
+        images = batch["image"].to(device)
+        masks = batch["mask"].to(device)
+
+        optimizer.zero_grad()
+        predictions = model(images)
+
+        # Ensure mask shape matches predictions for loss computation
+        if masks.shape != predictions.shape:
+            # Convert integer masks to one-hot if needed
+            if masks.dim() == 4:
+                masks = masks.unsqueeze(1)
+            if masks.shape[1] == 1 and predictions.shape[1] > 1:
+                # One-hot encode: (B, 1, D, H, W) -> (B, C, D, H, W)
+                num_classes = predictions.shape[1]
+                masks_long = masks.long().squeeze(1)
+                masks_onehot = torch.zeros_like(predictions)
+                masks_onehot.scatter_(1, masks_long.unsqueeze(1), 1)
+                masks = masks_onehot
+
+        loss = loss_fn(predictions, masks)
+        loss.backward()
+        optimizer.step()
+
+        total_loss += loss.item()
+
+        # Compute Dice score (simple approximation)
+        with torch.no_grad():
+            pred_binary = (torch.sigmoid(predictions) > 0.5).float()
+            intersection = (pred_binary * masks).sum()
+            union = pred_binary.sum() + masks.sum()
+            dice = (2.0 * intersection / (union + 1e-8)).item()
+            total_dice += dice
+
+        num_batches += 1
+
+    avg_loss = total_loss / max(num_batches, 1)
+    avg_dice = total_dice / max(num_batches, 1)
+
+    return {"training_loss": avg_loss, "dice_score": avg_dice}

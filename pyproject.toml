@@ -24,7 +24,9 @@ dependencies = [
     "tensorboard>=2.14.0",
     "pydantic>=2.4.2",
     "pydantic-settings>=2.0.3",
-    "websockets>=11.0.3"
+    "websockets>=11.0.3",
+    "sqlalchemy>=2.0.0",
+    "requests>=2.31.0"
 ]
 
 [project.optional-dependencies]
@@ -37,7 +39,7 @@ dev = [
 ]
 
 [tool.setuptools.packages.find]
-include = ["client*", "server*", "model*", "privacy*", "configs*", "common*", "utils*"]
+include = ["client*", "server*", "model*", "privacy*", "configs*", "common*", "utils*", "dashboard*"]
 
 [tool.black]
 line-length = 88
