@@ -10,6 +10,10 @@ from common.schemas import (
     TrainingRound,
     NodeHealth,
     Experiment,
+    Benchmark,
+    BenchmarkStatus,
+    BenchmarkMatrixConfig,
+    LeaderboardEntry,
     SuccessResponse,
     ErrorResponse,
     ConnectionStatus,
@@ -93,6 +97,38 @@ def test_experiment_schema():
     assert exp.learning_rate == 1e-4
     assert exp.num_rounds == 5
     assert exp.he_enabled is True
+
+
+@pytest.mark.unit
+def test_benchmark_schema():
+    """Verify Benchmark v2.0 suite container and leaderboard schemas."""
+    bm = Benchmark(
+        benchmark_id="bm_pytest_001",
+        name="FedAvg vs FedProx Benchmark",
+        description="Evaluating statistical heterogeneity",
+        status=BenchmarkStatus.RUNNING,
+        total_experiments=6,
+        completed_experiments=2,
+    )
+    assert bm.benchmark_id == "bm_pytest_001"
+    assert bm.status == BenchmarkStatus.RUNNING
+    assert bm.total_experiments == 6
+    assert len(bm.matrix_config.strategies) == 2
+
+    entry = LeaderboardEntry(
+        rank=1,
+        experiment_id="exp_001",
+        strategy_name="FedProx",
+        partition_strategy="NonIID(alpha=0.2)",
+        seed=42,
+        best_dice=0.885,
+        avg_loss=0.312,
+        convergence_round=3,
+        runtime_sec=42.1,
+        status="completed",
+    )
+    assert entry.rank == 1
+    assert entry.best_dice == 0.885
 
 
 @pytest.mark.unit

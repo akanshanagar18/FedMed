@@ -48,6 +48,14 @@ class ExperimentStatus(str, Enum):
     STOPPED = "stopped"
 
 
+class BenchmarkStatus(str, Enum):
+    """Benchmark suite lifecycle states."""
+    CREATED = "created"
+    RUNNING = "running"
+    COMPLETED = "completed"
+    FAILED = "failed"
+
+
 # ---------------------------------------------------------------------------
 # Core Schemas
 # ---------------------------------------------------------------------------
@@ -125,6 +133,47 @@ class Experiment(BaseModel):
     # Timestamps
     start_time: datetime = Field(default_factory=datetime.utcnow)
     end_time: Optional[datetime] = None
+
+
+class BenchmarkMatrixConfig(BaseModel):
+    """Matrix parameters for generating benchmark experiment sweeps."""
+    strategies: List[str] = Field(default_factory=lambda: ["FedAvg", "FedProx"])
+    partition_strategies: List[str] = Field(
+        default_factory=lambda: ["IID", "NonIID(alpha=0.5)", "NonIID(alpha=0.2)"]
+    )
+    seeds: List[int] = Field(default_factory=lambda: [42, 123, 999])
+    num_rounds: int = 3
+    num_clients: int = 2
+
+
+class Benchmark(BaseModel):
+    """Metadata contract for a multi-experiment benchmark suite."""
+    benchmark_id: str
+    name: str
+    description: str = ""
+    status: BenchmarkStatus = BenchmarkStatus.CREATED
+    total_experiments: int = 0
+    completed_experiments: int = 0
+    best_experiment_id: Optional[str] = None
+    best_dice_score: Optional[float] = None
+    avg_dice_score: Optional[float] = None
+    matrix_config: BenchmarkMatrixConfig = Field(default_factory=BenchmarkMatrixConfig)
+    start_time: datetime = Field(default_factory=datetime.utcnow)
+    end_time: Optional[datetime] = None
+
+
+class LeaderboardEntry(BaseModel):
+    """Single row entry in a benchmark leaderboard table."""
+    rank: int
+    experiment_id: str
+    strategy_name: str
+    partition_strategy: str
+    seed: int
+    best_dice: float
+    avg_loss: float
+    convergence_round: int
+    runtime_sec: float
+    status: str
 
 
 # ---------------------------------------------------------------------------

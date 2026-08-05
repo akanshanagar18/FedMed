@@ -9,8 +9,9 @@ from dashboard.backend.app.main import app
 from dashboard.backend.app.database.session import Base, engine, SessionLocal, init_db
 from dashboard.backend.app.services.hospital import HospitalService
 from dashboard.backend.app.services.experiment import ExperimentService
+from dashboard.backend.app.services.benchmark import BenchmarkService
 from dashboard.backend.app.schemas.node import HospitalStatus
-from common.schemas import Experiment, ExperimentStatus
+from common.schemas import Experiment, ExperimentStatus, Benchmark, BenchmarkStatus
 from server.flower_server import MetricsReporterStrategy
 
 
@@ -106,6 +107,48 @@ def test_experiment_endpoints_crud(client):
 
     # 5. Verify Deletion
     get_after_del = client.get("/api/v1/experiments/exp_pytest_crud")
+    assert get_after_del.status_code == 404
+
+
+@pytest.mark.integration
+def test_benchmark_endpoints_crud(client):
+    """Test REST API endpoints for Benchmark Framework (POST, GET, LEADERBOARD, DELETE)."""
+    payload = {
+        "benchmark_id": "bm_pytest_crud",
+        "name": "Pytest Benchmark Suite",
+        "description": "Evaluating matrix execution",
+        "status": "running",
+        "total_experiments": 6,
+        "completed_experiments": 2,
+    }
+
+    # 1. Create Benchmark
+    create_res = client.post("/api/v1/benchmarks", json=payload)
+    assert create_res.status_code == 200
+    assert create_res.json()["data"]["benchmark_id"] == "bm_pytest_crud"
+    assert create_res.json()["data"]["total_experiments"] == 6
+
+    # 2. Get Benchmark List
+    list_res = client.get("/api/v1/benchmarks")
+    assert list_res.status_code == 200
+    assert len(list_res.json()["data"]) >= 1
+
+    # 3. Get Benchmark Details
+    get_res = client.get("/api/v1/benchmarks/bm_pytest_crud")
+    assert get_res.status_code == 200
+    assert get_res.json()["data"]["name"] == "Pytest Benchmark Suite"
+
+    # 4. Get Leaderboard
+    l_res = client.get("/api/v1/benchmarks/bm_pytest_crud/leaderboard")
+    assert l_res.status_code == 200
+    assert isinstance(l_res.json()["data"], list)
+
+    # 5. Delete Benchmark
+    del_res = client.delete("/api/v1/benchmarks/bm_pytest_crud")
+    assert del_res.status_code == 200
+
+    # 6. Verify Deletion
+    get_after_del = client.get("/api/v1/benchmarks/bm_pytest_crud")
     assert get_after_del.status_code == 404
 
 

@@ -5,7 +5,7 @@ Purpose:
 SQLAlchemy Declarative Base and ORM table models for the FedMed monitoring database.
 """
 
-from sqlalchemy import Column, String, Integer, Float, DateTime, Text, Boolean
+from sqlalchemy import Column, String, Integer, Float, DateTime, Text, Boolean, ForeignKey
 from sqlalchemy.orm import declarative_base
 from datetime import datetime
 
@@ -74,3 +74,33 @@ class ExperimentModel(Base):
     # Timestamps
     start_time = Column(DateTime, default=datetime.utcnow)
     end_time = Column(DateTime, nullable=True)
+
+
+class BenchmarkModel(Base):
+    """Persisted metadata for multi-experiment benchmark suites."""
+    __tablename__ = "benchmarks"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    benchmark_id = Column(String, unique=True, nullable=False, index=True)
+    name = Column(String, nullable=False)
+    description = Column(Text, default="")
+    status = Column(String, default="created")
+    total_experiments = Column(Integer, default=0)
+    completed_experiments = Column(Integer, default=0)
+    best_experiment_id = Column(String, nullable=True)
+    best_dice_score = Column(Float, nullable=True)
+    avg_dice_score = Column(Float, nullable=True)
+    matrix_config_json = Column(Text, default="{}")
+    start_time = Column(DateTime, default=datetime.utcnow)
+    end_time = Column(DateTime, nullable=True)
+
+
+class BenchmarkExperimentModel(Base):
+    """Mapping table linking experiments to a benchmark suite."""
+    __tablename__ = "benchmark_experiments"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    benchmark_id = Column(String, nullable=False, index=True)
+    experiment_id = Column(String, nullable=False, index=True)
+    sequence_order = Column(Integer, default=0)
+    status = Column(String, default="pending")
