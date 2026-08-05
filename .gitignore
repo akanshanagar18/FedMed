@@ -1,49 +1,33 @@
-# Python
+# Byte-compiled / optimized files
 __pycache__/
 *.py[cod]
 *$py.class
-*.so
-.Python
-env/
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-share/python-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
 
-# Virtual Environment
+# Environments
 venv/
-.venv/
+env/
+ENV/
+.venv
 
-# Environment Variables
-.env
-.env.local
+# Database & Runtime Output
+fedmed.db
+*.db
+outputs/
+logs/*.log
+checkpoints/*.pth
 
-# Data and Checkpoints
-data/*
-!data/.keep
-checkpoints/*
-!checkpoints/.keep
-logs/*
-!logs/.keep
+# Node & Frontend Build
+dashboard/frontend/node_modules/
+dashboard/frontend/dist/
+npm-debug.log*
 
-# Node
-node_modules/
-dist/
-build/
-.next/
+# Testing & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
 
-# OS Files
+# IDE & OS Files
 .DS_Store
-Thumbs.db
+.vscode/
+.idea/
+*.swp
