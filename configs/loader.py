@@ -9,7 +9,7 @@ Supports loading modular YAML files, overriding default parameters, and throwing
 import os
 import yaml
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 from pydantic import BaseModel, Field, ValidationError
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -29,8 +29,13 @@ class ServerConfig(BaseModel):
     cors_origins: List[str] = Field(default_factory=list)
 
 
+class StrategySpec(BaseModel):
+    name: str = "FedAvg"
+    parameters: Dict[str, Any] = Field(default_factory=dict)
+
+
 class FederatedConfig(BaseModel):
-    strategy: str = "FedAvg"
+    strategy: Union[str, StrategySpec, Dict[str, Any]] = "FedAvg"
     num_rounds: int = Field(3, ge=1)
     min_clients: int = Field(2, ge=1)
     min_available_clients: int = Field(2, ge=1)
@@ -41,6 +46,28 @@ class FederatedConfig(BaseModel):
     weight_decay: float = Field(1e-5, ge=0)
     proximal_mu: float = Field(0.01, ge=0)
     seed: int = 42
+
+    def get_strategy_name(self) -> str:
+        if isinstance(self.strategy, str):
+            return self.strategy
+        elif isinstance(self.strategy, StrategySpec):
+            return self.strategy.name
+        elif isinstance(self.strategy, dict):
+            return self.strategy.get("name", "FedAvg")
+        return "FedAvg"
+
+    def get_strategy_parameters(self) -> Dict[str, Any]:
+        params = {
+            "min_fit_clients": self.min_clients,
+            "min_available_clients": self.min_available_clients,
+            "proximal_mu": self.proximal_mu,
+        }
+        if isinstance(self.strategy, StrategySpec):
+            params.update(self.strategy.parameters)
+        elif isinstance(self.strategy, dict) and "parameters" in self.strategy:
+            params.update(self.strategy.get("parameters", {}))
+        return params
+
 
 
 class DataConfig(BaseModel):

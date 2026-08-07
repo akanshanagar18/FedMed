@@ -2,140 +2,55 @@
 Module: server.flower_server
 
 Purpose:
-Flower server with custom FedAvg strategy that reports aggregation metrics
-and registers experiment lifecycle metadata to the FedMed Dashboard API.
-
-Usage:
-    python -m server.flower_server --api-url http://127.0.0.1:8000 --rounds 3
+Production Flower server orchestrator for FedMed v2.0.
+Instantiates pluggable strategy implementations via StrategyRegistry and wraps them
+with FlowerStrategyAdapter for telemetry and gRPC transport.
 """
 
 import argparse
 import logging
-import time
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, Optional, Tuple, Union
 
 import flwr as fl
-from flwr.common import (
-    FitRes,
-    Parameters,
-    Scalar,
-)
-from flwr.server.client_proxy import ClientProxy
-from flwr.server.strategy import FedAvg
-
 import requests
+
+from configs.loader import AppConfig, load_config
+from server.strategies import FlowerStrategyAdapter, StrategyRegistry
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 
-class MetricsReporterStrategy(FedAvg):
+# Backward compatibility alias
+class MetricsReporterStrategy(FlowerStrategyAdapter):
     """
-    Custom FedAvg strategy that reports round metrics and experiment status
-    to the Dashboard API.
+    Backward-compatible strategy wrapper matching FedMed v1.0 interface.
     """
-
-    def __init__(self, api_url: str = "http://127.0.0.1:8000", experiment_id: str = "default", **kwargs):
-        super().__init__(**kwargs)
-        self.api_url = api_url.rstrip("/")
-        self.experiment_id = experiment_id
-        self.current_round = 0
-        self.best_dice_score = 0.0
-        self.best_round = 0
-
-    def aggregate_fit(
+    def __init__(
         self,
-        server_round: int,
-        results: List[Tuple[ClientProxy, FitRes]],
-        failures: List[Union[Tuple[ClientProxy, FitRes], BaseException]],
-    ) -> Tuple[Optional[Parameters], Dict[str, Scalar]]:
-        """
-        Aggregate client weights using FedAvg, then POST metrics to Dashboard.
-        """
-        self.current_round = server_round
-        start_time = time.time()
-
-        # Perform standard FedAvg aggregation
-        aggregated_parameters, aggregated_metrics = super().aggregate_fit(
-            server_round, results, failures
-        )
-
-        aggregation_time = time.time() - start_time
-
-        # Collect per-client metrics
-        total_loss = 0.0
-        total_dice = 0.0
-        total_samples = 0
-        hospital_ids = []
-
-        for client_proxy, fit_res in results:
-            client_metrics = fit_res.metrics
-            num_examples = fit_res.num_examples
-            total_loss += client_metrics.get("training_loss", 0.0) * num_examples
-            total_dice += client_metrics.get("dice_score", 0.0) * num_examples
-            total_samples += num_examples
-            hospital_id = client_metrics.get("hospital_id", "unknown")
-            hospital_ids.append(str(hospital_id))
-
-        avg_loss = total_loss / max(total_samples, 1)
-        avg_dice = total_dice / max(total_samples, 1)
-
-        if avg_dice > self.best_dice_score:
-            self.best_dice_score = avg_dice
-            self.best_round = server_round
-
-        logger.info(
-            f"Round {server_round} aggregation complete — "
-            f"avg_loss: {avg_loss:.4f}, avg_dice: {avg_dice:.4f}, "
-            f"time: {aggregation_time:.2f}s, hospitals: {hospital_ids}"
-        )
-
-        # POST metrics to Dashboard API
-        self._report_metrics(server_round, avg_loss, avg_dice, hospital_ids)
-
-        return aggregated_parameters, aggregated_metrics
-
-    def _report_metrics(
-        self,
-        round_number: int,
-        avg_loss: float,
-        avg_dice: float,
-        hospital_ids: List[str],
-    ) -> None:
-        """Send round metrics to the Dashboard monitoring API."""
-        payload = {
-            "experiment_id": self.experiment_id,
-            "round_number": round_number,
-            "training_loss": avg_loss,
-            "dice_score": avg_dice,
-        }
-
-        try:
-            url = f"{self.api_url}/api/v1/metrics"
-            response = requests.post(url, json=payload, timeout=5)
-            if response.status_code == 200:
-                logger.info(f"Round {round_number} metrics reported to Dashboard API")
-            else:
-                logger.warning(
-                    f"Dashboard API returned {response.status_code}: {response.text}"
-                )
-        except requests.exceptions.ConnectionError:
-            logger.warning(
-                f"Could not connect to Dashboard API at {self.api_url}. "
-                f"Metrics for round {round_number} will not be persisted."
-            )
-        except Exception as e:
-            logger.error(f"Error reporting metrics: {e}")
+        api_url: str = "http://127.0.0.1:8000",
+        experiment_id: str = "default",
+        strategy_name: str = "FedAvg",
+        **kwargs,
+    ):
+        base_strat = StrategyRegistry.create(strategy_name, **kwargs)
+        super().__init__(strategy=base_strat, api_url=api_url, experiment_id=experiment_id)
 
 
-def _register_experiment_start(api_url: str, experiment_id: str, num_rounds: int, min_clients: int):
+def _register_experiment_start(
+    api_url: str,
+    experiment_id: str,
+    num_rounds: int,
+    min_clients: int,
+    strategy_name: str = "FedAvg",
+):
     """Registers experiment metadata and transitions status to RUNNING."""
     payload = {
         "experiment_id": experiment_id,
         "name": f"Federated Run ({experiment_id})",
-        "description": "Cross-silo 3D UNet Brain Tumor MRI Segmentation",
+        "description": f"Cross-silo 3D UNet Brain Tumor MRI Segmentation using {strategy_name}",
         "status": "running",
-        "strategy_name": "FedAvg",
+        "strategy_name": strategy_name,
         "num_clients": min_clients,
         "learning_rate": 1e-4,
         "batch_size": 2,
@@ -150,7 +65,7 @@ def _register_experiment_start(api_url: str, experiment_id: str, num_rounds: int
     try:
         url = f"{api_url.rstrip('/')}/api/v1/experiments"
         requests.post(url, json=payload, timeout=5)
-        logger.info(f"Registered experiment '{experiment_id}' as RUNNING")
+        logger.info(f"Registered experiment '{experiment_id}' ({strategy_name}) as RUNNING")
     except Exception as e:
         logger.warning(f"Could not register experiment start: {e}")
 
@@ -179,29 +94,61 @@ def start_server(
     min_available_clients: int = 2,
     api_url: str = "http://127.0.0.1:8000",
     experiment_id: str = "default",
+    config_path: Optional[str] = None,
+    strategy_name: Optional[str] = None,
+    strategy_params: Optional[Dict[str, Any]] = None,
 ):
-    """Start the Flower server with the MetricsReporter strategy."""
-    _register_experiment_start(api_url, experiment_id, num_rounds, min_fit_clients)
+    """Start the Flower server using the Strategy Registry engine."""
+    # 1. Resolve strategy and params from config if provided
+    params: Dict[str, Any] = {
+        "min_fit_clients": min_fit_clients,
+        "min_available_clients": min_available_clients,
+    }
 
-    strategy = MetricsReporterStrategy(
+    if config_path:
+        app_cfg: AppConfig = load_config(config_path)
+        num_rounds = app_cfg.federated.num_rounds
+        min_fit_clients = app_cfg.federated.min_clients
+        min_available_clients = app_cfg.federated.min_available_clients
+        resolved_strategy_name = app_cfg.federated.get_strategy_name()
+        params.update(app_cfg.federated.get_strategy_parameters())
+    else:
+        resolved_strategy_name = strategy_name or "FedAvg"
+
+    if strategy_params:
+        params.update(strategy_params)
+
+    # 2. Instantiate pure Strategy via Registry
+    pure_strategy = StrategyRegistry.create(resolved_strategy_name, **params)
+    logger.info(f"Instantiated strategy '{pure_strategy.get_metadata().name}' via StrategyRegistry")
+
+    # 3. Wrap pure Strategy with FlowerStrategyAdapter
+    adapter = FlowerStrategyAdapter(
+        strategy=pure_strategy,
         api_url=api_url,
         experiment_id=experiment_id,
-        min_fit_clients=min_fit_clients,
-        min_available_clients=min_available_clients,
+    )
+
+    _register_experiment_start(
+        api_url,
+        experiment_id,
+        num_rounds,
+        min_fit_clients,
+        strategy_name=resolved_strategy_name,
     )
 
     logger.info(
-        f"Starting Flower server on {server_address} "
+        f"Starting Flower server on {server_address} using [{resolved_strategy_name}] "
         f"for {num_rounds} rounds (min_clients={min_fit_clients})"
     )
 
     fl.server.start_server(
         server_address=server_address,
         config=fl.server.ServerConfig(num_rounds=num_rounds),
-        strategy=strategy,
+        strategy=adapter,
     )
 
-    _register_experiment_complete(api_url, experiment_id, strategy.best_dice_score, strategy.best_round)
+    _register_experiment_complete(api_url, experiment_id, adapter.best_dice_score, adapter.best_round)
 
 
 if __name__ == "__main__":
@@ -211,6 +158,8 @@ if __name__ == "__main__":
     parser.add_argument("--min-clients", type=int, default=2, help="Minimum clients per round")
     parser.add_argument("--api-url", type=str, default="http://127.0.0.1:8000", help="Dashboard API URL")
     parser.add_argument("--experiment-id", type=str, default="default", help="Experiment identifier")
+    parser.add_argument("--config", type=str, default=None, help="Path to YAML config file")
+    parser.add_argument("--strategy", type=str, default=None, help="Strategy name (e.g. FedAvg, FedProx)")
     args = parser.parse_args()
 
     start_server(
@@ -220,4 +169,6 @@ if __name__ == "__main__":
         min_available_clients=args.min_clients,
         api_url=args.api_url,
         experiment_id=args.experiment_id,
+        config_path=args.config,
+        strategy_name=args.strategy,
     )

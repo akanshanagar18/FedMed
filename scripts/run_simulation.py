@@ -231,6 +231,9 @@ def run_simulation(yaml_config_path: Optional[str] = None):
             "--experiment-id",
             sim_config.experiment_id,
         ]
+        if yaml_config_path:
+            server_cmd.extend(["--config", yaml_config_path])
+
         server_proc = subprocess.Popen(server_cmd, cwd=PROJECT_ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
         tracker.register("FLOWER", server_proc)
         time.sleep(2.0)
