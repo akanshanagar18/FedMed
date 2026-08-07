@@ -9,8 +9,7 @@ decrypt should ever hold the version containing the secret key.
 
 import tenseal as ts
 
-class ContextError(Exception):
-    pass
+from .exceptions import ContextError
 
 DEFAULT_POLY_MODULUS_DEGREE = 8192
 DEFAULT_COEFF_MOD_BIT_SIZES = [60, 40, 40, 60]
