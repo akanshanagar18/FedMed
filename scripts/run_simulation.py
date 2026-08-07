@@ -51,13 +51,16 @@ class SimulationConfig:
     num_rounds: int = 3
     min_clients: int = 2
     experiment_id: str = "default"
-    client_ids: List[str] = field(default_factory=lambda: ["hospital_a", "hospital_b"])
+    partition_strategy: str = "dirichlet"
+    dirichlet_alpha: float = 0.5
+    client_ids: List[str] = field(default_factory=lambda: ["hospital_alpha", "hospital_beta", "hospital_gamma"])
     api_url: str = field(init=False)
     flower_address: str = field(init=False)
 
     def __post_init__(self):
         self.api_url = f"http://{self.backend_host}:{self.backend_port}"
         self.flower_address = f"{self.flower_host}:{self.flower_port}"
+
 
 
 def is_port_in_use(host: str, port: int) -> bool:
@@ -155,7 +158,12 @@ class ProcessTracker:
                     log_subsystem("ORCHESTRATOR", f"{tag} forcibly killed.")
 
 
-def run_simulation(yaml_config_path: Optional[str] = None):
+def run_simulation(
+    yaml_config_path: Optional[str] = None,
+    partition_strategy: str = "dirichlet",
+    dirichlet_alpha: float = 0.5,
+    enable_he: bool = False,
+):
     """Orchestrates the entire execution pipeline."""
     # Load modular YAML config
     try:
@@ -165,6 +173,10 @@ def run_simulation(yaml_config_path: Optional[str] = None):
         log_subsystem("ORCHESTRATOR", f"CRITICAL: Configuration error:\n{e}", logging.ERROR)
         sys.exit(1)
 
+    p_strat = partition_strategy or app_cfg.data.partition_strategy
+    p_alpha = dirichlet_alpha if dirichlet_alpha is not None else app_cfg.data.dirichlet_alpha
+    he_active = enable_he or app_cfg.privacy.he_enabled
+
     sim_config = SimulationConfig(
         backend_host=app_cfg.server.host,
         backend_port=app_cfg.server.port,
@@ -172,6 +184,8 @@ def run_simulation(yaml_config_path: Optional[str] = None):
         flower_port=int(app_cfg.server.fl_server_address.split(":")[1]),
         num_rounds=app_cfg.federated.num_rounds,
         min_clients=app_cfg.federated.min_clients,
+        partition_strategy=p_strat,
+        dirichlet_alpha=p_alpha,
     )
 
     tracker = ProcessTracker()
@@ -188,7 +202,6 @@ def run_simulation(yaml_config_path: Optional[str] = None):
         verify_ports_available(sim_config)
 
         # 1. Spawn FastAPI Backend
-        backend_dir = os.path.join(PROJECT_ROOT, "dashboard", "backend")
         log_subsystem("BACKEND", f"Launching FastAPI server at {sim_config.api_url}...")
         backend_cmd = [
             sys.executable,
@@ -238,9 +251,10 @@ def run_simulation(yaml_config_path: Optional[str] = None):
         tracker.register("FLOWER", server_proc)
         time.sleep(2.0)
 
-        # 3. Spawn Hospital Clients
+        # 3. Spawn Hospital Clients (Hospital Alpha, Hospital Beta, Hospital Gamma)
         for client_id in sim_config.client_ids:
-            log_subsystem(client_id.upper(), f"Launching Flower Client connecting to {sim_config.flower_address}...")
+            he_status_str = "TEN_SEAL CKKS ENCRYPTED" if he_active else "PLAINTEXT"
+            log_subsystem(client_id.upper(), f"Launching Hospital Client ({sim_config.partition_strategy.upper()} alpha={sim_config.dirichlet_alpha} Mode={he_status_str}) connecting to {sim_config.flower_address}...")
             client_cmd = [
                 sys.executable,
                 "-m",
@@ -251,7 +265,16 @@ def run_simulation(yaml_config_path: Optional[str] = None):
                 client_id,
                 "--api-url",
                 sim_config.api_url,
+                "--partition-strategy",
+                sim_config.partition_strategy,
+                "--dirichlet-alpha",
+                str(sim_config.dirichlet_alpha),
             ]
+            if he_active:
+                client_cmd.append("--enable-he")
+            if yaml_config_path:
+                client_cmd.extend(["--config", yaml_config_path])
+
             client_proc = subprocess.Popen(client_cmd, cwd=PROJECT_ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
             tracker.register(client_id.upper(), client_proc)
 
@@ -272,6 +295,16 @@ def run_simulation(yaml_config_path: Optional[str] = None):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="FedMed Simulation Orchestrator")
     parser.add_argument("--config", type=str, default=None, help="Path to modular YAML config file")
+    parser.add_argument("--partition", type=str, default="dirichlet", help="Partition strategy (iid / dirichlet)")
+    parser.add_argument("--alpha", type=float, default=0.5, help="Dirichlet alpha value")
+    parser.add_argument("--enable-he", action="store_true", help="Enable TenSEAL Homomorphic Encryption")
     args = parser.parse_args()
 
-    run_simulation(yaml_config_path=args.config)
+    run_simulation(
+        yaml_config_path=args.config,
+        partition_strategy=args.partition,
+        dirichlet_alpha=args.alpha,
+        enable_he=args.enable_he,
+    )
+
+

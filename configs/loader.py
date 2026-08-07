@@ -72,11 +72,18 @@ class FederatedConfig(BaseModel):
 
 class DataConfig(BaseModel):
     dataset_name: str = "BraTS2021"
+    data_dir: str = "data/BraTS2021"
+    cache_type: str = "persistent"
+    cache_dir: str = ".cache/monai"
+    num_workers: int = Field(2, ge=0)
+    val_split: float = Field(0.2, ge=0.0, le=0.5)
+    modalities: List[str] = Field(default_factory=lambda: ["t1", "t1ce", "t2", "flair"])
     partition_strategy: str = "IID"
     dirichlet_alpha: float = Field(0.5, gt=0)
     image_size: List[int] = Field(default_factory=lambda: [128, 128, 128])
     in_channels: int = 4
     out_channels: int = 3
+
 
 
 class PrivacyConfig(BaseModel):
@@ -86,6 +93,8 @@ class PrivacyConfig(BaseModel):
     max_grad_norm: float = Field(1.0, gt=0)
     he_enabled: bool = False
     scheme: str = "CKKS"
+    poly_modulus_degree: int = 8192
+
 
 
 class LoggingConfig(BaseModel):

@@ -73,14 +73,18 @@ class FlowerStrategyAdapter(fl.server.strategy.Strategy):
         """
         Configure fit instructions for clients via Flower's client manager.
         """
-        # Default sample selection logic: select min_fit_clients
         min_fit = getattr(self.strategy, "min_fit_clients", 2)
         sample_size = max(min_fit, 1)
         clients = client_manager.sample(num_clients=sample_size, min_num_clients=min_fit)
 
-        # Build FitIns carrying current global parameters
-        fit_ins = fl.common.FitIns(parameters, {})
+        config_dict = {}
+        if hasattr(self, "latest_metrics") and "encrypted_global_payload" in self.latest_metrics:
+            config_dict["encrypted_global_payload"] = self.latest_metrics["encrypted_global_payload"]
+
+        # Build FitIns carrying current global parameters and config
+        fit_ins = fl.common.FitIns(parameters, config_dict)
         return [(client, fit_ins) for client in clients]
+
 
     def configure_evaluate(
         self,
@@ -132,7 +136,9 @@ class FlowerStrategyAdapter(fl.server.strategy.Strategy):
 
         # Delegate aggregation to framework-agnostic strategy
         aggregated_ndarrays, metrics = self.strategy.aggregate_fit(server_round, native_results, failures)
+        self.latest_metrics = metrics
         aggregation_time = time.time() - start_time
+
 
         if aggregated_ndarrays is None:
             return None, metrics

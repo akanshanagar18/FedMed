@@ -16,7 +16,7 @@ from configs.config import (
 
 class UNet3D(nn.Module):
 
-    def __init__(self):
+    def __init__(self, in_channels: int = IN_CHANNELS, out_channels: int = OUT_CHANNELS):
 
         super().__init__()
 
@@ -24,9 +24,9 @@ class UNet3D(nn.Module):
 
             spatial_dims=3,
 
-            in_channels=IN_CHANNELS,
+            in_channels=in_channels,
 
-            out_channels=OUT_CHANNELS,
+            out_channels=out_channels,
 
             channels=CHANNELS,
 
@@ -35,6 +35,7 @@ class UNet3D(nn.Module):
             num_res_units=NUM_RES_UNITS,
 
         )
+
 
     def forward(self, x):
 

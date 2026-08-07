@@ -383,9 +383,9 @@ export default function App() {
           <tbody>
             <tr>
               <td>
-                <span className="node-badge">hospital_a</span>
+                <span className="node-badge">hospital_alpha</span>
               </td>
-              <td>General Hospital Alpha</td>
+              <td>Hospital Alpha (Silo A)</td>
               <td>
                 <div className="status-indicator">
                   <div className="dot green"></div>
@@ -393,14 +393,14 @@ export default function App() {
                 </div>
               </td>
               <td>12 ms</td>
-              <td>BraTS Synthetic Tensors</td>
-              <td>PyTorch 2.x (CPU)</td>
+              <td>BraTS NIfTI (Dirichlet non-IID)</td>
+              <td>PyTorch 2.x MONAI</td>
             </tr>
             <tr>
               <td>
-                <span className="node-badge">hospital_b</span>
+                <span className="node-badge">hospital_beta</span>
               </td>
-              <td>St. Jude Medical Beta</td>
+              <td>Hospital Beta (Silo B)</td>
               <td>
                 <div className="status-indicator">
                   <div className="dot green"></div>
@@ -408,8 +408,23 @@ export default function App() {
                 </div>
               </td>
               <td>18 ms</td>
-              <td>BraTS Synthetic Tensors</td>
-              <td>PyTorch 2.x (CPU)</td>
+              <td>BraTS NIfTI (Dirichlet non-IID)</td>
+              <td>PyTorch 2.x MONAI</td>
+            </tr>
+            <tr>
+              <td>
+                <span className="node-badge">hospital_gamma</span>
+              </td>
+              <td>Hospital Gamma (Silo C)</td>
+              <td>
+                <div className="status-indicator">
+                  <div className="dot green"></div>
+                  <span>ACTIVE / TRAINING</span>
+                </div>
+              </td>
+              <td>15 ms</td>
+              <td>BraTS NIfTI (Dirichlet non-IID)</td>
+              <td>PyTorch 2.x MONAI</td>
             </tr>
           </tbody>
         </table>
@@ -417,3 +432,4 @@ export default function App() {
     </div>
   );
 }
+

@@ -26,11 +26,22 @@ federated:
 
 data:
   dataset_name: "BraTS2021"
+  data_dir: "data/BraTS2021"
+  cache_type: "persistent"
+  cache_dir: ".cache/monai"
+  num_workers: 2
+  val_split: 0.2
+  modalities:
+    - "t1"
+    - "t1ce"
+    - "t2"
+    - "flair"
   partition_strategy: "IID"
   dirichlet_alpha: 0.5
   image_size: [128, 128, 128]
   in_channels: 4
   out_channels: 3
+
 
 privacy:
   dp_enabled: false
