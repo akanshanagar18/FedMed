@@ -163,6 +163,7 @@ def run_simulation(
     partition_strategy: str = "dirichlet",
     dirichlet_alpha: float = 0.5,
     enable_he: bool = False,
+    enable_dp: bool = False,
 ):
     """Orchestrates the entire execution pipeline."""
     # Load modular YAML config
@@ -176,6 +177,7 @@ def run_simulation(
     p_strat = partition_strategy or app_cfg.data.partition_strategy
     p_alpha = dirichlet_alpha if dirichlet_alpha is not None else app_cfg.data.dirichlet_alpha
     he_active = enable_he or app_cfg.privacy.he_enabled
+    dp_active = enable_dp or app_cfg.privacy.dp_enabled
 
     sim_config = SimulationConfig(
         backend_host=app_cfg.server.host,
@@ -254,7 +256,8 @@ def run_simulation(
         # 3. Spawn Hospital Clients (Hospital Alpha, Hospital Beta, Hospital Gamma)
         for client_id in sim_config.client_ids:
             he_status_str = "TEN_SEAL CKKS ENCRYPTED" if he_active else "PLAINTEXT"
-            log_subsystem(client_id.upper(), f"Launching Hospital Client ({sim_config.partition_strategy.upper()} alpha={sim_config.dirichlet_alpha} Mode={he_status_str}) connecting to {sim_config.flower_address}...")
+            dp_status_str = "OPACUS DIFFERENTIAL PRIVACY" if dp_active else "NO_DP"
+            log_subsystem(client_id.upper(), f"Launching Hospital Client ({sim_config.partition_strategy.upper()} alpha={sim_config.dirichlet_alpha} Mode={he_status_str} DP={dp_status_str}) connecting to {sim_config.flower_address}...")
             client_cmd = [
                 sys.executable,
                 "-m",
@@ -272,6 +275,8 @@ def run_simulation(
             ]
             if he_active:
                 client_cmd.append("--enable-he")
+            if dp_active:
+                client_cmd.append("--enable-dp")
             if yaml_config_path:
                 client_cmd.extend(["--config", yaml_config_path])
 
@@ -298,6 +303,7 @@ if __name__ == "__main__":
     parser.add_argument("--partition", type=str, default="dirichlet", help="Partition strategy (iid / dirichlet)")
     parser.add_argument("--alpha", type=float, default=0.5, help="Dirichlet alpha value")
     parser.add_argument("--enable-he", action="store_true", help="Enable TenSEAL Homomorphic Encryption")
+    parser.add_argument("--enable-dp", action="store_true", help="Enable Opacus Differential Privacy")
     args = parser.parse_args()
 
     run_simulation(
@@ -305,6 +311,8 @@ if __name__ == "__main__":
         partition_strategy=args.partition,
         dirichlet_alpha=args.alpha,
         enable_he=args.enable_he,
+        enable_dp=args.enable_dp,
     )
+
 
 

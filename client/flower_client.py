@@ -4,10 +4,10 @@ Module: client.flower_client
 Purpose:
 Flower NumPyClient implementation for FedMed hospital nodes.
 Handles local training on partitioned BraTS medical MRI data and communicates weight updates
-(optionally encrypted via TenSEAL CKKS homomorphic encryption) to the central Flower server.
+(optionally protected with Differential Privacy via Opacus and encrypted via TenSEAL CKKS).
 
 Usage:
-    python -m client.flower_client --server-address 127.0.0.1:8080 --hospital-id hospital_alpha --enable-he
+    python -m client.flower_client --server-address 127.0.0.1:8080 --hospital-id hospital_alpha --enable-dp --enable-he
 """
 
 import argparse
@@ -31,6 +31,7 @@ from data.partitioner import get_partitioner
 from model.trainer import train_one_epoch
 from model.unet3d import UNet3D
 from privacy.context import create_ckks_context, get_public_context, serialize_context
+from privacy.dp_engine import DifferentialPrivacyEngine
 from privacy.encrypt import encrypt_model_parameters
 from privacy.communication import serialize_encrypted_payload
 
@@ -42,7 +43,7 @@ class FedMedClient(fl.client.NumPyClient):
     """
     Flower NumPyClient for a FedMed hospital node.
     Trains UNet3D on its assigned disjoint patient dataset partition.
-    Supports Homomorphic Encryption (TenSEAL CKKS) parameter obfuscation.
+    Supports Differential Privacy (Opacus) and Homomorphic Encryption (TenSEAL CKKS).
     """
 
     def __init__(
@@ -52,6 +53,7 @@ class FedMedClient(fl.client.NumPyClient):
         partition_strategy: str = "dirichlet",
         dirichlet_alpha: float = 0.5,
         enable_he: bool = False,
+        enable_dp: bool = False,
         hospital_silos: Optional[List[str]] = None,
         config_path: Optional[str] = None,
     ):
@@ -59,6 +61,7 @@ class FedMedClient(fl.client.NumPyClient):
         self.device = device
         self.config = load_config(config_path)
         self.he_enabled = enable_he or self.config.privacy.he_enabled
+        self.dp_enabled = enable_dp or self.config.privacy.dp_enabled
 
         # Initialize UNet3D model
         self.model = UNet3D(
@@ -78,10 +81,8 @@ class FedMedClient(fl.client.NumPyClient):
             self.public_he_context = None
             self.public_context_bytes = None
 
-        # Hospitals set
-        silos = hospital_silos or ["hospital_alpha", "hospital_beta", "hospital_gamma"]
-
         # Build BraTS dataset & apply partitioner
+        silos = hospital_silos or ["hospital_alpha", "hospital_beta", "hospital_gamma"]
         full_dataset = BraTSDataset(
             data_dir=self.config.data.data_dir,
             modalities=self.config.data.modalities,
@@ -138,6 +139,19 @@ class FedMedClient(fl.client.NumPyClient):
         from monai.losses import DiceCELoss
         self.loss_fn = DiceCELoss(sigmoid=True)
 
+        # Initialize Differential Privacy Engine if enabled
+        if self.dp_enabled:
+            logger.info(f"[{self.hospital_id}] Initializing Opacus Differential Privacy Engine (target_ε={self.config.privacy.target_epsilon}, C={self.config.privacy.max_grad_norm})...")
+            self.dp_engine = DifferentialPrivacyEngine(
+                model=self.model,
+                optimizer=self.optimizer,
+                target_epsilon=self.config.privacy.target_epsilon,
+                target_delta=self.config.privacy.target_delta,
+                max_grad_norm=self.config.privacy.max_grad_norm,
+            )
+        else:
+            self.dp_engine = None
+
     def get_parameters(self, config: Dict[str, Scalar]) -> NDArrays:
         """Return model weights as a list of numpy arrays."""
         return [val.cpu().numpy() for _, val in self.model.state_dict().items()]
@@ -163,7 +177,6 @@ class FedMedClient(fl.client.NumPyClient):
             decrypted_global_weights = decrypt_model_parameters(self.he_context, payload["encrypted_chunks"], payload["shapes"])
             self.set_parameters(decrypted_global_weights)
         else:
-            # Standard parameters setup
             if any(np.count_nonzero(p) > 0 for p in parameters):
                 self.set_parameters(parameters)
 
@@ -173,8 +186,8 @@ class FedMedClient(fl.client.NumPyClient):
             optimizer=self.optimizer,
             loss_fn=self.loss_fn,
             device=self.device,
+            dp_engine=self.dp_engine,
         )
-
 
         updated_params = self.get_parameters(config={})
         fit_metrics: Dict[str, Scalar] = {
@@ -182,7 +195,16 @@ class FedMedClient(fl.client.NumPyClient):
             "dice_score": float(metrics["dice_score"]),
             "hospital_id": self.hospital_id,
             "he_enabled": bool(self.he_enabled),
+            "dp_enabled": bool(self.dp_enabled),
         }
+
+        # Track Differential Privacy budget if active
+        if self.dp_enabled and self.dp_engine is not None:
+            budget = self.dp_engine.get_privacy_budget()
+            fit_metrics["epsilon"] = float(budget["epsilon"])
+            fit_metrics["delta"] = float(budget["delta"])
+            fit_metrics["noise_multiplier"] = float(budget["noise_multiplier"])
+            fit_metrics["max_grad_norm"] = float(budget["max_grad_norm"])
 
         # Encrypt model parameters with CKKS if Homomorphic Encryption is active
         if self.he_enabled and self.he_context is not None:
@@ -194,7 +216,6 @@ class FedMedClient(fl.client.NumPyClient):
             fit_metrics["encryption_time_ms"] = float(enc_result["encryption_time_ms"])
             fit_metrics["ciphertext_size_bytes"] = int(enc_result["ciphertext_size_bytes"])
 
-            # Zero out plaintext parameter output so zero plaintext crosses network
             zero_params = [np.zeros_like(p) for p in updated_params]
             params_to_return = zero_params
         else:
@@ -203,6 +224,7 @@ class FedMedClient(fl.client.NumPyClient):
         logger.info(
             f"[{self.hospital_id}] Round training complete — "
             f"loss: {metrics['training_loss']:.4f}, dice: {metrics['dice_score']:.4f}"
+            + (f", ε={fit_metrics['epsilon']:.2f}" if self.dp_enabled else "")
         )
 
         return (
@@ -242,6 +264,7 @@ def start_client(
     partition_strategy: str = "dirichlet",
     dirichlet_alpha: float = 0.5,
     enable_he: bool = False,
+    enable_dp: bool = False,
     config_path: Optional[str] = None,
 ):
     """Start a Flower client connecting to the given server."""
@@ -251,6 +274,7 @@ def start_client(
         partition_strategy=partition_strategy,
         dirichlet_alpha=dirichlet_alpha,
         enable_he=enable_he,
+        enable_dp=enable_dp,
         config_path=config_path,
     )
     fl.client.start_numpy_client(server_address=server_address, client=client)
@@ -264,6 +288,7 @@ if __name__ == "__main__":
     parser.add_argument("--partition-strategy", type=str, default="dirichlet", help="Partition strategy (iid / dirichlet)")
     parser.add_argument("--dirichlet-alpha", type=float, default=0.5, help="Dirichlet alpha value")
     parser.add_argument("--enable-he", action="store_true", help="Enable TenSEAL Homomorphic Encryption")
+    parser.add_argument("--enable-dp", action="store_true", help="Enable Opacus Differential Privacy")
     parser.add_argument("--config", type=str, default=None, help="YAML config file")
     args = parser.parse_args()
 
@@ -273,5 +298,6 @@ if __name__ == "__main__":
         partition_strategy=args.partition_strategy,
         dirichlet_alpha=args.dirichlet_alpha,
         enable_he=args.enable_he,
+        enable_dp=args.enable_dp,
         config_path=args.config,
     )

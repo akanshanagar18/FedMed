@@ -1,0 +1,63 @@
+# FedMed Privacy Configuration (Differential Privacy + CKKS Homomorphic Encryption)
+server:
+  host: "127.0.0.1"
+  port: 8000
+  fl_server_address: "127.0.0.1:8080"
+  max_workers: 4
+
+federated:
+  num_rounds: 3
+  min_clients: 2
+  local_epochs: 1
+  batch_size: 2
+  learning_rate: 0.0001
+  weight_decay: 0.00001
+  strategy: "FedAvg"
+  seed: 42
+
+data:
+  dataset_name: "BraTS2021"
+  data_dir: "data/BraTS2021"
+  cache_type: "persistent"
+  cache_dir: ".cache/monai"
+  num_workers: 2
+  val_split: 0.2
+  modalities:
+    - "t1"
+    - "t1ce"
+    - "t2"
+    - "flair"
+  partition_strategy: "dirichlet"
+  dirichlet_alpha: 0.5
+  image_size: [128, 128, 128]
+  in_channels: 4
+  out_channels: 3
+
+privacy:
+  dp_enabled: true
+  target_epsilon: 3.0
+  target_delta: 0.00001
+  max_grad_norm: 1.0
+  he_enabled: true
+  scheme: "CKKS"
+  poly_modulus_degree: 8192
+
+logging:
+  log_level: "INFO"
+  log_interval: 10
+  export_tensorboard: false
+  export_mlflow: false
+
+checkpoint:
+  save_dir: "checkpoints"
+  best_model_name: "best_model.pth"
+  save_frequency: 1
+
+benchmark:
+  enabled: true
+  benchmark_id: "bm_dp_suite"
+  metrics:
+    - "dice_score"
+    - "training_loss"
+    - "epsilon"
+    - "delta"

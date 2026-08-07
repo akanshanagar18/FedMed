@@ -11,6 +11,7 @@ from privacy.encrypt import encrypt_weights_vector, encrypt_model_parameters
 from privacy.decrypt import decrypt_weights_vector, decrypt_model_parameters
 from privacy.aggregation import aggregate_encrypted_updates
 from privacy.communication import serialize_encrypted_payload, deserialize_encrypted_payload
+from privacy.dp_engine import DifferentialPrivacyEngine, compute_rdp_epsilon
 
 __all__ = [
     "create_ckks_context",
@@ -24,4 +25,7 @@ __all__ = [
     "aggregate_encrypted_updates",
     "serialize_encrypted_payload",
     "deserialize_encrypted_payload",
+    "DifferentialPrivacyEngine",
+    "compute_rdp_epsilon",
 ]
+

@@ -2,14 +2,14 @@
 Module: model.trainer
 
 Purpose:
-Minimal PyTorch training loop for the 3D U-Net.
-Called by the Flower client during local training rounds.
+PyTorch training loop for 3D U-Net supporting Differential Privacy (Opacus).
+Executes strictly ordered step pipeline: Forward -> Backward -> Clip -> Noise -> Step.
 """
 
+from typing import Any, Dict, Optional
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
-from typing import Dict
 
 
 def train_one_epoch(
@@ -18,9 +18,10 @@ def train_one_epoch(
     optimizer: torch.optim.Optimizer,
     loss_fn: nn.Module,
     device: str = "cpu",
+    dp_engine: Optional[Any] = None,
 ) -> Dict[str, float]:
     """
-    Trains the model for one epoch.
+    Trains the model for one epoch with optional Differential Privacy engine.
 
     Args:
         model: PyTorch model (UNet3D).
@@ -28,6 +29,7 @@ def train_one_epoch(
         optimizer: PyTorch optimizer.
         loss_fn: Loss function (e.g., DiceLoss).
         device: "cpu" or "cuda".
+        dp_engine: Optional DifferentialPrivacyEngine instance.
 
     Returns:
         Dict with "training_loss" and "dice_score" (averaged over batches).
@@ -41,18 +43,16 @@ def train_one_epoch(
 
     for batch in dataloader:
         images = batch["image"].to(device)
-        masks = batch["mask"].to(device)
+        masks = batch.get("label", batch.get("mask")).to(device)
 
         optimizer.zero_grad()
         predictions = model(images)
 
         # Ensure mask shape matches predictions for loss computation
         if masks.shape != predictions.shape:
-            # Convert integer masks to one-hot if needed
             if masks.dim() == 4:
                 masks = masks.unsqueeze(1)
             if masks.shape[1] == 1 and predictions.shape[1] > 1:
-                # One-hot encode: (B, 1, D, H, W) -> (B, C, D, H, W)
                 num_classes = predictions.shape[1]
                 masks_long = masks.long().squeeze(1)
                 masks_onehot = torch.zeros_like(predictions)
@@ -61,11 +61,16 @@ def train_one_epoch(
 
         loss = loss_fn(predictions, masks)
         loss.backward()
+
+        # Apply Differential Privacy Gradient Clipping & Noise Addition
+        if dp_engine is not None:
+            dp_engine.apply_gradient_clipping_and_noise(batch_size=images.size(0))
+
         optimizer.step()
 
         total_loss += loss.item()
 
-        # Compute Dice score (simple approximation)
+        # Compute Dice score
         with torch.no_grad():
             pred_binary = (torch.sigmoid(predictions) > 0.5).float()
             intersection = (pred_binary * masks).sum()
