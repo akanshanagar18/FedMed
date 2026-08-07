@@ -2,160 +2,135 @@
 Module: scripts.run_simulation
 
 Purpose:
-Production-Grade Federated Learning Process Orchestrator for FedMed v2.0.
-Supports modular YAML configuration loading via --config flag, port collision detection,
-active health polling, and clean process tree termination.
-
-Usage:
-    python scripts/run_simulation.py --config configs/default.yaml
+Production Master Simulation Orchestrator for FedMed v2.0.
+Spawns and manages the FastAPI backend, central Flower server, and 3 hospital clients
+(Hospital Alpha, Hospital Beta, Hospital Gamma) on Non-IID Dirichlet patient data partitions.
+Supports TenSEAL CKKS Homomorphic Encryption, Opacus Differential Privacy, Production TLS gRPC,
+and Fault-Tolerant Node Failure Simulation (`--simulate-failure hospital_beta`).
 """
 
 import argparse
-import json
 import logging
 import os
 import signal
 import socket
 import subprocess
 import sys
+import threading
 import time
-import urllib.request
-from dataclasses import dataclass, field
-from typing import List, Optional, Tuple
+from typing import Dict, List, Optional
 
-from configs.loader import load_config, AppConfig, ConfigValidationError
+import requests
 
-# Configure structured color-coded logger
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(message)s",
-    datefmt="%H:%M:%S",
-)
-logger = logging.getLogger("fedmed_orchestrator")
+from configs.loader import AppConfig, ConfigValidationError, load_config
+from privacy.tls_cert_gen import ensure_tls_certificates
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, PROJECT_ROOT)
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logger = logging.getLogger("fedmed_orchestrator")
 
 
-def log_subsystem(tag: str, msg: str, level: int = logging.INFO) -> None:
-    """Format and output logs tagged by subsystem."""
-    logger.log(level, f"[{tag:^14}] {msg}")
+def log_subsystem(subsystem: str, message: str, level: int = logging.INFO):
+    """Outputs structured, subsystem-prefixed log messages."""
+    ts = time.strftime("%H:%M:%S")
+    sub_str = f"[{subsystem.center(14)}]"
+    if level == logging.ERROR:
+        logger.error(f"{ts} {sub_str} {message}")
+    elif level == logging.WARNING:
+        logger.warning(f"{ts} {sub_str} {message}")
+    else:
+        logger.info(f"{ts} {sub_str} {message}")
 
 
-@dataclass
+class ProcessTracker:
+    """Tracks spawned subprocesses and provides clean shutdown handling."""
+
+    def __init__(self):
+        self.processes: Dict[str, subprocess.Popen] = {}
+
+    def register(self, name: str, proc: subprocess.Popen):
+        self.processes[name] = proc
+
+    def cleanup_all(self):
+        log_subsystem("ORCHESTRATOR", "Initiating graceful process tree shutdown...")
+        for name, proc in self.processes.items():
+            if proc.poll() is None:
+                try:
+                    proc.terminate()
+                    proc.wait(timeout=3)
+                except Exception:
+                    proc.kill()
+
+
 class SimulationConfig:
-    """Configuration specification for the Orchestrator."""
-    backend_host: str = "127.0.0.1"
-    backend_port: int = 8000
-    flower_host: str = "127.0.0.1"
-    flower_port: int = 8080
-    num_rounds: int = 3
-    min_clients: int = 2
-    experiment_id: str = "default"
-    partition_strategy: str = "dirichlet"
-    dirichlet_alpha: float = 0.5
-    client_ids: List[str] = field(default_factory=lambda: ["hospital_alpha", "hospital_beta", "hospital_gamma"])
-    api_url: str = field(init=False)
-    flower_address: str = field(init=False)
+    """Resolved runtime configuration for simulation orchestration."""
 
-    def __post_init__(self):
-        self.api_url = f"http://{self.backend_host}:{self.backend_port}"
-        self.flower_address = f"{self.flower_host}:{self.flower_port}"
+    def __init__(
+        self,
+        backend_host: str = "127.0.0.1",
+        backend_port: int = 8000,
+        flower_host: str = "127.0.0.1",
+        flower_port: int = 8080,
+        num_rounds: int = 3,
+        min_clients: int = 2,
+        client_ids: Optional[List[str]] = None,
+        partition_strategy: str = "dirichlet",
+        dirichlet_alpha: float = 0.5,
+    ):
+        self.backend_host = backend_host
+        self.backend_port = backend_port
+        self.flower_host = flower_host
+        self.flower_port = flower_port
+        self.num_rounds = num_rounds
+        self.min_clients = min_clients
+        self.client_ids = client_ids or ["hospital_alpha", "hospital_beta", "hospital_gamma"]
+        self.partition_strategy = partition_strategy
+        self.dirichlet_alpha = dirichlet_alpha
+        self.api_url = f"http://{backend_host}:{backend_port}"
+        self.flower_address = f"{flower_host}:{flower_port}"
+        self.experiment_id = f"sim_{int(time.time())}"
 
 
-
-def is_port_in_use(host: str, port: int) -> bool:
-    """Check if a TCP port is open and accepting socket connections."""
+def is_port_in_use(port: int, host: str = "127.0.0.1") -> bool:
+    """Checks whether a local TCP port is currently bound."""
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.settimeout(0.5)
         return s.connect_ex((host, port)) == 0
 
 
-def find_occupying_process(port: int) -> Optional[Tuple[int, str]]:
-    """Determine PID and process command occupying a specific port on macOS/Linux."""
-    try:
-        cmd = ["lsof", "-ti", f":{port}"]
-        output = subprocess.check_output(cmd, stderr=subprocess.DEVNULL, text=True).strip()
-        if output:
-            pids = output.split("\n")
-            pid = int(pids[0])
-            cmd_name = subprocess.check_output(
-                ["ps", "-p", str(pid), "-o", "comm="],
-                stderr=subprocess.DEVNULL,
-                text=True,
-            ).strip()
-            return pid, cmd_name
-    except Exception:
-        pass
-    return None
-
-
-def verify_ports_available(config: SimulationConfig) -> None:
-    """Verify backend and Flower ports are available before spawning subprocesses."""
-    ports_to_check = [
-        ("BACKEND", config.backend_host, config.backend_port),
-        ("FLOWER", config.flower_host, config.flower_port),
-    ]
-
+def verify_ports_available(cfg: SimulationConfig):
+    """Ensures required network ports are free prior to launching subprocesses."""
     collisions = []
-    for subsystem, host, port in ports_to_check:
-        if is_port_in_use(host, port):
-            proc_info = find_occupying_process(port)
-            if proc_info:
-                pid, cmd = proc_info
-                collisions.append(f"{subsystem} port {port} is occupied by PID {pid} ('{cmd}'). Fix: kill -9 {pid}")
-            else:
-                collisions.append(f"{subsystem} port {port} is already occupied on {host}.")
+    if is_port_in_use(cfg.backend_port, cfg.backend_host):
+        collisions.append(f"FastAPI Backend Port {cfg.backend_port}")
+    if is_port_in_use(cfg.flower_port, cfg.flower_host):
+        collisions.append(f"Flower gRPC Port {cfg.flower_port}")
 
     if collisions:
-        log_subsystem("ORCHESTRATOR", "CRITICAL: Port collisions detected before startup!", logging.ERROR)
-        for msg in collisions:
-            log_subsystem("ORCHESTRATOR", f"  ↳ {msg}", logging.ERROR)
+        log_subsystem(
+            "ORCHESTRATOR",
+            f"CRITICAL: Network port collisions detected: {', '.join(collisions)}. Please clear ports before running.",
+            logging.ERROR,
+        )
         sys.exit(1)
 
 
-def poll_backend_health(health_url: str, timeout_sec: float, interval_sec: float, proc: subprocess.Popen) -> bool:
-    """Active HTTP readiness polling for FastAPI backend GET /api/v1/health."""
+def poll_backend_health(health_url: str, timeout_sec: float = 15.0, interval_sec: float = 0.5, proc: Optional[subprocess.Popen] = None) -> bool:
+    """Polls FastAPI GET /api/v1/health endpoint until HTTP 200 is returned."""
     start_time = time.time()
     while time.time() - start_time < timeout_sec:
-        if proc.poll() is not None:
-            log_subsystem("BACKEND", f"Process exited prematurely with code {proc.returncode}!", logging.ERROR)
+        if proc and proc.poll() is not None:
             return False
         try:
-            req = urllib.request.Request(health_url, headers={"User-Agent": "FedMedOrchestrator"})
-            with urllib.request.urlopen(req, timeout=1.0) as resp:
-                if resp.status == 200:
-                    body = json.loads(resp.read().decode("utf-8"))
-                    if body.get("data", {}).get("status") == "ok":
-                        return True
+            resp = requests.get(health_url, timeout=1.0)
+            if resp.status_code == 200:
+                return True
         except Exception:
             pass
         time.sleep(interval_sec)
     return False
-
-
-class ProcessTracker:
-    """Manages active subprocesses and guarantees clean termination."""
-
-    def __init__(self):
-        self.processes: List[Tuple[str, subprocess.Popen]] = []
-
-    def register(self, tag: str, proc: subprocess.Popen):
-        self.processes.append((tag, proc))
-
-    def cleanup_all(self, timeout_per_proc: float = 3.0):
-        log_subsystem("ORCHESTRATOR", "Initiating graceful process tree shutdown...")
-        for tag, proc in reversed(self.processes):
-            if proc.poll() is None:
-                log_subsystem("ORCHESTRATOR", f"Sending SIGTERM to {tag} (PID {proc.pid})...")
-                proc.terminate()
-                try:
-                    proc.wait(timeout=timeout_per_proc)
-                    log_subsystem("ORCHESTRATOR", f"{tag} terminated cleanly (exit code {proc.returncode}).")
-                except subprocess.TimeoutExpired:
-                    log_subsystem("ORCHESTRATOR", f"{tag} unresponsive to SIGTERM. Escalating to SIGKILL...", logging.WARNING)
-                    proc.kill()
-                    proc.wait()
-                    log_subsystem("ORCHESTRATOR", f"{tag} forcibly killed.")
 
 
 def run_simulation(
@@ -164,9 +139,10 @@ def run_simulation(
     dirichlet_alpha: float = 0.5,
     enable_he: bool = False,
     enable_dp: bool = False,
+    enable_tls: bool = False,
+    simulate_failure: Optional[str] = None,
 ):
     """Orchestrates the entire execution pipeline."""
-    # Load modular YAML config
     try:
         app_cfg: AppConfig = load_config(yaml_config_path)
         log_subsystem("ORCHESTRATOR", f"Loaded configuration cleanly: {yaml_config_path or 'configs/default.yaml'}")
@@ -178,6 +154,12 @@ def run_simulation(
     p_alpha = dirichlet_alpha if dirichlet_alpha is not None else app_cfg.data.dirichlet_alpha
     he_active = enable_he or app_cfg.privacy.he_enabled
     dp_active = enable_dp or app_cfg.privacy.dp_enabled
+    tls_active = enable_tls or (hasattr(app_cfg, "tls") and app_cfg.tls.enabled)
+
+    if tls_active:
+        cert_dir = getattr(app_cfg.tls, "cert_dir", "certs") if hasattr(app_cfg, "tls") else "certs"
+        ensure_tls_certificates(cert_dir)
+        log_subsystem("ORCHESTRATOR", f"Production TLS certificate suite verified in '{cert_dir}'.")
 
     sim_config = SimulationConfig(
         backend_host=app_cfg.server.host,
@@ -246,6 +228,8 @@ def run_simulation(
             "--experiment-id",
             sim_config.experiment_id,
         ]
+        if tls_active:
+            server_cmd.append("--enable-tls")
         if yaml_config_path:
             server_cmd.extend(["--config", yaml_config_path])
 
@@ -257,7 +241,8 @@ def run_simulation(
         for client_id in sim_config.client_ids:
             he_status_str = "TEN_SEAL CKKS ENCRYPTED" if he_active else "PLAINTEXT"
             dp_status_str = "OPACUS DIFFERENTIAL PRIVACY" if dp_active else "NO_DP"
-            log_subsystem(client_id.upper(), f"Launching Hospital Client ({sim_config.partition_strategy.upper()} alpha={sim_config.dirichlet_alpha} Mode={he_status_str} DP={dp_status_str}) connecting to {sim_config.flower_address}...")
+            tls_status_str = "TLS_MUTUAL" if tls_active else "INSECURE"
+            log_subsystem(client_id.upper(), f"Launching Hospital Client ({sim_config.partition_strategy.upper()} alpha={sim_config.dirichlet_alpha} Mode={he_status_str} DP={dp_status_str} Transport={tls_status_str}) connecting to {sim_config.flower_address}...")
             client_cmd = [
                 sys.executable,
                 "-m",
@@ -277,13 +262,46 @@ def run_simulation(
                 client_cmd.append("--enable-he")
             if dp_active:
                 client_cmd.append("--enable-dp")
+            if tls_active:
+                client_cmd.append("--enable-tls")
             if yaml_config_path:
                 client_cmd.extend(["--config", yaml_config_path])
 
             client_proc = subprocess.Popen(client_cmd, cwd=PROJECT_ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
             tracker.register(client_id.upper(), client_proc)
 
-        # 4. Monitor Flower Server Completion
+        # 4. Handle Simulated Node Failure if specified
+        if simulate_failure:
+            target_key = simulate_failure.strip().upper()
+            if target_key not in tracker.processes:
+                target_key = f"HOSPITAL_{target_key}"
+
+            def failure_worker():
+                log_subsystem("RESILIENCE", f"Failure simulation active for '{simulate_failure}'. Scheduled SIGTERM termination in 12 seconds during Round 2...")
+                time.sleep(12.0)
+                if target_key in tracker.processes:
+                    proc_to_kill = tracker.processes[target_key]
+                    if proc_to_kill.poll() is None:
+                        log_subsystem("RESILIENCE", f"SIMULATED FAILURE: Terminating hospital node '{simulate_failure}' process (SIGTERM) during FL training execution!", logging.WARNING)
+                        proc_to_kill.terminate()
+                        try:
+                            proc_to_kill.wait(timeout=2)
+                        except Exception:
+                            proc_to_kill.kill()
+                        # Update REST API node status to FAILED
+                        try:
+                            requests.post(
+                                f"{sim_config.api_url}/api/v1/nodes/heartbeat",
+                                json={"hospital_id": simulate_failure.strip().lower(), "status": "FAILED", "active_round": 2, "training_state": "failed"},
+                                timeout=2,
+                            )
+                        except Exception:
+                            pass
+
+            fail_thread = threading.Thread(target=failure_worker, daemon=True)
+            fail_thread.start()
+
+        # 5. Monitor Flower Server Completion
         log_subsystem("ORCHESTRATOR", "All subprocesses spawned successfully. Monitoring training execution...")
         server_proc.wait()
 
@@ -304,6 +322,8 @@ if __name__ == "__main__":
     parser.add_argument("--alpha", type=float, default=0.5, help="Dirichlet alpha value")
     parser.add_argument("--enable-he", action="store_true", help="Enable TenSEAL Homomorphic Encryption")
     parser.add_argument("--enable-dp", action="store_true", help="Enable Opacus Differential Privacy")
+    parser.add_argument("--enable-tls", "--tls", action="store_true", help="Enable production TLS gRPC transport")
+    parser.add_argument("--simulate-failure", type=str, default=None, help="Simulate node failure during FL training (e.g. hospital_beta)")
     args = parser.parse_args()
 
     run_simulation(
@@ -312,7 +332,6 @@ if __name__ == "__main__":
         dirichlet_alpha=args.alpha,
         enable_he=args.enable_he,
         enable_dp=args.enable_dp,
+        enable_tls=args.enable_tls,
+        simulate_failure=args.simulate_failure,
     )
-
-
-

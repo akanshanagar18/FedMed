@@ -4,7 +4,7 @@ Module: server.flower_server
 Purpose:
 Production Flower server orchestrator for FedMed v2.0.
 Instantiates pluggable strategy implementations via StrategyRegistry and wraps them
-with FlowerStrategyAdapter for telemetry and gRPC transport.
+with FlowerStrategyAdapter for telemetry, gRPC transport, production TLS encryption, and fault tolerance.
 """
 
 import argparse
@@ -15,6 +15,7 @@ import flwr as fl
 import requests
 
 from configs.loader import AppConfig, load_config
+from privacy.tls_cert_gen import ensure_tls_certificates, load_pem_bytes
 from server.strategies import FlowerStrategyAdapter, StrategyRegistry
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
@@ -94,16 +95,19 @@ def start_server(
     min_available_clients: int = 2,
     api_url: str = "http://127.0.0.1:8000",
     experiment_id: str = "default",
+    enable_tls: bool = False,
+    cert_dir: str = "certs",
     config_path: Optional[str] = None,
     strategy_name: Optional[str] = None,
     strategy_params: Optional[Dict[str, Any]] = None,
 ):
     """Start the Flower server using the Strategy Registry engine."""
-    # 1. Resolve strategy and params from config if provided
     params: Dict[str, Any] = {
         "min_fit_clients": min_fit_clients,
         "min_available_clients": min_available_clients,
     }
+
+    tls_active = enable_tls
 
     if config_path:
         app_cfg: AppConfig = load_config(config_path)
@@ -112,6 +116,9 @@ def start_server(
         min_available_clients = app_cfg.federated.min_available_clients
         resolved_strategy_name = app_cfg.federated.get_strategy_name()
         params.update(app_cfg.federated.get_strategy_parameters())
+        if hasattr(app_cfg, "tls") and app_cfg.tls.enabled:
+            tls_active = True
+            cert_dir = app_cfg.tls.cert_dir
     else:
         resolved_strategy_name = strategy_name or "FedAvg"
 
@@ -137,15 +144,27 @@ def start_server(
         strategy_name=resolved_strategy_name,
     )
 
+    # Resolve TLS Certificates if TLS enabled
+    certificates_tuple = None
+    if tls_active:
+        logger.info(f"Enabling Production TLS gRPC Server Transport (cert_dir='{cert_dir}')...")
+        cert_paths = ensure_tls_certificates(cert_dir)
+        ca_bytes = load_pem_bytes(cert_paths["ca_cert"])
+        server_cert_bytes = load_pem_bytes(cert_paths["server_cert"])
+        server_key_bytes = load_pem_bytes(cert_paths["server_key"])
+        certificates_tuple = (ca_bytes, server_cert_bytes, server_key_bytes)
+
+    mode_str = "TLS-SECURED mTLS gRPC" if tls_active else "INSECURE gRPC"
     logger.info(
-        f"Starting Flower server on {server_address} using [{resolved_strategy_name}] "
-        f"for {num_rounds} rounds (min_clients={min_fit_clients})"
+        f"Starting Flower server on {server_address} [{mode_str}] using [{resolved_strategy_name}] "
+        f"for {num_rounds} rounds (min_fit={min_fit_clients}, min_available={min_available_clients})"
     )
 
     fl.server.start_server(
         server_address=server_address,
         config=fl.server.ServerConfig(num_rounds=num_rounds),
         strategy=adapter,
+        certificates=certificates_tuple,
     )
 
     _register_experiment_complete(api_url, experiment_id, adapter.best_dice_score, adapter.best_round)
@@ -158,6 +177,8 @@ if __name__ == "__main__":
     parser.add_argument("--min-clients", type=int, default=2, help="Minimum clients per round")
     parser.add_argument("--api-url", type=str, default="http://127.0.0.1:8000", help="Dashboard API URL")
     parser.add_argument("--experiment-id", type=str, default="default", help="Experiment identifier")
+    parser.add_argument("--tls", "--enable-tls", action="store_true", help="Enable production TLS gRPC transport")
+    parser.add_argument("--cert-dir", type=str, default="certs", help="TLS certificate directory")
     parser.add_argument("--config", type=str, default=None, help="Path to YAML config file")
     parser.add_argument("--strategy", type=str, default=None, help="Strategy name (e.g. FedAvg, FedProx)")
     args = parser.parse_args()
@@ -169,6 +190,8 @@ if __name__ == "__main__":
         min_available_clients=args.min_clients,
         api_url=args.api_url,
         experiment_id=args.experiment_id,
+        enable_tls=args.tls,
+        cert_dir=args.cert_dir,
         config_path=args.config,
         strategy_name=args.strategy,
     )

@@ -96,8 +96,15 @@ class PrivacyConfig(BaseModel):
     poly_modulus_degree: int = 8192
 
 
+class TlsConfig(BaseModel):
+    enabled: bool = False
+    verify_server: bool = True
+    verify_client: bool = True
+    cert_dir: str = "certs/"
+
 
 class LoggingConfig(BaseModel):
+
     log_level: str = "INFO"
     log_interval: int = Field(10, ge=1)
     export_tensorboard: bool = False
@@ -122,7 +129,9 @@ class AppConfig(BaseModel):
     federated: FederatedConfig = Field(default_factory=FederatedConfig)
     data: DataConfig = Field(default_factory=DataConfig)
     privacy: PrivacyConfig = Field(default_factory=PrivacyConfig)
+    tls: TlsConfig = Field(default_factory=TlsConfig)
     logging: LoggingConfig = Field(default_factory=LoggingConfig)
+
     checkpoint: CheckpointConfig = Field(default_factory=CheckpointConfig)
     benchmark: BenchmarkSubConfig = Field(default_factory=BenchmarkSubConfig)
 

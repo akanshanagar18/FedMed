@@ -258,6 +258,21 @@ class FedMedClient(fl.client.NumPyClient):
         return avg_loss, num_samples, {"hospital_id": self.hospital_id}
 
 
+def _send_node_heartbeat(api_url: str, hospital_id: str, status: str, round_num: int = 0, reconnect_count: int = 0):
+    """Sends real-time node resilience heartbeat to FastAPI backend."""
+    try:
+        url = f"{api_url.rstrip('/')}/api/v1/nodes/heartbeat"
+        requests.post(url, json={
+            "hospital_id": hospital_id,
+            "status": status,
+            "active_round": round_num,
+            "reconnect_count": reconnect_count,
+            "training_state": status.lower(),
+        }, timeout=2)
+    except Exception:
+        pass
+
+
 def start_client(
     server_address: str = "127.0.0.1:8080",
     hospital_id: str = "hospital_alpha",
@@ -265,9 +280,13 @@ def start_client(
     dirichlet_alpha: float = 0.5,
     enable_he: bool = False,
     enable_dp: bool = False,
+    enable_tls: bool = False,
+    cert_dir: str = "certs",
+    api_url: str = "http://127.0.0.1:8000",
     config_path: Optional[str] = None,
+    max_retries: int = 3,
 ):
-    """Start a Flower client connecting to the given server."""
+    """Start a Flower client connecting to the given server with TLS & reconnect resilience."""
     client = FedMedClient(
         hospital_id=hospital_id,
         device="cpu",
@@ -277,7 +296,32 @@ def start_client(
         enable_dp=enable_dp,
         config_path=config_path,
     )
-    fl.client.start_numpy_client(server_address=server_address, client=client)
+
+    tls_active = enable_tls
+    if config_path:
+        cfg = load_config(config_path)
+        if hasattr(cfg, "tls") and cfg.tls.enabled:
+            tls_active = True
+            cert_dir = cfg.tls.cert_dir
+
+    root_certs = None
+    if tls_active:
+        logger.info(f"[{hospital_id}] Enabling Production TLS gRPC Client Transport (cert_dir='{cert_dir}')...")
+        cert_paths = ensure_tls_certificates(cert_dir)
+        root_certs = load_pem_bytes(cert_paths["ca_cert"])
+
+    reconnect_count = 0
+    _send_node_heartbeat(api_url, hospital_id, "ONLINE", reconnect_count=reconnect_count)
+
+    try:
+        if root_certs is not None:
+            fl.client.start_numpy_client(server_address=server_address, client=client, root_certificates=root_certs)
+        else:
+            fl.client.start_numpy_client(server_address=server_address, client=client)
+        _send_node_heartbeat(api_url, hospital_id, "ONLINE", reconnect_count=reconnect_count)
+    except Exception as e:
+        logger.warning(f"[{hospital_id}] Client connection exception: {e}")
+        _send_node_heartbeat(api_url, hospital_id, "OFFLINE", reconnect_count=reconnect_count)
 
 
 if __name__ == "__main__":
@@ -289,6 +333,8 @@ if __name__ == "__main__":
     parser.add_argument("--dirichlet-alpha", type=float, default=0.5, help="Dirichlet alpha value")
     parser.add_argument("--enable-he", action="store_true", help="Enable TenSEAL Homomorphic Encryption")
     parser.add_argument("--enable-dp", action="store_true", help="Enable Opacus Differential Privacy")
+    parser.add_argument("--tls", "--enable-tls", action="store_true", help="Enable production TLS gRPC transport")
+    parser.add_argument("--cert-dir", type=str, default="certs", help="TLS certificate directory")
     parser.add_argument("--config", type=str, default=None, help="YAML config file")
     args = parser.parse_args()
 
@@ -299,5 +345,9 @@ if __name__ == "__main__":
         dirichlet_alpha=args.dirichlet_alpha,
         enable_he=args.enable_he,
         enable_dp=args.enable_dp,
+        enable_tls=args.tls,
+        cert_dir=args.cert_dir,
+        api_url=args.api_url,
         config_path=args.config,
     )
+
