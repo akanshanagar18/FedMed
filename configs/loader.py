@@ -46,6 +46,12 @@ class FederatedConfig(BaseModel):
     weight_decay: float = Field(1e-5, ge=0)
     proximal_mu: float = Field(0.01, ge=0)
     control_variate_lr: float = Field(1.0, ge=0)
+    eta: float = Field(0.01, ge=0)
+    beta_1: float = Field(0.9, ge=0)
+    beta_2: float = Field(0.999, ge=0)
+    tau: float = Field(1e-3, ge=0)
+    gmf: float = Field(0.0, ge=0)
+    alpha: float = Field(0.01, ge=0)
     seed: int = 42
 
     def get_strategy_name(self) -> str:
@@ -62,6 +68,12 @@ class FederatedConfig(BaseModel):
             "min_fit_clients": self.min_clients,
             "min_available_clients": self.min_available_clients,
             "proximal_mu": self.proximal_mu,
+            "eta": self.eta,
+            "beta_1": self.beta_1,
+            "beta_2": self.beta_2,
+            "tau": self.tau,
+            "gmf": self.gmf,
+            "alpha": self.alpha,
         }
         if isinstance(self.strategy, StrategySpec):
             params.update(self.strategy.parameters)
@@ -101,12 +113,14 @@ class TlsConfig(BaseModel):
     enabled: bool = False
     verify_server: bool = True
     verify_client: bool = True
-    cert_dir: str = "certs/"
+    cert_dir: str = "certs"
+    ca_cert: str = "certs/ca.crt"
+    server_cert: str = "certs/server.crt"
+    server_key: str = "certs/server.key"
 
 
 class LoggingConfig(BaseModel):
-
-    log_level: str = "INFO"
+    level: str = "INFO"
     log_interval: int = Field(10, ge=1)
     export_tensorboard: bool = False
     export_mlflow: bool = False
@@ -119,7 +133,11 @@ class CheckpointConfig(BaseModel):
 
 
 class BenchmarkSubConfig(BaseModel):
-    strategies: List[str] = Field(default_factory=lambda: ["FedAvg", "FedProx", "SCAFFOLD"])
+    strategies: List[str] = Field(
+        default_factory=lambda: [
+            "FedAvg", "FedProx", "SCAFFOLD", "FedAdam", "FedYogi", "FedAdagrad", "FedNova", "FedDyn", "FedBN"
+        ]
+    )
     partitions: List[str] = Field(default_factory=lambda: ["IID", "NonIID(alpha=0.5)", "NonIID(alpha=0.2)"])
     privacy_modes: List[str] = Field(default_factory=lambda: ["none", "dp", "he", "dp_he"])
     client_counts: List[int] = Field(default_factory=lambda: [2, 3, 5])

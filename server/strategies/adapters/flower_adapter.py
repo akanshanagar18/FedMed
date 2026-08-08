@@ -198,6 +198,16 @@ class FlowerStrategyAdapter(fl.server.strategy.Strategy):
             mlflow_metrics["client_drift"] = float(metrics["client_drift"])
         if "control_variate_norm" in metrics:
             mlflow_metrics["control_variate_norm"] = float(metrics["control_variate_norm"])
+        if "server_momentum_norm" in metrics:
+            mlflow_metrics["server_momentum_norm"] = float(metrics["server_momentum_norm"])
+        if "server_variance_norm" in metrics:
+            mlflow_metrics["server_variance_norm"] = float(metrics["server_variance_norm"])
+        if "server_accumulator_norm" in metrics:
+            mlflow_metrics["server_accumulator_norm"] = float(metrics["server_accumulator_norm"])
+        if "tau_eff" in metrics:
+            mlflow_metrics["tau_eff"] = float(metrics["tau_eff"])
+        if "server_state_norm" in metrics:
+            mlflow_metrics["server_state_norm"] = float(metrics["server_state_norm"])
 
         self.mlflow_tracker.log_metrics(mlflow_metrics, step=server_round)
 

@@ -10,6 +10,12 @@ benchmark:
     - "FedAvg"
     - "FedProx"
     - "SCAFFOLD"
+    - "FedAdam"
+    - "FedYogi"
+    - "FedAdagrad"
+    - "FedNova"
+    - "FedDyn"
+    - "FedBN"
   partitions:
     - "IID"
     - "NonIID(alpha=1.0)"

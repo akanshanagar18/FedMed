@@ -264,6 +264,20 @@ export default function App() {
           MLflow & Reproducibility
         </button>
         <button
+          onClick={() => setActiveTab('strategy_explorer')}
+          style={{
+            padding: '0.6rem 1.2rem',
+            borderRadius: '0.5rem',
+            border: 'none',
+            fontWeight: '600',
+            cursor: 'pointer',
+            backgroundColor: activeTab === 'strategy_explorer' ? '#0284c7' : '#1e293b',
+            color: '#ffffff'
+          }}
+        >
+          Strategy Explorer (9 Algorithms)
+        </button>
+        <button
           onClick={() => setActiveTab('operations')}
           style={{
             padding: '0.6rem 1.2rem',
@@ -595,6 +609,94 @@ export default function App() {
               <div className="info-item"><span className="info-key">MLflow URI</span><span className="info-value"><code>{mlflowStatus?.tracking_uri}</code></span></div>
               <div className="info-item"><span className="info-key">TensorBoard Logdir</span><span className="info-value"><code>{tbStatus?.logdir}</code></span></div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB: STRATEGY EXPLORER (9 ALGORITHMS) */}
+      {activeTab === 'strategy_explorer' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <div className="panel-card">
+            <div className="panel-header">
+              <div className="panel-title">FedMed Next-Generation Federated Optimization Suite (9 Algorithms)</div>
+              <div className="tag">ADVANCED STRATEGY ENGINE</div>
+            </div>
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Algorithm</th>
+                  <th>Paper Reference</th>
+                  <th>Core Mathematical Innovation</th>
+                  <th>Key Hyperparameters</th>
+                  <th>Heterogeneity Robustness</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><b>FedAvg</b></td>
+                  <td>McMahan et al., AISTATS 2017</td>
+                  <td>Sample-weighted parameter averaging</td>
+                  <td><code>lr, local_epochs</code></td>
+                  <td>Baseline (Degrades on Non-IID)</td>
+                </tr>
+                <tr>
+                  <td><b>FedProx</b></td>
+                  <td>Li et al., MLSys 2020</td>
+                  <td>Proximal loss regularization <code>(&mu;/2)||y - x||^2</code></td>
+                  <td><code>proximal_mu</code></td>
+                  <td>Moderate</td>
+                </tr>
+                <tr>
+                  <td><b>SCAFFOLD</b></td>
+                  <td>Karimireddy et al., ICML 2020</td>
+                  <td>Variance reduction via client/server control variates</td>
+                  <td><code>control_variate_lr</code></td>
+                  <td>High (Heterogeneity Independent)</td>
+                </tr>
+                <tr>
+                  <td><b>FedAdam</b></td>
+                  <td>Reddi et al., ICLR 2021</td>
+                  <td>Server-side Adam adaptive momentum <code>m_t, v_t</code></td>
+                  <td><code>eta=0.01, beta_1=0.9, beta_2=0.999</code></td>
+                  <td>High (Adaptive Server Gradient)</td>
+                </tr>
+                <tr>
+                  <td><b>FedYogi</b></td>
+                  <td>Reddi et al., ICLR 2021</td>
+                  <td>Server-side Yogi adaptive variance update</td>
+                  <td><code>eta=0.01, beta_1=0.9, beta_2=0.999</code></td>
+                  <td>High (Prevents Aggressive LR Decay)</td>
+                </tr>
+                <tr>
+                  <td><b>FedAdagrad</b></td>
+                  <td>Reddi et al., ICLR 2021</td>
+                  <td>Server-side Adagrad accumulator <code>v_t += delta^2</code></td>
+                  <td><code>eta=0.1, tau=1e-3</code></td>
+                  <td>Moderate-High</td>
+                </tr>
+                <tr>
+                  <td><b>FedNova</b></td>
+                  <td>Wang et al., NeurIPS 2020</td>
+                  <td>Normalized update scaling by effective local steps <code>&tau;_eff</code></td>
+                  <td><code>gmf=0.0</code></td>
+                  <td>High (Objective Consistency)</td>
+                </tr>
+                <tr>
+                  <td><b>FedDyn</b></td>
+                  <td>Acar et al., ICLR 2021</td>
+                  <td>Dynamic regularization & server state vector <code>h_t</code></td>
+                  <td><code>alpha=0.01</code></td>
+                  <td>High (Asymptotic Convergence)</td>
+                </tr>
+                <tr>
+                  <td><b>FedBN</b></td>
+                  <td>Li et al., ICLR 2021</td>
+                  <td>Local BatchNorm statistics preservation</td>
+                  <td><code>local_bn=True</code></td>
+                  <td>High (Medical Domain Shift)</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       )}
