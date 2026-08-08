@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: fedmed-backend
+  namespace: fedmed
+  labels:
+    app.kubernetes.io/name: fedmed-backend
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8000
+      targetPort: 8000
+      name: http
+  selector:
+    app.kubernetes.io/name: fedmed-backend
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fedmed-flower
+  namespace: fedmed
+  labels:
+    app.kubernetes.io/name: fedmed-flower-server
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8080
+      targetPort: 8080
+      name: grpc
+  selector:
+    app.kubernetes.io/name: fedmed-flower-server
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fedmed-dashboard
+  namespace: fedmed
+  labels:
+    app.kubernetes.io/name: fedmed-dashboard
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 80
+      name: http
+  selector:
+    app.kubernetes.io/name: fedmed-dashboard

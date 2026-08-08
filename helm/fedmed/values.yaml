@@ -1,0 +1,71 @@
+# Default values for fedmed Helm v3 Chart
+
+namespace: fedmed
+
+image:
+  repository: fedmed
+  pullPolicy: IfNotPresent
+  tag: "2.0.0"
+
+backend:
+  replicaCount: 2
+  port: 8000
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+    limits:
+      cpu: 2000m
+      memory: 4Gi
+
+flowerServer:
+  replicaCount: 1
+  port: 8080
+  resources:
+    requests:
+      cpu: 1000m
+      memory: 2Gi
+    limits:
+      cpu: 4000m
+      memory: 8Gi
+
+dashboard:
+  replicaCount: 2
+  port: 80
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+hospitals:
+  enabled: true
+  partitionStrategy: dirichlet
+  dirichletAlpha: 0.5
+  nodes:
+    - id: hospital_alpha
+      name: Hospital Silo Alpha
+    - id: hospital_beta
+      name: Hospital Silo Beta
+    - id: hospital_gamma
+      name: Hospital Silo Gamma
+
+persistence:
+  databaseStorage: 10Gi
+  checkpointsStorage: 50Gi
+  mlrunsStorage: 20Gi
+  resultsStorage: 20Gi
+  logsStorage: 10Gi
+
+ingress:
+  enabled: true
+  host: fedmed.internal
+  tls: true
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70

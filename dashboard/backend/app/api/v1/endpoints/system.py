@@ -31,3 +31,15 @@ async def get_system_environment():
         message="Environment details retrieved successfully",
         data={"hardware": hw, "dependencies": deps},
     )
+
+
+@router.get("/health", response_model=SuccessResponse)
+async def get_system_health_endpoint():
+    """Returns full distributed system health status."""
+    from app.api.v1.endpoints.health import get_system_health
+    from app.database.session import SessionLocal
+    db = SessionLocal()
+    try:
+        return await get_system_health(db=db)
+    finally:
+        db.close()

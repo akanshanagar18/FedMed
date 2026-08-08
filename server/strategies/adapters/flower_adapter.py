@@ -98,6 +98,9 @@ class FlowerStrategyAdapter(fl.server.strategy.Strategy):
         if hasattr(self, "latest_metrics") and "encrypted_global_payload" in self.latest_metrics:
             config_dict["encrypted_global_payload"] = self.latest_metrics["encrypted_global_payload"]
 
+        if hasattr(self.strategy, "server_control_variates") and self.strategy.server_control_variates is not None:
+            config_dict["server_control_variates"] = [p.tolist() for p in self.strategy.server_control_variates]
+
         # Build FitIns carrying current global parameters and config
         fit_ins = fl.common.FitIns(parameters, config_dict)
         return [(client, fit_ins) for client in clients]
@@ -177,7 +180,7 @@ class FlowerStrategyAdapter(fl.server.strategy.Strategy):
             f"time: {aggregation_time:.2f}s, hospitals: {hospital_ids}"
         )
 
-        # Milestone J Loggers & Registries
+        # Milestone J & L Loggers & Registries
         self.tb_logger.log_round_metrics(
             global_step=server_round,
             training_loss=avg_loss,
@@ -185,12 +188,18 @@ class FlowerStrategyAdapter(fl.server.strategy.Strategy):
             iou=iou_score,
             aggregation_time_sec=aggregation_time,
         )
-        self.mlflow_tracker.log_metrics({
+        mlflow_metrics = {
             "train_loss": avg_loss,
             "dice": avg_dice,
             "iou": iou_score,
             "aggregation_time_sec": aggregation_time,
-        }, step=server_round)
+        }
+        if "client_drift" in metrics:
+            mlflow_metrics["client_drift"] = float(metrics["client_drift"])
+        if "control_variate_norm" in metrics:
+            mlflow_metrics["control_variate_norm"] = float(metrics["control_variate_norm"])
+
+        self.mlflow_tracker.log_metrics(mlflow_metrics, step=server_round)
 
         # Checkpoint registration
         try:

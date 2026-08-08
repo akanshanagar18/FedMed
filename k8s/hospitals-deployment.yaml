@@ -1,0 +1,104 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fedmed-hospital-alpha
+  namespace: fedmed
+  labels:
+    app.kubernetes.io/name: fedmed-hospital-alpha
+    app.kubernetes.io/component: hospital-client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: fedmed-hospital-alpha
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: fedmed-hospital-alpha
+        app.kubernetes.io/component: hospital-client
+    spec:
+      containers:
+        - name: hospital-client
+          image: fedmed/hospital-client:2.0.0
+          imagePullPolicy: IfNotPresent
+          command: ["python", "-m", "client.flower_client", "--hospital-id", "hospital_alpha"]
+          envFrom:
+            - configMapRef:
+                name: fedmed-config
+          resources:
+            requests:
+              cpu: "1000m"
+              memory: "2Gi"
+            limits:
+              cpu: "4000m"
+              memory: "8Gi"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fedmed-hospital-beta
+  namespace: fedmed
+  labels:
+    app.kubernetes.io/name: fedmed-hospital-beta
+    app.kubernetes.io/component: hospital-client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: fedmed-hospital-beta
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: fedmed-hospital-beta
+        app.kubernetes.io/component: hospital-client
+    spec:
+      containers:
+        - name: hospital-client
+          image: fedmed/hospital-client:2.0.0
+          imagePullPolicy: IfNotPresent
+          command: ["python", "-m", "client.flower_client", "--hospital-id", "hospital_beta"]
+          envFrom:
+            - configMapRef:
+                name: fedmed-config
+          resources:
+            requests:
+              cpu: "1000m"
+              memory: "2Gi"
+            limits:
+              cpu: "4000m"
+              memory: "8Gi"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fedmed-hospital-gamma
+  namespace: fedmed
+  labels:
+    app.kubernetes.io/name: fedmed-hospital-gamma
+    app.kubernetes.io/component: hospital-client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: fedmed-hospital-gamma
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: fedmed-hospital-gamma
+        app.kubernetes.io/component: hospital-client
+    spec:
+      containers:
+        - name: hospital-client
+          image: fedmed/hospital-client:2.0.0
+          imagePullPolicy: IfNotPresent
+          command: ["python", "-m", "client.flower_client", "--hospital-id", "hospital_gamma"]
+          envFrom:
+            - configMapRef:
+                name: fedmed-config
+          resources:
+            requests:
+              cpu: "1000m"
+              memory: "2Gi"
+            limits:
+              cpu: "4000m"
+              memory: "8Gi"

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fedmed-config
+  namespace: fedmed
+  labels:
+    app.kubernetes.io/name: fedmed
+data:
+  LOG_LEVEL: "INFO"
+  API_URL: "http://fedmed-backend.fedmed.svc.cluster.local:8000"
+  SERVER_ADDRESS: "fedmed-flower.fedmed.svc.cluster.local:8080"
+  PARTITION_STRATEGY: "dirichlet"
+  DIRICHLET_ALPHA: "0.5"
+  DATABASE_URL: "sqlite:////app/data_db/fedmed.db"

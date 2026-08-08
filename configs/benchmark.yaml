@@ -9,8 +9,10 @@ benchmark:
   strategies:
     - "FedAvg"
     - "FedProx"
+    - "SCAFFOLD"
   partitions:
     - "IID"
+    - "NonIID(alpha=1.0)"
     - "NonIID(alpha=0.5)"
     - "NonIID(alpha=0.2)"
   privacy_modes:

@@ -1,0 +1,43 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: fedmed-disaster-recovery-backup
+  namespace: fedmed
+spec:
+  schedule: "0 2 * * *"  # Run daily at 02:00 UTC
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: backup
+              image: fedmed/backend:2.0.0
+              command:
+                - sh
+                - -c
+                - |
+                  echo "Initiating FedMed Disaster Recovery Backup..."
+                  ts=$(date +%Y%m%d_%H%M%S)
+                  backup_dir="/app/results/backups/$ts"
+                  mkdir -p "$backup_dir"
+                  cp -r /app/data_db "$backup_dir/" || true
+                  cp -r /app/checkpoints "$backup_dir/" || true
+                  echo "Backup snapshot successfully stored in $backup_dir"
+              volumeMounts:
+                - name: database-storage
+                  mountPath: /app/data_db
+                - name: checkpoints-storage
+                  mountPath: /app/checkpoints
+                - name: results-storage
+                  mountPath: /app/results
+          restartPolicy: OnFailure
+          volumes:
+            - name: database-storage
+              persistentVolumeClaim:
+                claimName: fedmed-database-pvc
+            - name: checkpoints-storage
+              persistentVolumeClaim:
+                claimName: fedmed-checkpoints-pvc
+            - name: results-storage
+              persistentVolumeClaim:
+                claimName: fedmed-results-pvc

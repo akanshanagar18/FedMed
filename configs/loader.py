@@ -45,6 +45,7 @@ class FederatedConfig(BaseModel):
     optimizer: str = "adam"
     weight_decay: float = Field(1e-5, ge=0)
     proximal_mu: float = Field(0.01, ge=0)
+    control_variate_lr: float = Field(1.0, ge=0)
     seed: int = 42
 
     def get_strategy_name(self) -> str:
@@ -118,7 +119,7 @@ class CheckpointConfig(BaseModel):
 
 
 class BenchmarkSubConfig(BaseModel):
-    strategies: List[str] = Field(default_factory=lambda: ["FedAvg", "FedProx"])
+    strategies: List[str] = Field(default_factory=lambda: ["FedAvg", "FedProx", "SCAFFOLD"])
     partitions: List[str] = Field(default_factory=lambda: ["IID", "NonIID(alpha=0.5)", "NonIID(alpha=0.2)"])
     privacy_modes: List[str] = Field(default_factory=lambda: ["none", "dp", "he", "dp_he"])
     client_counts: List[int] = Field(default_factory=lambda: [2, 3, 5])

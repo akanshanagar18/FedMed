@@ -19,6 +19,7 @@ def train_one_epoch(
     loss_fn: nn.Module,
     device: str = "cpu",
     dp_engine: Optional[Any] = None,
+    **kwargs,
 ) -> Dict[str, float]:
     """
     Trains the model for one epoch with optional Differential Privacy engine.
@@ -65,6 +66,15 @@ def train_one_epoch(
         # Apply Differential Privacy Gradient Clipping & Noise Addition
         if dp_engine is not None:
             dp_engine.apply_gradient_clipping_and_noise(batch_size=images.size(0))
+
+        # Apply SCAFFOLD Control Variate Gradient Correction: g_corr = g_i - c_i + c
+        if kwargs.get("server_control_variate") is not None and kwargs.get("client_control_variate") is not None:
+            s_c = kwargs["server_control_variate"]
+            c_c = kwargs["client_control_variate"]
+            for idx, p in enumerate(model.parameters()):
+                if p.grad is not None and idx < len(s_c) and idx < len(c_c):
+                    correction = torch.tensor(s_c[idx] - c_c[idx], device=p.device, dtype=p.grad.dtype)
+                    p.grad.add_(correction)
 
         optimizer.step()
 

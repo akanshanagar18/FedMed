@@ -40,6 +40,12 @@ def create_app() -> FastAPI:
     
     # Include main API router
     app.include_router(api_router, prefix=settings.API_V1_STR)
+
+    @app.get("/metrics", include_in_schema=True)
+    async def prometheus_metrics():
+        from utils.telemetry import prometheus_registry
+        from fastapi import Response
+        return Response(content=prometheus_registry.generate_prometheus_text(), media_type="text/plain; version=0.0.4; charset=utf-8")
     
     # Static files setup for frontend React dashboard
     frontend_dist = os.path.abspath(

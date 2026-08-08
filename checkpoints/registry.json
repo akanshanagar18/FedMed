@@ -1,41 +1,5 @@
 [
   {
-    "checkpoint_id": "chk_e2e_milestone_j_1_1786210497",
-    "file_path": "/Users/siddhant_patil/Projects/FedMed/checkpoints/last_model.pth",
-    "experiment_id": "e2e_milestone_j",
-    "benchmark_id": "standalone",
-    "strategy": "CentralizedBaseline",
-    "epoch": 1,
-    "round": null,
-    "dice": 0.012794296878520933,
-    "loss": 1.0333800315856934,
-    "privacy_settings": {
-      "dp_enabled": false,
-      "he_enabled": false
-    },
-    "config": {},
-    "file_hash": "8282643b6943aa60ca9b38d708d59eaea10437cd7941acdecaa3d00523d9b717",
-    "timestamp": "2026-08-08T17:34:57Z"
-  },
-  {
-    "checkpoint_id": "chk_e2e_milestone_j_1_1786210497",
-    "file_path": "/Users/siddhant_patil/Projects/FedMed/checkpoints/best_model.pth",
-    "experiment_id": "e2e_milestone_j",
-    "benchmark_id": "standalone",
-    "strategy": "CentralizedBaseline",
-    "epoch": 1,
-    "round": null,
-    "dice": 0.012794296878520933,
-    "loss": 1.0333800315856934,
-    "privacy_settings": {
-      "dp_enabled": false,
-      "he_enabled": false
-    },
-    "config": {},
-    "file_hash": "398c9fbca31985c23c5b6f2fc1d607ffd7c8e87eeef5f7f28905d85145075b48",
-    "timestamp": "2026-08-08T17:34:57Z"
-  },
-  {
     "checkpoint_id": "chk_sim_1786211337_1_1786211363",
     "file_path": "/Users/siddhant_patil/Projects/FedMed/checkpoints/fl_round_1.pth",
     "experiment_id": "sim_1786211337",
@@ -70,5 +34,41 @@
     "config": {},
     "file_hash": "a1f8534b2af4be06112833d257f1d49e66ff10cdfedc8fddd88547fac20dd9ac",
     "timestamp": "2026-08-08T17:49:53Z"
+  },
+  {
+    "checkpoint_id": "chk_baseline_brats_1_1786213087",
+    "file_path": "/Users/siddhant_patil/Projects/FedMed/checkpoints/last_model.pth",
+    "experiment_id": "baseline_brats",
+    "benchmark_id": "standalone",
+    "strategy": "CentralizedBaseline",
+    "epoch": 1,
+    "round": null,
+    "dice": 0.012928403603974065,
+    "loss": 1.0300345420837402,
+    "privacy_settings": {
+      "dp_enabled": false,
+      "he_enabled": false
+    },
+    "config": {},
+    "file_hash": "4776b3774563c744ff5a03d186929f7cd24ef7b6a7905118f1224bc72afbb8d9",
+    "timestamp": "2026-08-08T18:18:08Z"
+  },
+  {
+    "checkpoint_id": "chk_baseline_brats_1_1786213088",
+    "file_path": "/Users/siddhant_patil/Projects/FedMed/checkpoints/best_model.pth",
+    "experiment_id": "baseline_brats",
+    "benchmark_id": "standalone",
+    "strategy": "CentralizedBaseline",
+    "epoch": 1,
+    "round": null,
+    "dice": 0.012928403603974065,
+    "loss": 1.0300345420837402,
+    "privacy_settings": {
+      "dp_enabled": false,
+      "he_enabled": false
+    },
+    "config": {},
+    "file_hash": "218cd20075ffcc8f4c93bb5ce84c01a6d07ebfa8fbad60de9402cb9e58e38f29",
+    "timestamp": "2026-08-08T18:18:08Z"
   }
 ]

@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fedmed-flower-server
+  namespace: fedmed
+  labels:
+    app.kubernetes.io/name: fedmed-flower-server
+    app.kubernetes.io/component: flower-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: fedmed-flower-server
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: fedmed-flower-server
+        app.kubernetes.io/component: flower-server
+    spec:
+      containers:
+        - name: flower-server
+          image: fedmed/flower-server:2.0.0
+          imagePullPolicy: IfNotPresent
+          command: ["python", "-m", "server.flower_server", "--address", "0.0.0.0:8080"]
+          ports:
+            - containerPort: 8080
+              name: grpc
+          envFrom:
+            - configMapRef:
+                name: fedmed-config
+          resources:
+            requests:
+              cpu: "1000m"
+              memory: "2Gi"
+            limits:
+              cpu: "4000m"
+              memory: "8Gi"
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          volumeMounts:
+            - name: checkpoints-storage
+              mountPath: /app/checkpoints
+            - name: logs-storage
+              mountPath: /app/logs
+      volumes:
+        - name: checkpoints-storage
+          persistentVolumeClaim:
+            claimName: fedmed-checkpoints-pvc
+        - name: logs-storage
+          persistentVolumeClaim:
+            claimName: fedmed-logs-pvc

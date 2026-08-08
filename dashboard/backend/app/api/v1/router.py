@@ -26,6 +26,9 @@ api_router.include_router(artifacts.router, prefix="/artifacts", tags=["Research
 api_router.include_router(tensorboard.router, prefix="/tensorboard", tags=["TensorBoard Integration"])
 api_router.include_router(system.router, prefix="/system", tags=["System Reproducibility Platform"])
 
+from app.api.v1.endpoints import metrics_prometheus
+api_router.include_router(metrics_prometheus.router, prefix="/metrics-prometheus", tags=["Prometheus Metrics"])
+
 
 
 

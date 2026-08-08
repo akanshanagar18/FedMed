@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/siddhant_patil/Projects/FedMed/mlruns/182214309995616549/4b9da4c30f5d4e8bb955b90719105bab/artifacts
+end_time: 1786213133730
+entry_point_name: ''
+experiment_id: '182214309995616549'
+lifecycle_stage: active
+run_id: 4b9da4c30f5d4e8bb955b90719105bab
+run_name: FL_SCAFFOLD_exp_scaffold_e2e
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1786213133351
+status: 3
+tags: []
+user_id: siddhant_patil

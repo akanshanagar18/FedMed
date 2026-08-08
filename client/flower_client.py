@@ -54,14 +54,17 @@ class FedMedClient(fl.client.NumPyClient):
         dirichlet_alpha: float = 0.5,
         enable_he: bool = False,
         enable_dp: bool = False,
+        strategy: str = "fedavg",
         hospital_silos: Optional[List[str]] = None,
         config_path: Optional[str] = None,
     ):
         self.hospital_id = hospital_id
         self.device = device
         self.config = load_config(config_path)
+        self.strategy_name = strategy
         self.he_enabled = enable_he or self.config.privacy.he_enabled
         self.dp_enabled = enable_dp or self.config.privacy.dp_enabled
+        self.client_control_variates: Optional[NDArrays] = None
 
         # Initialize UNet3D model
         self.model = UNet3D(
@@ -180,6 +183,18 @@ class FedMedClient(fl.client.NumPyClient):
             if any(np.count_nonzero(p) > 0 for p in parameters):
                 self.set_parameters(parameters)
 
+        # SCAFFOLD Control Variate Extraction & Initialization
+        server_c = None
+        if "server_control_variates" in config and isinstance(config["server_control_variates"], list):
+            server_c = [np.array(arr, dtype=np.float32) for arr in config["server_control_variates"]]
+
+        initial_params = self.get_parameters(config={})
+        if self.client_control_variates is None:
+            self.client_control_variates = [np.zeros_like(p, dtype=np.float32) for p in initial_params]
+
+        if server_c is None:
+            server_c = [np.zeros_like(p, dtype=np.float32) for p in initial_params]
+
         metrics = train_one_epoch(
             model=self.model,
             dataloader=self.dataloader,
@@ -187,15 +202,33 @@ class FedMedClient(fl.client.NumPyClient):
             loss_fn=self.loss_fn,
             device=self.device,
             dp_engine=self.dp_engine,
+            server_control_variate=server_c,
+            client_control_variate=self.client_control_variates,
         )
 
         updated_params = self.get_parameters(config={})
-        fit_metrics: Dict[str, Scalar] = {
+
+        # Compute SCAFFOLD updated control variate c_i^+ and delta c_i = c_i^+ - c_i
+        lr = self.config.federated.learning_rate
+        K = max(len(self.dataloader), 1)
+        c_delta = []
+        new_c_i = []
+
+        for idx in range(len(updated_params)):
+            param_diff = (initial_params[idx] - updated_params[idx]) / (K * lr)
+            delta_val = param_diff - server_c[idx]
+            c_delta.append(delta_val)
+            new_c_i.append(self.client_control_variates[idx] + delta_val)
+
+        self.client_control_variates = new_c_i
+
+        fit_metrics: Dict[str, Any] = {
             "training_loss": float(metrics["training_loss"]),
             "dice_score": float(metrics["dice_score"]),
             "hospital_id": self.hospital_id,
             "he_enabled": bool(self.he_enabled),
             "dp_enabled": bool(self.dp_enabled),
+            "control_variate_delta": [d.tolist() for d in c_delta],
         }
 
         # Track Differential Privacy budget if active
@@ -284,6 +317,7 @@ def start_client(
     cert_dir: str = "certs",
     api_url: str = "http://127.0.0.1:8000",
     config_path: Optional[str] = None,
+    strategy: str = "fedavg",
     max_retries: int = 3,
 ):
     """Start a Flower client connecting to the given server with TLS & reconnect resilience."""
@@ -294,6 +328,7 @@ def start_client(
         dirichlet_alpha=dirichlet_alpha,
         enable_he=enable_he,
         enable_dp=enable_dp,
+        strategy=strategy,
         config_path=config_path,
     )
 
@@ -311,23 +346,36 @@ def start_client(
         root_certs = load_pem_bytes(cert_paths["ca_cert"])
 
     reconnect_count = 0
-    _send_node_heartbeat(api_url, hospital_id, "ONLINE", reconnect_count=reconnect_count)
+    max_retries = max_retries or 5
+    base_delay = 2.0
 
-    try:
-        if root_certs is not None:
-            fl.client.start_numpy_client(server_address=server_address, client=client, root_certificates=root_certs)
-        else:
-            fl.client.start_numpy_client(server_address=server_address, client=client)
-        _send_node_heartbeat(api_url, hospital_id, "ONLINE", reconnect_count=reconnect_count)
-    except Exception as e:
-        logger.warning(f"[{hospital_id}] Client connection exception: {e}")
-        _send_node_heartbeat(api_url, hospital_id, "OFFLINE", reconnect_count=reconnect_count)
+    while reconnect_count <= max_retries:
+        try:
+            _send_node_heartbeat(api_url, hospital_id, "ONLINE", reconnect_count=reconnect_count)
+            if root_certs is not None:
+                fl.client.start_numpy_client(server_address=server_address, client=client, root_certificates=root_certs)
+            else:
+                fl.client.start_numpy_client(server_address=server_address, client=client)
+            _send_node_heartbeat(api_url, hospital_id, "ONLINE", reconnect_count=reconnect_count)
+            break
+        except Exception as e:
+            reconnect_count += 1
+            if reconnect_count > max_retries:
+                logger.error(f"[{hospital_id}] Client connection failed after {max_retries} retries: {e}")
+                _send_node_heartbeat(api_url, hospital_id, "OFFLINE", reconnect_count=reconnect_count)
+                raise
+
+            delay = min(30.0, base_delay * (2 ** (reconnect_count - 1)))
+            logger.warning(f"[{hospital_id}] Connection lost ({e}). Reconnecting in {delay:.1f}s (Attempt {reconnect_count}/{max_retries})...")
+            _send_node_heartbeat(api_url, hospital_id, "RECONNECTING", reconnect_count=reconnect_count)
+            time.sleep(delay)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="FedMed Hospital Client")
     parser.add_argument("--server-address", "--server", type=str, default="127.0.0.1:8080", help="Flower server address")
     parser.add_argument("--hospital-id", type=str, default="hospital_alpha", help="Unique hospital identifier")
+    parser.add_argument("--strategy", type=str, default="fedavg", help="FL Strategy (fedavg / fedprox / scaffold)")
     parser.add_argument("--api-url", type=str, default="http://127.0.0.1:8000", help="FastAPI URL")
     parser.add_argument("--partition-strategy", type=str, default="dirichlet", help="Partition strategy (iid / dirichlet)")
     parser.add_argument("--dirichlet-alpha", type=float, default=0.5, help="Dirichlet alpha value")
@@ -349,5 +397,6 @@ if __name__ == "__main__":
         cert_dir=args.cert_dir,
         api_url=args.api_url,
         config_path=args.config,
+        strategy=args.strategy,
     )
 

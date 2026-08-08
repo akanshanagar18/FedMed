@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-flower
+  namespace: {{ .Values.namespace }}
+  labels:
+    app.kubernetes.io/name: {{ .Release.Name }}-flower
+    app.kubernetes.io/component: flower-server
+spec:
+  replicas: {{ .Values.flowerServer.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ .Release.Name }}-flower
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ .Release.Name }}-flower
+        app.kubernetes.io/component: flower-server
+    spec:
+      containers:
+        - name: flower-server
+          image: "{{ .Values.image.repository }}/flower-server:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["python", "-m", "server.flower_server", "--address", "0.0.0.0:{{ .Values.flowerServer.port }}"]
+          ports:
+            - containerPort: {{ .Values.flowerServer.port }}
+              name: grpc
+          envFrom:
+            - configMapRef:
+                name: {{ .Release.Name }}-config
+          resources:
+            {{- toYaml .Values.flowerServer.resources | nindent 12 }}
+          readinessProbe:
+            tcpSocket:
+              port: {{ .Values.flowerServer.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 5
