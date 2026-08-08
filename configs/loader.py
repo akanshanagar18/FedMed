@@ -52,6 +52,9 @@ class FederatedConfig(BaseModel):
     tau: float = Field(1e-3, ge=0)
     gmf: float = Field(0.0, ge=0)
     alpha: float = Field(0.01, ge=0)
+    num_shared_layers: int = Field(4, ge=1)
+    num_local_layers: int = Field(2, ge=1)
+    representation_layers: int = Field(4, ge=1)
     seed: int = 42
 
     def get_strategy_name(self) -> str:
@@ -74,6 +77,9 @@ class FederatedConfig(BaseModel):
             "tau": self.tau,
             "gmf": self.gmf,
             "alpha": self.alpha,
+            "num_shared_layers": self.num_shared_layers,
+            "num_local_layers": self.num_local_layers,
+            "representation_layers": self.representation_layers,
         }
         if isinstance(self.strategy, StrategySpec):
             params.update(self.strategy.parameters)

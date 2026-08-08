@@ -16,6 +16,11 @@ benchmark:
     - "FedNova"
     - "FedDyn"
     - "FedBN"
+    - "FedAsync"
+    - "FedPer"
+    - "LG-FedAvg"
+    - "FedRep"
+    - "Per-FedAvg"
   partitions:
     - "IID"
     - "NonIID(alpha=1.0)"

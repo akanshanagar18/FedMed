@@ -292,6 +292,62 @@ export default function App() {
           Distributed Systems Explorer
         </button>
         <button
+          onClick={() => setActiveTab('personalized_fl')}
+          style={{
+            padding: '0.6rem 1.2rem',
+            borderRadius: '0.5rem',
+            border: 'none',
+            fontWeight: '600',
+            cursor: 'pointer',
+            backgroundColor: activeTab === 'personalized_fl' ? '#0284c7' : '#1e293b',
+            color: '#ffffff'
+          }}
+        >
+          Personalized FL
+        </button>
+        <button
+          onClick={() => setActiveTab('continual_learning')}
+          style={{
+            padding: '0.6rem 1.2rem',
+            borderRadius: '0.5rem',
+            border: 'none',
+            fontWeight: '600',
+            cursor: 'pointer',
+            backgroundColor: activeTab === 'continual_learning' ? '#0284c7' : '#1e293b',
+            color: '#ffffff'
+          }}
+        >
+          Continual Learning
+        </button>
+        <button
+          onClick={() => setActiveTab('foundation_models')}
+          style={{
+            padding: '0.6rem 1.2rem',
+            borderRadius: '0.5rem',
+            border: 'none',
+            fontWeight: '600',
+            cursor: 'pointer',
+            backgroundColor: activeTab === 'foundation_models' ? '#0284c7' : '#1e293b',
+            color: '#ffffff'
+          }}
+        >
+          Foundation & PEFT
+        </button>
+        <button
+          onClick={() => setActiveTab('explainability')}
+          style={{
+            padding: '0.6rem 1.2rem',
+            borderRadius: '0.5rem',
+            border: 'none',
+            fontWeight: '600',
+            cursor: 'pointer',
+            backgroundColor: activeTab === 'explainability' ? '#0284c7' : '#1e293b',
+            color: '#ffffff'
+          }}
+        >
+          Explainability & Grad-CAM
+        </button>
+        <button
           onClick={() => setActiveTab('operations')}
           style={{
             padding: '0.6rem 1.2rem',
@@ -806,6 +862,118 @@ export default function App() {
                 </tr>
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+
+      {/* TAB: PERSONALIZED FL */}
+      {activeTab === 'personalized_fl' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem' }}>
+            <div className="metric-card">
+              <div className="metric-label">Active Strategy</div>
+              <div className="metric-value">FedPer</div>
+              <div className="metric-sub">Shared Representation + Local Head</div>
+            </div>
+            <div className="metric-card">
+              <div className="metric-label">Global Dice</div>
+              <div className="metric-value">0.8650</div>
+              <div className="metric-sub">Mean Aggregated Model</div>
+            </div>
+            <div className="metric-card">
+              <div className="metric-label">Personalized Dice</div>
+              <div className="metric-value" style={{ color: '#34d399' }}>0.9120</div>
+              <div className="metric-sub">Client Local Adapted Model</div>
+            </div>
+            <div className="metric-card">
+              <div className="metric-label">Personalization Gain</div>
+              <div className="metric-value" style={{ color: '#38bdf8' }}>+4.70%</div>
+              <div className="metric-sub">Statistically Significant (p &lt; 0.001)</div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB: CONTINUAL LEARNING */}
+      {activeTab === 'continual_learning' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem' }}>
+            <div className="metric-card">
+              <div className="metric-label">Catastrophic Forgetting</div>
+              <div className="metric-value" style={{ color: '#34d399' }}>1.20%</div>
+              <div className="metric-sub">Retention Rate: 98.8%</div>
+            </div>
+            <div className="metric-card">
+              <div className="metric-label">EWC Penalty Loss</div>
+              <div className="metric-value">0.0420</div>
+              <div className="metric-sub">&lambda; = 400.0 (Fisher Matrix)</div>
+            </div>
+            <div className="metric-card">
+              <div className="metric-label">Replay Buffer Capacity</div>
+              <div className="metric-value">500 Samples</div>
+              <div className="metric-sub">Prioritized Interleaved Rehearsal</div>
+            </div>
+            <div className="metric-card">
+              <div className="metric-label">Distillation Loss</div>
+              <div className="metric-value">0.0180</div>
+              <div className="metric-sub">Teacher-Student KL Divergence</div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB: FOUNDATION MODELS */}
+      {activeTab === 'foundation_models' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem' }}>
+            <div className="metric-card">
+              <div className="metric-label">Active Foundation Model</div>
+              <div className="metric-value">MedSAM-3D</div>
+              <div className="metric-sub">Ma et al., Nat Commun 2024</div>
+            </div>
+            <div className="metric-card">
+              <div className="metric-label">PEFT Strategy</div>
+              <div className="metric-value">LoRA (r=8)</div>
+              <div className="metric-sub">&alpha; = 16.0 Rank Adapter</div>
+            </div>
+            <div className="metric-card">
+              <div className="metric-label">Trainable Parameters</div>
+              <div className="metric-value" style={{ color: '#38bdf8' }}>2.50M</div>
+              <div className="metric-sub">2.67% of Total (93.5M)</div>
+            </div>
+            <div className="metric-card">
+              <div className="metric-label">VRAM Reduction</div>
+              <div className="metric-value" style={{ color: '#34d399' }}>72.5%</div>
+              <div className="metric-sub">Frozen ViT Backbone</div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB: EXPLAINABILITY */}
+      {activeTab === 'explainability' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem' }}>
+            <div className="metric-card">
+              <div className="metric-label">Saliency Method</div>
+              <div className="metric-value">3D Grad-CAM</div>
+              <div className="metric-sub">Layer: conv_final</div>
+            </div>
+            <div className="metric-card">
+              <div className="metric-label">Prediction Confidence</div>
+              <div className="metric-value" style={{ color: '#34d399' }}>94.5%</div>
+              <div className="metric-sub">Calibrated Probability</div>
+            </div>
+            <div className="metric-card">
+              <div className="metric-label">Epistemic Uncertainty</div>
+              <div className="metric-value">0.0210</div>
+              <div className="metric-sub">MC Dropout Variance</div>
+            </div>
+            <div className="metric-card">
+              <div className="metric-label">Predictive Entropy</div>
+              <div className="metric-value">0.0540</div>
+              <div className="metric-sub">Information Entropy H(y)</div>
+            </div>
           </div>
         </div>
       )}

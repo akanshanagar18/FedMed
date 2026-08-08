@@ -26,9 +26,13 @@ api_router.include_router(artifacts.router, prefix="/artifacts", tags=["Research
 api_router.include_router(tensorboard.router, prefix="/tensorboard", tags=["TensorBoard Integration"])
 api_router.include_router(system.router, prefix="/system", tags=["System Reproducibility Platform"])
 
-from app.api.v1.endpoints import metrics_prometheus, distributed
+from app.api.v1.endpoints import metrics_prometheus, distributed, personalization, continual, foundation, explainability
 api_router.include_router(metrics_prometheus.router, prefix="/metrics-prometheus", tags=["Prometheus Metrics"])
 api_router.include_router(distributed.router, prefix="/distributed-systems", tags=["Distributed Federated Systems"])
+api_router.include_router(personalization.router, prefix="/personalization", tags=["Personalized Federated Learning"])
+api_router.include_router(continual.router, prefix="/continual", tags=["Continual Federated Learning"])
+api_router.include_router(foundation.router, prefix="/foundation", tags=["Vision Foundation Models & PEFT"])
+api_router.include_router(explainability.router, prefix="/explainability", tags=["Explainability & Grad-CAM"])
 
 
 
