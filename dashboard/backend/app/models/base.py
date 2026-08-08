@@ -104,3 +104,64 @@ class BenchmarkExperimentModel(Base):
     experiment_id = Column(String, nullable=False, index=True)
     sequence_order = Column(Integer, default=0)
     status = Column(String, default="pending")
+
+
+class GovernanceRecordModel(Base):
+    """Persisted governance events and model stage transition logs."""
+    __tablename__ = "governance_records"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    model_id = Column(String, nullable=False, index=True)
+    previous_stage = Column(String, default="Candidate")
+    new_stage = Column(String, default="Staging")
+    promoted_by = Column(String, default="automated_governance")
+    hmac_signature = Column(String, nullable=True)
+    timestamp = Column(DateTime, default=datetime.utcnow)
+
+
+class DriftMetricModel(Base):
+    """Persisted feature and concept drift measurements per node."""
+    __tablename__ = "drift_metrics"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    node_id = Column(String, nullable=False, index=True)
+    mmd_score = Column(Float, nullable=False)
+    ks_statistic = Column(Float, nullable=False)
+    ks_p_value = Column(Float, nullable=False)
+    wasserstein_distance = Column(Float, nullable=False)
+    psi_score = Column(Float, nullable=False)
+    risk_level = Column(String, default="LOW")
+    timestamp = Column(DateTime, default=datetime.utcnow)
+
+
+class HPOTrialModel(Base):
+    """Persisted Federated Hyperparameter Optimization trial results."""
+    __tablename__ = "hpo_trials"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    study_id = Column(String, nullable=False, index=True)
+    trial_id = Column(String, nullable=False)
+    strategy = Column(String, default="fedavg")
+    learning_rate = Column(Float, nullable=False)
+    proximal_mu = Column(Float, nullable=False)
+    ewc_lambda = Column(Float, nullable=False)
+    dp_noise_multiplier = Column(Float, nullable=False)
+    val_dice = Column(Float, nullable=False)
+    timestamp = Column(DateTime, default=datetime.utcnow)
+
+
+class SLACertificateModel(Base):
+    """Persisted HIPAA/GDPR institutional SLA compliance certificate attestations."""
+    __tablename__ = "sla_certificates"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    run_id = Column(String, nullable=False, index=True)
+    certificate_hash = Column(String, unique=True, nullable=False)
+    status = Column(String, default="PASSED_COMPLIANT")
+    overall_compliant = Column(Boolean, default=True)
+    epsilon_consumed = Column(Float, nullable=False)
+    participation_rate = Column(Float, nullable=False)
+    avg_latency_ms = Column(Float, nullable=False)
+    encryption_scheme = Column(String, default="TenSEAL_CKKS")
+    timestamp = Column(DateTime, default=datetime.utcnow)
+

@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/siddhant_patil/Projects/FedMed/mlruns/182214309995616549/9342a96857dd480cb863383e37f74926/artifacts
+end_time: 1786219531594
+entry_point_name: ''
+experiment_id: '182214309995616549'
+lifecycle_stage: active
+run_id: 9342a96857dd480cb863383e37f74926
+run_name: Baseline_e2e_milestone_j
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1786219505878
+status: 3
+tags: []
+user_id: siddhant_patil

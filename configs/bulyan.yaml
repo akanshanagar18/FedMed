@@ -1,0 +1,4 @@
+strategy: Bulyan
+f_byzantine: 1
+min_fit_clients: 5
+min_available_clients: 5

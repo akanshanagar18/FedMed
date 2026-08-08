@@ -11,6 +11,11 @@ services:
     environment:
       - DATABASE_URL=${DATABASE_URL:-sqlite:////app/data_db/fedmed.db}
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - FEDMED_GOVERNANCE_ENABLED=true
+      - FEDMED_DRIFT_DETECTION=true
+      - FEDMED_HPO_ENABLED=true
+      - FEDMED_SLA_AUDITING=true
+
     volumes:
       - database_data:/app/data_db
       - checkpoint_data:/app/checkpoints

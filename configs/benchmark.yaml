@@ -39,3 +39,9 @@ benchmark:
     - 42
     - 123
     - 999
+  governance:
+    drift_detection: true
+    sla_auditing: true
+    hpo_enabled: true
+    model_registry_gates: true
+

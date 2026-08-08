@@ -1,0 +1,5 @@
+strategy: MultiKrum
+f_byzantine: 1
+m_select: 3
+min_fit_clients: 4
+min_available_clients: 4

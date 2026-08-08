@@ -1,0 +1,4 @@
+strategy: TrimmedMean
+beta: 0.1
+min_fit_clients: 3
+min_available_clients: 3

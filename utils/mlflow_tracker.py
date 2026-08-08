@@ -133,7 +133,33 @@ class MLflowTracker:
         except Exception as e:
             logger.warning(f"Error uploading artifact directory '{local_dir}' to MLflow: {e}")
 
+    def log_governance_event(self, event_name: str, details: Dict[str, Any]) -> None:
+        """Logs governance event details and stage transitions as MLflow tags & params."""
+        if not self.is_active or not self.current_run:
+            return
+        try:
+            for k, v in details.items():
+                if isinstance(v, (int, float)):
+                    mlflow.log_metric(f"gov_{k}", float(v))
+                else:
+                    mlflow.set_tag(f"gov_{k}", str(v))
+            logger.info(f"Logged governance event '{event_name}' to MLflow.")
+        except Exception as e:
+            logger.warning(f"Error logging governance event to MLflow: {e}")
+
+    def log_drift_metrics(self, node_id: str, drift_metrics: Dict[str, float]) -> None:
+        """Logs distribution drift metrics (MMD, KS, Wasserstein, PSI) per node to MLflow."""
+        if not self.is_active or not self.current_run:
+            return
+        try:
+            for k, v in drift_metrics.items():
+                mlflow.log_metric(f"drift_{node_id}_{k}", float(v))
+            logger.info(f"Logged drift metrics for node '{node_id}' to MLflow.")
+        except Exception as e:
+            logger.warning(f"Error logging drift metrics to MLflow: {e}")
+
     def end_run(self, status: str = "FINISHED") -> None:
+
         """Ends the currently active MLflow run."""
         if not self.is_active or not self.current_run:
             return

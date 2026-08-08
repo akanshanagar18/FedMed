@@ -103,7 +103,21 @@ class TensorBoardLogger:
             if val is not None and isinstance(val, (int, float)) and not (val != val):
                 self.log_scalar(tag, val, global_step)
 
+    def log_hpo_trial(self, trial_id: str, hparams: Dict[str, Union[float, str]], val_dice: float, global_step: int) -> None:
+        """Logs HPO trial hyperparameter settings and validation Dice score."""
+        self.log_scalar(f"HPO/ValidationDice/{trial_id}", val_dice, global_step)
+        for hp_k, hp_v in hparams.items():
+            if isinstance(hp_v, (int, float)):
+                self.log_scalar(f"HPO/Hparams/{hp_k}", float(hp_v), global_step)
+
+    def log_sla_compliance(self, overall_compliant: bool, epsilon_consumed: float, latency_ms: float, global_step: int) -> None:
+        """Logs institutional SLA compliance metrics to TensorBoard."""
+        self.log_scalar("Governance/SLA_Compliant", 1.0 if overall_compliant else 0.0, global_step)
+        self.log_scalar("Governance/SLA_Epsilon_Consumed", epsilon_consumed, global_step)
+        self.log_scalar("Governance/SLA_Latency_ms", latency_ms, global_step)
+
     def flush(self) -> None:
+
         try:
             self.writer.flush()
         except Exception:

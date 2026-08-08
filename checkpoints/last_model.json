@@ -1,18 +1,18 @@
 {
-  "checkpoint_id": "chk_baseline_brats_1_1786213087",
+  "checkpoint_id": "chk_e2e_milestone_j_1_1786219666",
   "file_path": "/Users/siddhant_patil/Projects/FedMed/checkpoints/last_model.pth",
-  "experiment_id": "baseline_brats",
+  "experiment_id": "e2e_milestone_j",
   "benchmark_id": "standalone",
   "strategy": "CentralizedBaseline",
   "epoch": 1,
   "round": null,
-  "dice": 0.012928403603974065,
-  "loss": 1.0300345420837402,
+  "dice": 0.012794296878520933,
+  "loss": 1.0333800315856934,
   "privacy_settings": {
     "dp_enabled": false,
     "he_enabled": false
   },
   "config": {},
-  "file_hash": "4776b3774563c744ff5a03d186929f7cd24ef7b6a7905118f1224bc72afbb8d9",
-  "timestamp": "2026-08-08T18:18:08Z"
+  "file_hash": "8282643b6943aa60ca9b38d708d59eaea10437cd7941acdecaa3d00523d9b717",
+  "timestamp": "2026-08-08T20:07:46Z"
 }

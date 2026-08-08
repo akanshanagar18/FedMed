@@ -1,0 +1,5 @@
+attack:
+  type: "backdoor"
+  trigger_value: 5.0
+  trigger_size: 4
+  affected_clients: 1

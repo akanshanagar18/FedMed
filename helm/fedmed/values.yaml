@@ -69,3 +69,12 @@ autoscaling:
   minReplicas: 2
   maxReplicas: 10
   targetCPUUtilizationPercentage: 70
+
+governance:
+  enabled: true
+  driftDetection: true
+  slaAuditing: true
+  hpoEngine: true
+  maxEpsilonAllowed: 10.0
+  minParticipationRate: 0.75
+

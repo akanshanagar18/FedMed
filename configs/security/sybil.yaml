@@ -1,0 +1,4 @@
+attack:
+  type: "sybil"
+  num_sybils: 3
+  base_attack: "sign_flip"

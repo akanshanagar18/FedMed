@@ -1,0 +1,6 @@
+attack:
+  type: "label_flip"
+  source_class: 0
+  target_class: 1
+  flip_ratio: 1.0
+  affected_clients: 1

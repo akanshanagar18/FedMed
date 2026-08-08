@@ -193,3 +193,48 @@ class ErrorResponse(BaseModel):
     message: str = "An unexpected error occurred."
     developer_details: Optional[str] = None
     recovery_suggestions: Optional[str] = None
+
+
+# ---------------------------------------------------------------------------
+# Milestone R: Governance, Drift, FedHPO, & SLA Schemas
+# ---------------------------------------------------------------------------
+
+class GovernanceRecordSchema(BaseModel):
+    model_id: str
+    previous_stage: str = "Candidate"
+    new_stage: str = "Staging"
+    promoted_by: str = "automated_governance"
+    hmac_signature: Optional[str] = None
+
+
+class DriftMetricSchema(BaseModel):
+    node_id: str
+    mmd_score: float
+    ks_statistic: float
+    ks_p_value: float
+    wasserstein_distance: float
+    psi_score: float
+    risk_level: str = "LOW"
+
+
+class HPOTrialSchema(BaseModel):
+    study_id: str
+    trial_id: str
+    strategy: str
+    learning_rate: float
+    proximal_mu: float
+    ewc_lambda: float
+    dp_noise_multiplier: float
+    val_dice: float
+
+
+class SLACertificateSchema(BaseModel):
+    run_id: str
+    certificate_hash: str
+    status: str = "PASSED_COMPLIANT"
+    overall_compliant: bool = True
+    epsilon_consumed: float
+    participation_rate: float
+    avg_latency_ms: float
+    encryption_scheme: str = "TenSEAL_CKKS"
+

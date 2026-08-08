@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/siddhant_patil/Projects/FedMed/mlruns/182214309995616549/34a1b9f698184d6b8bee55ddd3456c7c/artifacts
+end_time: 1786219444481
+entry_point_name: ''
+experiment_id: '182214309995616549'
+lifecycle_stage: active
+run_id: 34a1b9f698184d6b8bee55ddd3456c7c
+run_name: FL_FedAvg_sim_1786219438
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1786219443834
+status: 3
+tags: []
+user_id: siddhant_patil
