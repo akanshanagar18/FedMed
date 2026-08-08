@@ -31,3 +31,20 @@ htmlcov/
 .vscode/
 .idea/
 *.swp
+
+# MLflow
+mlruns/
+
+# TensorBoard
+runs/
+
+# Runtime database
+fedmed.db
+*.db
+
+# Checkpoints
+checkpoints/*.json
+checkpoints/*.pth
+
+# Training artifacts
+*.tfevents.*
