@@ -46,6 +46,7 @@ def test_export_engine_benchmark_suite(tmp_path):
     )
 
     assert "json" in files and os.path.exists(files["json"])
-    assert "csv" in files and os.path.exists(files["csv"])
-    assert "markdown" in files and os.path.exists(files["markdown"])
-    assert "pdf" in files and os.path.exists(files["pdf"])
+    assert "leaderboard_csv" in files and os.path.exists(files["leaderboard_csv"])
+    assert "markdown_report" in files and os.path.exists(files["markdown_report"])
+    assert "pdf_report" in files and os.path.exists(files["pdf_report"])
+    assert "latex_tables" in files and os.path.exists(files["latex_tables"])

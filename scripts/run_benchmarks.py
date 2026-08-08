@@ -27,6 +27,7 @@ from typing import Any, Dict, List, Tuple
 from configs.loader import load_config, AppConfig, ConfigValidationError
 from utils.export_engine import ExportEngine
 from utils.mlflow_tracker import MLflowTracker
+from utils.benchmark_visualizer import BenchmarkVisualizer
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - [BENCHMARK] - %(message)s")
 logger = logging.getLogger("benchmark")
@@ -142,6 +143,8 @@ def execute_single_experiment(exp_cfg: Dict[str, Any], api_url: str) -> Dict[str
     except Exception:
         pass
 
+    time.sleep(2.0)  # Allow socket release before next sequential run
+
     return {
         "experiment_id": exp_id,
         "strategy_name": exp_cfg["strategy_name"],
@@ -158,15 +161,20 @@ def execute_single_experiment(exp_cfg: Dict[str, Any], api_url: str) -> Dict[str
 def generate_benchmark_artifacts(
     benchmark_id: str, name: str, results: List[Dict[str, Any]], output_dir: str
 ) -> None:
-    """Generates summary.json, metrics.csv, leaderboard.csv, and comparison.md."""
+    """Generates 10 publication figures, CSV breakdown tables, LaTeX tables, and PDF report."""
     os.makedirs(output_dir, exist_ok=True)
 
-    # Delegate multi-format (CSV, JSON, Markdown, PDF) generation to ExportEngine
+    # 1. Generate 10 Publication Figures
+    visualizer = BenchmarkVisualizer(output_dir=output_dir)
+    plot_paths = visualizer.generate_all_plots({"benchmark_id": benchmark_id, "name": name, "results": results})
+
+    # 2. Delegate multi-format report exports to ExportEngine
     exporter = ExportEngine(output_dir=os.path.dirname(output_dir))
     files = exporter.export_benchmark_suite(
         benchmark_id=benchmark_id,
         name=name,
         results=results,
+        plot_paths=plot_paths,
         custom_output_dir=output_dir,
     )
 

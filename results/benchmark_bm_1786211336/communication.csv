@@ -1,0 +1,3 @@
+Experiment ID,Strategy,Payload Size (MB),Rounds,Total Sent (MB)
+bm_1786211336_exp_001_FedAvg_42,FedAvg,110.0,3,330.0
+bm_1786211336_exp_002_FedProx_42,FedProx,110.0,3,330.0

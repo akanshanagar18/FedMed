@@ -1,0 +1,67 @@
+{
+  "benchmark_id": "bm_1786211336",
+  "name": "FedMed Strategy Benchmark",
+  "timestamp": "2026-08-08T17:50:02.444712Z",
+  "total_experiments": 2,
+  "completed_experiments": 0,
+  "best_experiment_id": "bm_1786211336_exp_001_FedAvg_42",
+  "best_dice_score": 0.4482,
+  "average_dice_score": 0.4482,
+  "rankings": [
+    {
+      "strategy": "FedAvg",
+      "mean_dice": 0.4482,
+      "std_dice": 0.0,
+      "ci_dice": "[0.4482, 0.4482]",
+      "mean_loss": 0.8043,
+      "mean_runtime_sec": 60.04,
+      "mean_convergence_round": 9.0,
+      "total_runs": 1,
+      "rank": 1
+    },
+    {
+      "strategy": "FedProx",
+      "mean_dice": 0.4482,
+      "std_dice": 0.0,
+      "ci_dice": "[0.4482, 0.4482]",
+      "mean_loss": 0.8043,
+      "mean_runtime_sec": 3.61,
+      "mean_convergence_round": 9.0,
+      "total_runs": 1,
+      "rank": 2
+    }
+  ],
+  "reproducibility": {
+    "timestamp": "2026-08-08T17:50:01Z",
+    "random_seed": 42,
+    "git": {
+      "git_branch": "feature/integration-green",
+      "git_commit": "49bd4ab4ec24123e61c80e5e2b2c864c4b0f190d",
+      "git_dirty": "True"
+    },
+    "hardware": {
+      "os_platform": "macOS-26.6-arm64-arm-64bit",
+      "os_system": "Darwin",
+      "os_release": "25.6.0",
+      "cpu_count": 10,
+      "cpu_arch": "arm64",
+      "ram_gb": 16.0,
+      "cuda_available": false,
+      "gpu_count": 0,
+      "gpu_name": "N/A"
+    },
+    "dependencies": {
+      "python_version": "3.9.6",
+      "torch_version": "2.8.0",
+      "monai_version": "1.5.2",
+      "flower_version": "1.23.0",
+      "mlflow_version": "3.1.4",
+      "tensorboard_version": "2.21.0",
+      "tenseal_version": "0.3.16",
+      "opacus_version": "1.6.0",
+      "fastapi_version": "0.128.8",
+      "sqlalchemy_version": "2.0.51"
+    },
+    "config": {}
+  }
+}

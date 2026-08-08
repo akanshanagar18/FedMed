@@ -1,41 +1,5 @@
 [
   {
-    "checkpoint_id": "chk_sim_1786210358_1_1786210384",
-    "file_path": "/Users/siddhant_patil/Projects/FedMed/checkpoints/fl_round_1.pth",
-    "experiment_id": "sim_1786210358",
-    "benchmark_id": "standalone",
-    "strategy": "FedAvg",
-    "epoch": null,
-    "round": 1,
-    "dice": 0.011558128188231162,
-    "loss": 1.0399560672896249,
-    "privacy_settings": {
-      "dp_enabled": false,
-      "he_enabled": false
-    },
-    "config": {},
-    "file_hash": "4e6dbbc2cb81a04d43b70f22390b230738f73d831a11a3bde860b03c27f5ee8f",
-    "timestamp": "2026-08-08T17:33:04Z"
-  },
-  {
-    "checkpoint_id": "chk_sim_1786210358_2_1786210417",
-    "file_path": "/Users/siddhant_patil/Projects/FedMed/checkpoints/fl_round_2.pth",
-    "experiment_id": "sim_1786210358",
-    "benchmark_id": "standalone",
-    "strategy": "FedAvg",
-    "epoch": null,
-    "round": 2,
-    "dice": 0.011737894848920405,
-    "loss": 1.0323101878166199,
-    "privacy_settings": {
-      "dp_enabled": false,
-      "he_enabled": false
-    },
-    "config": {},
-    "file_hash": "151fb8d47adf10970e06709d7d7cb28def1eece3d6f1fc9ded850b5bdea1eff4",
-    "timestamp": "2026-08-08T17:33:37Z"
-  },
-  {
     "checkpoint_id": "chk_e2e_milestone_j_1_1786210497",
     "file_path": "/Users/siddhant_patil/Projects/FedMed/checkpoints/last_model.pth",
     "experiment_id": "e2e_milestone_j",
@@ -70,5 +34,41 @@
     "config": {},
     "file_hash": "398c9fbca31985c23c5b6f2fc1d607ffd7c8e87eeef5f7f28905d85145075b48",
     "timestamp": "2026-08-08T17:34:57Z"
+  },
+  {
+    "checkpoint_id": "chk_sim_1786211337_1_1786211363",
+    "file_path": "/Users/siddhant_patil/Projects/FedMed/checkpoints/fl_round_1.pth",
+    "experiment_id": "sim_1786211337",
+    "benchmark_id": "standalone",
+    "strategy": "FedAvg",
+    "epoch": null,
+    "round": 1,
+    "dice": 0.015837587682264193,
+    "loss": 1.0260092190333776,
+    "privacy_settings": {
+      "dp_enabled": false,
+      "he_enabled": false
+    },
+    "config": {},
+    "file_hash": "ae1e42f66bc97cb3bf5b1f3cfd34e3250a8ac23551af14781c084a52e24321c8",
+    "timestamp": "2026-08-08T17:49:23Z"
+  },
+  {
+    "checkpoint_id": "chk_sim_1786211337_2_1786211393",
+    "file_path": "/Users/siddhant_patil/Projects/FedMed/checkpoints/fl_round_2.pth",
+    "experiment_id": "sim_1786211337",
+    "benchmark_id": "standalone",
+    "strategy": "FedAvg",
+    "epoch": null,
+    "round": 2,
+    "dice": 0.016111369477584958,
+    "loss": 1.0212699174880981,
+    "privacy_settings": {
+      "dp_enabled": false,
+      "he_enabled": false
+    },
+    "config": {},
+    "file_hash": "a1f8534b2af4be06112833d257f1d49e66ff10cdfedc8fddd88547fac20dd9ac",
+    "timestamp": "2026-08-08T17:49:53Z"
   }
 ]

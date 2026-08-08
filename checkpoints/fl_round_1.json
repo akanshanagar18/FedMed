@@ -1,18 +1,18 @@
 {
-  "checkpoint_id": "chk_sim_1786210358_1_1786210384",
+  "checkpoint_id": "chk_sim_1786211337_1_1786211363",
   "file_path": "/Users/siddhant_patil/Projects/FedMed/checkpoints/fl_round_1.pth",
-  "experiment_id": "sim_1786210358",
+  "experiment_id": "sim_1786211337",
   "benchmark_id": "standalone",
   "strategy": "FedAvg",
   "epoch": null,
   "round": 1,
-  "dice": 0.011558128188231162,
-  "loss": 1.0399560672896249,
+  "dice": 0.015837587682264193,
+  "loss": 1.0260092190333776,
   "privacy_settings": {
     "dp_enabled": false,
     "he_enabled": false
   },
   "config": {},
-  "file_hash": "4e6dbbc2cb81a04d43b70f22390b230738f73d831a11a3bde860b03c27f5ee8f",
-  "timestamp": "2026-08-08T17:33:04Z"
+  "file_hash": "ae1e42f66bc97cb3bf5b1f3cfd34e3250a8ac23551af14781c084a52e24321c8",
+  "timestamp": "2026-08-08T17:49:23Z"
 }

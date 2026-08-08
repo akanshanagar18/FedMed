@@ -120,6 +120,8 @@ class CheckpointConfig(BaseModel):
 class BenchmarkSubConfig(BaseModel):
     strategies: List[str] = Field(default_factory=lambda: ["FedAvg", "FedProx"])
     partitions: List[str] = Field(default_factory=lambda: ["IID", "NonIID(alpha=0.5)", "NonIID(alpha=0.2)"])
+    privacy_modes: List[str] = Field(default_factory=lambda: ["none", "dp", "he", "dp_he"])
+    client_counts: List[int] = Field(default_factory=lambda: [2, 3, 5])
     seeds: List[int] = Field(default_factory=lambda: [42, 123, 999])
 
 

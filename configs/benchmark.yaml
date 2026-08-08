@@ -13,6 +13,15 @@ benchmark:
     - "IID"
     - "NonIID(alpha=0.5)"
     - "NonIID(alpha=0.2)"
+  privacy_modes:
+    - "none"
+    - "dp"
+    - "he"
+    - "dp_he"
+  client_counts:
+    - 2
+    - 3
+    - 5
   seeds:
     - 42
     - 123

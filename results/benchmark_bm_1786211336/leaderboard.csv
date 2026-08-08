@@ -1,0 +1,3 @@
+Rank,Experiment ID,Strategy,Partition Strategy,Seed,Best Dice,Avg Loss,Convergence Round,Runtime (s),Status
+1,bm_1786211336_exp_001_FedAvg_42,FedAvg,IID,42,0.4482,0.8043,9,60.04,failed
+2,bm_1786211336_exp_002_FedProx_42,FedProx,IID,42,0.4482,0.8043,9,3.61,failed

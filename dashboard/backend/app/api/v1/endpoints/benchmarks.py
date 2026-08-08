@@ -75,3 +75,78 @@ async def delete_benchmark(benchmark_id: str, db: Session = Depends(get_db)):
         message=f"Benchmark '{benchmark_id}' deleted successfully",
         data={"benchmark_id": benchmark_id},
     )
+
+
+@router.get("/{benchmark_id}/analytics", response_model=SuccessResponse)
+async def get_benchmark_analytics(benchmark_id: str, db: Session = Depends(get_db)):
+    """Retrieves analytics summary and strategy rankings for a benchmark suite."""
+    leaderboard = BenchmarkService.generate_leaderboard(db, benchmark_id)
+    results = [l.model_dump(mode="json") for l in leaderboard]
+    from utils.statistical_analysis import StatisticalAnalysisEngine
+    stat_engine = StatisticalAnalysisEngine(results)
+    rankings = stat_engine.rank_strategies()
+    summaries = stat_engine.compute_strategy_summaries()
+
+    return SuccessResponse(
+        message=f"Analytics for benchmark '{benchmark_id}' computed successfully",
+        data={
+            "benchmark_id": benchmark_id,
+            "rankings": rankings,
+            "summaries": summaries,
+            "total_experiments": len(results),
+        },
+    )
+
+
+@router.get("/{benchmark_id}/statistical-tests", response_model=SuccessResponse)
+async def get_benchmark_statistical_tests(benchmark_id: str, db: Session = Depends(get_db)):
+    """Retrieves pairwise inferential hypothesis tests (Paired t-test, Wilcoxon, Cohen's d)."""
+    leaderboard = BenchmarkService.generate_leaderboard(db, benchmark_id)
+    results = [l.model_dump(mode="json") for l in leaderboard]
+    from utils.statistical_analysis import StatisticalAnalysisEngine
+    stat_engine = StatisticalAnalysisEngine(results)
+    tests = stat_engine.compute_pairwise_hypothesis_tests()
+
+    return SuccessResponse(
+        message=f"Statistical hypothesis tests for benchmark '{benchmark_id}' computed successfully",
+        data={"benchmark_id": benchmark_id, "pairwise_tests": tests},
+    )
+
+
+@router.get("/{benchmark_id}/latex-tables", response_model=SuccessResponse)
+async def get_benchmark_latex_tables(benchmark_id: str, db: Session = Depends(get_db)):
+    """Retrieves LaTeX formatted publication tables for academic paper submissions."""
+    leaderboard = BenchmarkService.generate_leaderboard(db, benchmark_id)
+    results = [l.model_dump(mode="json") for l in leaderboard]
+    from utils.statistical_analysis import StatisticalAnalysisEngine
+    from utils.export_engine import ExportEngine
+    stat_engine = StatisticalAnalysisEngine(results)
+    ranks = stat_engine.rank_strategies()
+    pairwise_tests = stat_engine.compute_pairwise_hypothesis_tests()
+    exporter = ExportEngine()
+    tex_str = exporter._generate_latex_tables("Benchmark Suite", benchmark_id, ranks, pairwise_tests)
+
+    return SuccessResponse(
+        message=f"LaTeX publication tables for benchmark '{benchmark_id}' generated successfully",
+        data={"benchmark_id": benchmark_id, "latex_tables": tex_str},
+    )
+
+
+@router.get("/{benchmark_id}/plots", response_model=SuccessResponse)
+async def list_benchmark_plots(benchmark_id: str):
+    """Lists discovered publication plot files for a benchmark suite."""
+    import os
+    plots_dir = os.path.abspath(f"results/benchmark_{benchmark_id}/plots")
+    plots = []
+    if os.path.exists(plots_dir):
+        for f in os.listdir(plots_dir):
+            if f.endswith((".png", ".pdf")):
+                plots.append({
+                    "filename": f,
+                    "path": f"results/benchmark_{benchmark_id}/plots/{f}",
+                })
+
+    return SuccessResponse(
+        message=f"Plots for benchmark '{benchmark_id}' retrieved successfully",
+        data={"benchmark_id": benchmark_id, "total_plots": len(plots), "plots": plots},
+    )

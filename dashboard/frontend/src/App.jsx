@@ -23,6 +23,9 @@ export default function App() {
   const [mlflowStatus, setMlflowStatus] = useState(null);
   const [tbStatus, setTbStatus] = useState(null);
   const [leaderboard, setLeaderboard] = useState([]);
+  const [analytics, setAnalytics] = useState(null);
+  const [statisticalTests, setStatisticalTests] = useState([]);
+  const [latexTables, setLatexTables] = useState('');
   const [currentExp, setCurrentExp] = useState(null);
   const [currentBench, setCurrentBench] = useState(null);
   const [connectionStatus, setConnectionStatus] = useState('CONNECTING');
@@ -32,7 +35,7 @@ export default function App() {
   const [latestDice, setLatestDice] = useState('N/A');
 
   useEffect(() => {
-    // Initial fetch of metrics
+    // Metrics
     fetch('/api/v1/metrics/default')
       .then((res) => res.json())
       .then((res) => {
@@ -46,9 +49,9 @@ export default function App() {
           }
         }
       })
-      .catch((err) => console.log('Metrics fetch error:', err));
+      .catch(() => {});
 
-    // Initial fetch of experiments
+    // Experiments
     fetch('/api/v1/experiments')
       .then((res) => res.json())
       .then((res) => {
@@ -57,9 +60,9 @@ export default function App() {
           setCurrentExp(res.data[0]);
         }
       })
-      .catch((err) => console.log('Experiments fetch error:', err));
+      .catch(() => {});
 
-    // Fetch benchmarks
+    // Benchmarks
     fetch('/api/v1/benchmarks')
       .then((res) => res.json())
       .then((res) => {
@@ -67,19 +70,32 @@ export default function App() {
           setBenchmarks(res.data);
           const activeBench = res.data[0];
           setCurrentBench(activeBench);
-          fetch(`/api/v1/benchmarks/${activeBench.benchmark_id}/leaderboard`)
+          const bId = activeBench.benchmark_id;
+
+          fetch(`/api/v1/benchmarks/${bId}/leaderboard`)
             .then((r) => r.json())
-            .then((lRes) => {
-              if (lRes.data && Array.isArray(lRes.data)) {
-                setLeaderboard(lRes.data);
-              }
-            })
+            .then((lRes) => lRes.data && setLeaderboard(lRes.data))
+            .catch(() => {});
+
+          fetch(`/api/v1/benchmarks/${bId}/analytics`)
+            .then((r) => r.json())
+            .then((aRes) => aRes.data && setAnalytics(aRes.data))
+            .catch(() => {});
+
+          fetch(`/api/v1/benchmarks/${bId}/statistical-tests`)
+            .then((r) => r.json())
+            .then((sRes) => sRes.data?.pairwise_tests && setStatisticalTests(sRes.data.pairwise_tests))
+            .catch(() => {});
+
+          fetch(`/api/v1/benchmarks/${bId}/latex-tables`)
+            .then((r) => r.json())
+            .then((tRes) => tRes.data?.latex_tables && setLatexTables(tRes.data.latex_tables))
             .catch(() => {});
         }
       })
-      .catch((err) => console.log('Benchmarks fetch error:', err));
+      .catch(() => {});
 
-    // Milestone J endpoints fetch
+    // Milestone J/K endpoints
     fetch('/api/v1/checkpoints')
       .then((r) => r.json())
       .then((d) => d.data && setCheckpoints(d.data))
@@ -152,7 +168,7 @@ export default function App() {
           <div>
             <h1>FedMed v2.0 Research Platform</h1>
             <p className="header-subtitle">
-              Reproducible Federated Learning Experiment Tracking, Checkpoint Registry & Benchmark Platform
+              Scientifically Validated Federated Learning Benchmark Suite & Publication Platform
             </p>
             <div className="meta-tags">
               <span className="tag">BENCHMARK: {currentBench?.benchmark_id || 'bm_suite'}</span>
@@ -184,6 +200,20 @@ export default function App() {
           }}
         >
           Overview & Telemetry
+        </button>
+        <button
+          onClick={() => setActiveTab('analytics')}
+          style={{
+            padding: '0.6rem 1.2rem',
+            borderRadius: '0.5rem',
+            border: 'none',
+            fontWeight: '600',
+            cursor: 'pointer',
+            backgroundColor: activeTab === 'analytics' ? '#0284c7' : '#1e293b',
+            color: '#ffffff'
+          }}
+        >
+          Research Analytics & Significance
         </button>
         <button
           onClick={() => setActiveTab('checkpoints')}
@@ -250,7 +280,7 @@ export default function App() {
         <div className="status-indicator"><div className={`dot ${mlflowStatus?.enabled ? 'green' : 'yellow'}`}></div><span>MLFLOW: {mlflowStatus?.enabled ? 'ACTIVE' : 'FILE_LOCAL'}</span></div>
         <div className="status-indicator"><div className={`dot ${tbStatus?.has_active_runs ? 'green' : 'yellow'}`}></div><span>TENSORBOARD: {tbStatus?.has_active_runs ? 'LOGGING' : 'READY'}</span></div>
         <div className="status-indicator"><div className="dot green"></div><span>CHECKPOINTS: {checkpoints.length} Indexed</span></div>
-        <div className="status-indicator"><div className="dot green"></div><span>ARTIFACTS: {artifacts.length} Files</span></div>
+        <div className="status-indicator"><div className="dot green"></div><span>STATISTICAL ENGINE: Active</span></div>
       </div>
 
       {/* TAB 1: OVERVIEW & TELEMETRY */}
@@ -330,7 +360,99 @@ export default function App() {
         </>
       )}
 
-      {/* TAB 2: CHECKPOINT REGISTRY */}
+      {/* TAB 2: RESEARCH ANALYTICS & STATISTICAL SIGNIFICANCE */}
+      {activeTab === 'analytics' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          {/* Strategy Performance & Statistical Rankings */}
+          <div className="panel-card">
+            <div className="panel-header">
+              <div className="panel-title">Strategy Rankings & Descriptive Statistics</div>
+              <div className="tag">PUBLICATION METRICS</div>
+            </div>
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Rank</th>
+                  <th>Strategy Name</th>
+                  <th>Mean Dice (± Std)</th>
+                  <th>95% Confidence Interval</th>
+                  <th>Mean Loss</th>
+                  <th>Mean Runtime</th>
+                  <th>Convergence</th>
+                  <th>Runs</th>
+                </tr>
+              </thead>
+              <tbody>
+                {analytics?.rankings?.map((r) => (
+                  <tr key={r.strategy}>
+                    <td><span className="node-badge">#{r.rank}</span></td>
+                    <td><b>{r.strategy}</b></td>
+                    <td style={{ color: 'var(--accent-purple)', fontWeight: 'bold' }}>{r.mean_dice.toFixed(4)} ± {r.std_dice.toFixed(4)}</td>
+                    <td><code>{r.ci_dice}</code></td>
+                    <td style={{ color: 'var(--accent-cyan)' }}>{r.mean_loss.toFixed(4)}</td>
+                    <td>{r.mean_runtime_sec.toFixed(2)}s</td>
+                    <td>Round {r.mean_convergence_round}</td>
+                    <td>{r.total_runs}</td>
+                  </tr>
+                )) || <tr><td colSpan="8" style={{ textAlign: 'center' }}>No statistical benchmark data loaded</td></tr>}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Pairwise Hypothesis Testing */}
+          <div className="panel-card">
+            <div className="panel-header">
+              <div className="panel-title">Inferential Hypothesis Testing (t-test, Wilcoxon, Cohen's d)</div>
+              <div className="tag">STATISTICAL SIGNIFICANCE</div>
+            </div>
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Pairwise Comparison</th>
+                  <th>Test Type</th>
+                  <th>t-statistic</th>
+                  <th>p-value (t-test)</th>
+                  <th>Cohen's d</th>
+                  <th>Cliff's delta</th>
+                  <th>Statistically Significant</th>
+                </tr>
+              </thead>
+              <tbody>
+                {statisticalTests.map((t, idx) => (
+                  <tr key={idx}>
+                    <td><b>{t.comparison}</b></td>
+                    <td><code>{t.test_type}</code></td>
+                    <td>{t.t_statistic}</td>
+                    <td style={{ color: t.statistically_significant ? '#34d399' : '#94a3b8', fontWeight: 'bold' }}>{t.p_value_ttest}</td>
+                    <td>{t.cohens_d}</td>
+                    <td>{t.cliffs_delta}</td>
+                    <td>
+                      <span className="node-badge" style={{ backgroundColor: t.statistically_significant ? 'rgba(52, 211, 153, 0.2)' : 'rgba(148, 163, 184, 0.2)' }}>
+                        {t.statistically_significant ? 'YES (p < 0.05)' : 'NO'}
+                      </span>
+                    </td>
+                  </tr>
+                )) || <tr><td colSpan="7" style={{ textAlign: 'center' }}>No hypothesis tests computed yet</td></tr>}
+              </tbody>
+            </table>
+          </div>
+
+          {/* LaTeX Tables Viewer */}
+          {latexTables && (
+            <div className="panel-card">
+              <div className="panel-header">
+                <div className="panel-title">Generated Publication LaTeX Code (tables.tex)</div>
+                <div className="tag">ACM / IEEE / SPRINGER FORMAT</div>
+              </div>
+              <pre style={{ backgroundColor: '#0f172a', padding: '1rem', borderRadius: '0.5rem', overflowX: 'auto', color: '#38bdf8', fontSize: '0.85rem' }}>
+                {latexTables}
+              </pre>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* TAB 3: CHECKPOINT REGISTRY */}
       {activeTab === 'checkpoints' && (
         <div className="panel-card">
           <div className="panel-header">
@@ -366,7 +488,7 @@ export default function App() {
         </div>
       )}
 
-      {/* TAB 3: BENCHMARK EXPLORER */}
+      {/* TAB 4: BENCHMARK EXPLORER */}
       {activeTab === 'benchmarks' && (
         <div className="panel-card">
           <div className="panel-header">
@@ -406,7 +528,7 @@ export default function App() {
         </div>
       )}
 
-      {/* TAB 4: REPRODUCIBILITY & MLFLOW */}
+      {/* TAB 5: REPRODUCIBILITY & MLFLOW */}
       {activeTab === 'reproducibility' && (
         <div className="charts-grid">
           <div className="panel-card">
@@ -441,7 +563,7 @@ export default function App() {
         </div>
       )}
 
-      {/* TAB 5: ARTIFACT VIEWER */}
+      {/* TAB 6: ARTIFACT VIEWER */}
       {activeTab === 'artifacts' && (
         <div className="panel-card">
           <div className="panel-header">
