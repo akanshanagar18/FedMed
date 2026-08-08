@@ -1,0 +1,74 @@
+[
+  {
+    "checkpoint_id": "chk_sim_1786210358_1_1786210384",
+    "file_path": "/Users/siddhant_patil/Projects/FedMed/checkpoints/fl_round_1.pth",
+    "experiment_id": "sim_1786210358",
+    "benchmark_id": "standalone",
+    "strategy": "FedAvg",
+    "epoch": null,
+    "round": 1,
+    "dice": 0.011558128188231162,
+    "loss": 1.0399560672896249,
+    "privacy_settings": {
+      "dp_enabled": false,
+      "he_enabled": false
+    },
+    "config": {},
+    "file_hash": "4e6dbbc2cb81a04d43b70f22390b230738f73d831a11a3bde860b03c27f5ee8f",
+    "timestamp": "2026-08-08T17:33:04Z"
+  },
+  {
+    "checkpoint_id": "chk_sim_1786210358_2_1786210417",
+    "file_path": "/Users/siddhant_patil/Projects/FedMed/checkpoints/fl_round_2.pth",
+    "experiment_id": "sim_1786210358",
+    "benchmark_id": "standalone",
+    "strategy": "FedAvg",
+    "epoch": null,
+    "round": 2,
+    "dice": 0.011737894848920405,
+    "loss": 1.0323101878166199,
+    "privacy_settings": {
+      "dp_enabled": false,
+      "he_enabled": false
+    },
+    "config": {},
+    "file_hash": "151fb8d47adf10970e06709d7d7cb28def1eece3d6f1fc9ded850b5bdea1eff4",
+    "timestamp": "2026-08-08T17:33:37Z"
+  },
+  {
+    "checkpoint_id": "chk_e2e_milestone_j_1_1786210497",
+    "file_path": "/Users/siddhant_patil/Projects/FedMed/checkpoints/last_model.pth",
+    "experiment_id": "e2e_milestone_j",
+    "benchmark_id": "standalone",
+    "strategy": "CentralizedBaseline",
+    "epoch": 1,
+    "round": null,
+    "dice": 0.012794296878520933,
+    "loss": 1.0333800315856934,
+    "privacy_settings": {
+      "dp_enabled": false,
+      "he_enabled": false
+    },
+    "config": {},
+    "file_hash": "8282643b6943aa60ca9b38d708d59eaea10437cd7941acdecaa3d00523d9b717",
+    "timestamp": "2026-08-08T17:34:57Z"
+  },
+  {
+    "checkpoint_id": "chk_e2e_milestone_j_1_1786210497",
+    "file_path": "/Users/siddhant_patil/Projects/FedMed/checkpoints/best_model.pth",
+    "experiment_id": "e2e_milestone_j",
+    "benchmark_id": "standalone",
+    "strategy": "CentralizedBaseline",
+    "epoch": 1,
+    "round": null,
+    "dice": 0.012794296878520933,
+    "loss": 1.0333800315856934,
+    "privacy_settings": {
+      "dp_enabled": false,
+      "he_enabled": false
+    },
+    "config": {},
+    "file_hash": "398c9fbca31985c23c5b6f2fc1d607ffd7c8e87eeef5f7f28905d85145075b48",
+    "timestamp": "2026-08-08T17:34:57Z"
+  }
+]

@@ -31,11 +31,18 @@ from monai.utils import set_determinism
 from configs.loader import AppConfig, load_config
 from data.datasets.brats import BraTSDataset
 from model.unet3d import UNet3D
+from utils.reproducibility import collect_reproducibility_metadata, save_reproducibility_report
+from utils.mlflow_tracker import MLflowTracker
+from utils.tensorboard_logger import TensorBoardLogger
+from utils.checkpoint_registry import get_checkpoint_registry
+from utils.export_engine import ExportEngine
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("fedmed_baseline")
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
+import sys
+sys.path.insert(0, str(PROJECT_ROOT))
 
 
 def compute_segmentation_metrics(
@@ -212,6 +219,24 @@ def run_centralized_baseline(
     # MONAI DiceCELoss for medical 3D multi-label segmentation
     criterion = DiceCELoss(sigmoid=True)
 
+    # Initialize Research Trackers & Registry
+    mlflow_tracker = MLflowTracker(experiment_name="FedMed_v2_Research")
+    mlflow_tracker.start_run(run_name=f"Baseline_{experiment_id}", tags={"type": "centralized_baseline"})
+    mlflow_tracker.log_params({
+        "experiment_id": experiment_id,
+        "strategy": "CentralizedBaseline",
+        "dataset": app_cfg.data.dataset_name,
+        "learning_rate": learning_rate,
+        "epochs": n_epochs,
+        "batch_size": b_size,
+        "seed": app_cfg.federated.seed,
+        "dp_enabled": False,
+        "he_enabled": False,
+    })
+
+    tb_logger = TensorBoardLogger(experiment_id=experiment_id)
+    ckpt_registry = get_checkpoint_registry(str(checkpoint_dir))
+
     _register_experiment(api_url, experiment_id, status="running")
 
     history: Dict[str, List[float]] = {
@@ -280,6 +305,26 @@ def run_centralized_baseline(
         history["val_iou"].append(avg_metrics["iou_score"])
         history["val_hd95"].append(avg_metrics["hausdorff_95"])
 
+        # TensorBoard & MLflow per-epoch logging
+        tb_logger.log_round_metrics(
+            global_step=epoch,
+            training_loss=avg_train_loss,
+            val_loss=avg_val_loss,
+            dice=avg_metrics["dice_score"],
+            iou=avg_metrics["iou_score"],
+            learning_rate=learning_rate,
+            round_time_sec=epoch_time,
+        )
+        mlflow_tracker.log_metrics({
+            "train_loss": avg_train_loss,
+            "val_loss": avg_val_loss,
+            "dice": avg_metrics["dice_score"],
+            "iou": avg_metrics["iou_score"],
+            "precision": avg_metrics["precision"],
+            "recall": avg_metrics["recall"],
+            "hausdorff_95": avg_metrics["hausdorff_95"],
+        }, step=epoch)
+
         logger.info(
             f"Epoch {epoch:02d}/{n_epochs:02d} — "
             f"train_loss: {avg_train_loss:.4f}, val_loss: {avg_val_loss:.4f}, "
@@ -287,17 +332,33 @@ def run_centralized_baseline(
             f"HD95: {avg_metrics['hausdorff_95']:.2f}mm, time: {epoch_time:.2f}s"
         )
 
-        # Checkpointing & Early Stopping
-        last_ckpt_path = checkpoint_dir / "last_model.pth"
-        torch.save({"epoch": epoch, "model_state": model.state_dict(), "optimizer_state": optimizer.state_dict()}, last_ckpt_path)
+        # Checkpointing & Early Stopping via CheckpointRegistry
+        ckpt_registry.save_checkpoint(
+            model_state_dict=model.state_dict(),
+            experiment_id=experiment_id,
+            filename="last_model.pth",
+            strategy="CentralizedBaseline",
+            epoch=epoch,
+            dice=avg_metrics["dice_score"],
+            loss=avg_val_loss,
+            optimizer_state_dict=optimizer.state_dict(),
+        )
 
         if avg_metrics["dice_score"] > best_dice:
             best_dice = avg_metrics["dice_score"]
             best_epoch = epoch
             patience_counter = 0
-            best_ckpt_path = checkpoint_dir / app_cfg.checkpoint.best_model_name
-            torch.save({"epoch": epoch, "best_dice": best_dice, "model_state": model.state_dict()}, best_ckpt_path)
-            logger.info(f"  ★ New best model checkpoint saved to '{best_ckpt_path}' (Dice={best_dice:.4f})")
+            best_meta = ckpt_registry.save_checkpoint(
+                model_state_dict=model.state_dict(),
+                experiment_id=experiment_id,
+                filename=app_cfg.checkpoint.best_model_name,
+                strategy="CentralizedBaseline",
+                epoch=epoch,
+                dice=best_dice,
+                loss=avg_val_loss,
+                optimizer_state_dict=optimizer.state_dict(),
+            )
+            logger.info(f"  ★ New best model checkpoint registered to '{best_meta.file_path}' (Dice={best_dice:.4f})")
         else:
             patience_counter += 1
             if patience_counter >= early_stopping_patience:
@@ -322,6 +383,12 @@ def run_centralized_baseline(
     # Save convergence curves plot
     plot_path = checkpoint_dir / "baseline_convergence.png"
     save_convergence_plot(history, plot_path)
+
+    # Log Artifacts to MLflow
+    mlflow_tracker.log_artifact(str(checkpoint_dir / app_cfg.checkpoint.best_model_name))
+    mlflow_tracker.log_artifact(str(plot_path))
+    mlflow_tracker.end_run()
+    tb_logger.close()
 
     results = {
         "best_dice_score": best_dice,

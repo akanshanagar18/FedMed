@@ -7,13 +7,21 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-  ResponsiveContainer
+  ResponsiveContainer,
+  BarChart,
+  Bar
 } from 'recharts';
 
 export default function App() {
+  const [activeTab, setActiveTab] = useState('overview');
   const [metrics, setMetrics] = useState([]);
   const [experiments, setExperiments] = useState([]);
   const [benchmarks, setBenchmarks] = useState([]);
+  const [checkpoints, setCheckpoints] = useState([]);
+  const [artifacts, setArtifacts] = useState([]);
+  const [reproducibility, setReproducibility] = useState(null);
+  const [mlflowStatus, setMlflowStatus] = useState(null);
+  const [tbStatus, setTbStatus] = useState(null);
   const [leaderboard, setLeaderboard] = useState([]);
   const [currentExp, setCurrentExp] = useState(null);
   const [currentBench, setCurrentBench] = useState(null);
@@ -38,7 +46,7 @@ export default function App() {
           }
         }
       })
-      .catch((err) => console.log('Initial metrics fetch error:', err));
+      .catch((err) => console.log('Metrics fetch error:', err));
 
     // Initial fetch of experiments
     fetch('/api/v1/experiments')
@@ -51,7 +59,7 @@ export default function App() {
       })
       .catch((err) => console.log('Experiments fetch error:', err));
 
-    // Initial fetch of benchmarks
+    // Fetch benchmarks
     fetch('/api/v1/benchmarks')
       .then((res) => res.json())
       .then((res) => {
@@ -59,7 +67,6 @@ export default function App() {
           setBenchmarks(res.data);
           const activeBench = res.data[0];
           setCurrentBench(activeBench);
-          // Fetch leaderboard for active benchmark
           fetch(`/api/v1/benchmarks/${activeBench.benchmark_id}/leaderboard`)
             .then((r) => r.json())
             .then((lRes) => {
@@ -71,6 +78,32 @@ export default function App() {
         }
       })
       .catch((err) => console.log('Benchmarks fetch error:', err));
+
+    // Milestone J endpoints fetch
+    fetch('/api/v1/checkpoints')
+      .then((r) => r.json())
+      .then((d) => d.data && setCheckpoints(d.data))
+      .catch(() => {});
+
+    fetch('/api/v1/artifacts')
+      .then((r) => r.json())
+      .then((d) => d.data?.artifacts && setArtifacts(d.data.artifacts))
+      .catch(() => {});
+
+    fetch('/api/v1/system/reproducibility')
+      .then((r) => r.json())
+      .then((d) => d.data && setReproducibility(d.data))
+      .catch(() => {});
+
+    fetch('/api/v1/mlflow/status')
+      .then((r) => r.json())
+      .then((d) => d.data && setMlflowStatus(d.data))
+      .catch(() => {});
+
+    fetch('/api/v1/tensorboard/status')
+      .then((r) => r.json())
+      .then((d) => d.data && setTbStatus(d.data))
+      .catch(() => {});
 
     // WebSocket telemetry stream
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
@@ -112,20 +145,20 @@ export default function App() {
 
   return (
     <div className="dashboard-container">
-      {/* Platform Header */}
+      {/* Header */}
       <header className="header">
         <div className="header-title-group">
           <div className="logo-badge">FM</div>
           <div>
-            <h1>FedMed Research Dashboard</h1>
+            <h1>FedMed v2.0 Research Platform</h1>
             <p className="header-subtitle">
-              Cross-Silo Federated Learning Engine & Benchmark Platform
+              Reproducible Federated Learning Experiment Tracking, Checkpoint Registry & Benchmark Platform
             </p>
             <div className="meta-tags">
-              <span className="tag">BENCHMARK: {currentBench?.benchmark_id || 'bm_default'}</span>
+              <span className="tag">BENCHMARK: {currentBench?.benchmark_id || 'bm_suite'}</span>
               <span className="tag">EXP: {currentExp?.experiment_id || 'default'}</span>
               <span className="tag">STATUS: {expStatus}</span>
-              <span className="tag">MODEL: 3D U-Net (BraTS)</span>
+              <span className="tag">GIT: {reproducibility?.git?.git_commit?.slice(0, 7) || 'HEAD'}</span>
             </div>
           </div>
         </div>
@@ -136,188 +169,210 @@ export default function App() {
         </div>
       </header>
 
+      {/* Navigation Tabs */}
+      <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.5rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.75rem' }}>
+        <button
+          onClick={() => setActiveTab('overview')}
+          style={{
+            padding: '0.6rem 1.2rem',
+            borderRadius: '0.5rem',
+            border: 'none',
+            fontWeight: '600',
+            cursor: 'pointer',
+            backgroundColor: activeTab === 'overview' ? '#0284c7' : '#1e293b',
+            color: '#ffffff'
+          }}
+        >
+          Overview & Telemetry
+        </button>
+        <button
+          onClick={() => setActiveTab('checkpoints')}
+          style={{
+            padding: '0.6rem 1.2rem',
+            borderRadius: '0.5rem',
+            border: 'none',
+            fontWeight: '600',
+            cursor: 'pointer',
+            backgroundColor: activeTab === 'checkpoints' ? '#0284c7' : '#1e293b',
+            color: '#ffffff'
+          }}
+        >
+          Checkpoint Registry ({checkpoints.length})
+        </button>
+        <button
+          onClick={() => setActiveTab('benchmarks')}
+          style={{
+            padding: '0.6rem 1.2rem',
+            borderRadius: '0.5rem',
+            border: 'none',
+            fontWeight: '600',
+            cursor: 'pointer',
+            backgroundColor: activeTab === 'benchmarks' ? '#0284c7' : '#1e293b',
+            color: '#ffffff'
+          }}
+        >
+          Benchmark Explorer & Leaderboard
+        </button>
+        <button
+          onClick={() => setActiveTab('reproducibility')}
+          style={{
+            padding: '0.6rem 1.2rem',
+            borderRadius: '0.5rem',
+            border: 'none',
+            fontWeight: '600',
+            cursor: 'pointer',
+            backgroundColor: activeTab === 'reproducibility' ? '#0284c7' : '#1e293b',
+            color: '#ffffff'
+          }}
+        >
+          MLflow & Reproducibility
+        </button>
+        <button
+          onClick={() => setActiveTab('artifacts')}
+          style={{
+            padding: '0.6rem 1.2rem',
+            borderRadius: '0.5rem',
+            border: 'none',
+            fontWeight: '600',
+            cursor: 'pointer',
+            backgroundColor: activeTab === 'artifacts' ? '#0284c7' : '#1e293b',
+            color: '#ffffff'
+          }}
+        >
+          Artifact Viewer ({artifacts.length})
+        </button>
+      </div>
+
       {/* Subsystem Health Bar */}
-      <div className="status-bar">
-        <span className="status-label">System Health:</span>
-        <div className="status-indicator">
-          <div className="dot green"></div>
-          <span>REST API: 200 OK</span>
-        </div>
-        <div className="status-indicator">
-          <div className="dot green"></div>
-          <span>DATABASE: SQLite Active</span>
-        </div>
-        <div className="status-indicator">
-          <div className={`dot ${wsConnected ? 'green' : 'yellow'}`}></div>
-          <span>WEBSOCKET: {wsConnected ? 'LIVE' : 'IDLE'}</span>
-        </div>
-        <div className="status-indicator">
-          <div className="dot green"></div>
-          <span>FLOWER SERVER: 127.0.0.1:8080</span>
-        </div>
-        <div className="status-indicator">
-          <div className="dot green"></div>
-          <span>BENCHMARKS: {benchmarks.length} Active</span>
-        </div>
+      <div className="status-bar" style={{ marginBottom: '1.5rem' }}>
+        <span className="status-label">System Architecture:</span>
+        <div className="status-indicator"><div className="dot green"></div><span>REST API: /api/v1</span></div>
+        <div className="status-indicator"><div className={`dot ${mlflowStatus?.enabled ? 'green' : 'yellow'}`}></div><span>MLFLOW: {mlflowStatus?.enabled ? 'ACTIVE' : 'FILE_LOCAL'}</span></div>
+        <div className="status-indicator"><div className={`dot ${tbStatus?.has_active_runs ? 'green' : 'yellow'}`}></div><span>TENSORBOARD: {tbStatus?.has_active_runs ? 'LOGGING' : 'READY'}</span></div>
+        <div className="status-indicator"><div className="dot green"></div><span>CHECKPOINTS: {checkpoints.length} Indexed</span></div>
+        <div className="status-indicator"><div className="dot green"></div><span>ARTIFACTS: {artifacts.length} Files</span></div>
       </div>
 
-      {/* Top KPI Cards Grid */}
-      <div className="kpi-grid">
-        <div className="kpi-card">
-          <div className="kpi-title">Completed FL Round</div>
-          <div className="kpi-value-row">
-            <div className="kpi-value">{latestRound}</div>
-            <div className="kpi-trend neutral">{currentExp?.num_rounds || 3} Max Rounds</div>
-          </div>
-        </div>
-
-        <div className="kpi-card">
-          <div className="kpi-title">Global Training Loss</div>
-          <div className="kpi-value-row">
-            <div className="kpi-value" style={{ color: 'var(--accent-cyan)' }}>
-              {latestLoss}
+      {/* TAB 1: OVERVIEW & TELEMETRY */}
+      {activeTab === 'overview' && (
+        <>
+          <div className="kpi-grid">
+            <div className="kpi-card">
+              <div className="kpi-title">Completed FL Round</div>
+              <div className="kpi-value-row">
+                <div className="kpi-value">{latestRound}</div>
+                <div className="kpi-trend neutral">{currentExp?.num_rounds || 3} Max Rounds</div>
+              </div>
             </div>
-            <div className="kpi-trend positive">↓ Decreasing</div>
-          </div>
-        </div>
 
-        <div className="kpi-card">
-          <div className="kpi-title">Dice Score (Similarity)</div>
-          <div className="kpi-value-row">
-            <div className="kpi-value" style={{ color: 'var(--accent-purple)' }}>
-              {latestDice}
+            <div className="kpi-card">
+              <div className="kpi-title">Global Training Loss</div>
+              <div className="kpi-value-row">
+                <div className="kpi-value" style={{ color: 'var(--accent-cyan)' }}>{latestLoss}</div>
+                <div className="kpi-trend positive">↓ Decreasing</div>
+              </div>
             </div>
-            <div className="kpi-trend positive">↑ Improving</div>
-          </div>
-        </div>
 
-        <div className="kpi-card">
-          <div className="kpi-title">Participating Silos</div>
-          <div className="kpi-value-row">
-            <div className="kpi-value" style={{ color: 'var(--accent-green)' }}>
-              {currentExp?.num_clients || 2}
+            <div className="kpi-card">
+              <div className="kpi-title">Dice Score (Similarity)</div>
+              <div className="kpi-value-row">
+                <div className="kpi-value" style={{ color: 'var(--accent-purple)' }}>{latestDice}</div>
+                <div className="kpi-trend positive">↑ Improving</div>
+              </div>
             </div>
-            <div className="kpi-trend positive">100% Online</div>
-          </div>
-        </div>
-      </div>
 
-      {/* Main Charts & Metadata Layout */}
-      <div className="charts-grid">
-        {/* Recharts Live Metrics Panel */}
+            <div className="kpi-card">
+              <div className="kpi-title">Participating Silos</div>
+              <div className="kpi-value-row">
+                <div className="kpi-value" style={{ color: 'var(--accent-green)' }}>{currentExp?.num_clients || 3}</div>
+                <div className="kpi-trend positive">100% Online</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="charts-grid">
+            <div className="panel-card">
+              <div className="panel-header">
+                <div className="panel-title">Real-time Convergence Curves (Dice & Loss)</div>
+                <div className="tag">LIVE TELEMETRY</div>
+              </div>
+              <div style={{ width: '100%', height: 320 }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={metrics}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
+                    <XAxis dataKey="round_number" stroke="#64748b" tick={{ fill: '#94a3b8' }} />
+                    <YAxis stroke="#64748b" tick={{ fill: '#94a3b8' }} domain={[0, 1]} />
+                    <Tooltip contentStyle={{ backgroundColor: '#1e293b', borderRadius: '0.75rem' }} />
+                    <Legend />
+                    <Line type="monotone" dataKey="training_loss" stroke="#38bdf8" name="Training Loss" strokeWidth={3} />
+                    <Line type="monotone" dataKey="dice_score" stroke="#c084fc" name="Dice Score" strokeWidth={3} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            <div className="panel-card">
+              <div className="panel-header">
+                <div className="panel-title">Active Experiment Specs</div>
+                <div className="tag">{expStatus}</div>
+              </div>
+              <div className="info-list">
+                <div className="info-item"><span className="info-key">Experiment ID</span><span className="info-value">{currentExp?.experiment_id || 'default'}</span></div>
+                <div className="info-item"><span className="info-key">Strategy</span><span className="info-value">{currentExp?.strategy_name || 'FedAvg'}</span></div>
+                <div className="info-item"><span className="info-key">Learning Rate</span><span className="info-value">{currentExp?.learning_rate || '1e-4'}</span></div>
+                <div className="info-item"><span className="info-key">Batch Size / Epochs</span><span className="info-value">{currentExp?.batch_size || 2} / {currentExp?.local_epochs || 1}</span></div>
+                <div className="info-item"><span className="info-key">Random Seed</span><span className="info-value">{currentExp?.seed || 42}</span></div>
+                <div className="info-item"><span className="info-key">Differential Privacy</span><span className="info-value">{currentExp?.dp_enabled ? 'Opacus DP' : 'Disabled'}</span></div>
+                <div className="info-item"><span className="info-key">Homomorphic Enc.</span><span className="info-value">{currentExp?.he_enabled ? 'TenSEAL CKKS' : 'Disabled'}</span></div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* TAB 2: CHECKPOINT REGISTRY */}
+      {activeTab === 'checkpoints' && (
         <div className="panel-card">
           <div className="panel-header">
-            <div className="panel-title">
-              <div className="panel-title-icon"></div>
-              Real-time Convergence Curves
-            </div>
-            <div className="tag">LIVE TELEMETRY STREAM</div>
+            <div className="panel-title">Checkpoint Registry</div>
+            <div className="tag">INDEXED STATE WEIGHTS</div>
           </div>
-
-          <div style={{ width: '100%', height: 350 }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={metrics} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-                <XAxis
-                  dataKey="round_number"
-                  stroke="#64748b"
-                  tick={{ fill: '#94a3b8' }}
-                  label={{ value: 'FL Round Number', position: 'insideBottom', offset: -5, fill: '#64748b' }}
-                />
-                <YAxis stroke="#64748b" tick={{ fill: '#94a3b8' }} domain={[0, 1]} />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: '#1e293b',
-                    borderColor: 'rgba(255,255,255,0.1)',
-                    borderRadius: '0.75rem',
-                    color: '#f8fafc',
-                    boxShadow: '0 10px 25px rgba(0,0,0,0.5)'
-                  }}
-                />
-                <Legend wrapperStyle={{ paddingTop: '10px' }} />
-                <Line
-                  type="monotone"
-                  dataKey="training_loss"
-                  stroke="#38bdf8"
-                  name="Training Loss"
-                  strokeWidth={3}
-                  dot={{ r: 5, fill: '#38bdf8' }}
-                  activeDot={{ r: 8 }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="dice_score"
-                  stroke="#c084fc"
-                  name="Dice Score"
-                  strokeWidth={3}
-                  dot={{ r: 5, fill: '#c084fc' }}
-                  activeDot={{ r: 8 }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>Checkpoint ID</th>
+                <th>Strategy</th>
+                <th>Round / Epoch</th>
+                <th>Dice</th>
+                <th>Loss</th>
+                <th>SHA-256 Hash</th>
+                <th>Timestamp</th>
+              </tr>
+            </thead>
+            <tbody>
+              {checkpoints.map((c) => (
+                <tr key={c.checkpoint_id}>
+                  <td><code>{c.checkpoint_id}</code></td>
+                  <td>{c.strategy}</td>
+                  <td>{c.round ? `Round ${c.round}` : `Epoch ${c.epoch}`}</td>
+                  <td style={{ color: 'var(--accent-purple)', fontWeight: 'bold' }}>{c.dice?.toFixed(4)}</td>
+                  <td style={{ color: 'var(--accent-cyan)' }}>{c.loss?.toFixed(4)}</td>
+                  <td><code>{c.file_hash?.slice(0, 12)}...</code></td>
+                  <td>{c.timestamp}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
+      )}
 
-        {/* Experiment Specs & Hyperparameters Panel */}
+      {/* TAB 3: BENCHMARK EXPLORER */}
+      {activeTab === 'benchmarks' && (
         <div className="panel-card">
           <div className="panel-header">
-            <div className="panel-title">
-              <div className="panel-title-icon" style={{ backgroundColor: 'var(--accent-purple)' }}></div>
-              Experiment Management
-            </div>
-            <div className="tag">{expStatus}</div>
+            <div className="panel-title">Benchmark Suite Leaderboard ({currentBench?.benchmark_id || 'bm_suite'})</div>
+            <div className="tag">RANKED MATRIX SWEEPS</div>
           </div>
-
-          <div className="info-list">
-            <div className="info-item">
-              <span className="info-key">Experiment ID</span>
-              <span className="info-value">{currentExp?.experiment_id || 'default'}</span>
-            </div>
-            <div className="info-item">
-              <span className="info-key">Lifecycle Status</span>
-              <span className="info-value" style={{ color: expStatus === 'COMPLETED' ? 'var(--accent-green)' : 'var(--accent-cyan)' }}>
-                {expStatus}
-              </span>
-            </div>
-            <div className="info-item">
-              <span className="info-key">Strategy</span>
-              <span className="info-value">{currentExp?.strategy_name || 'FedAvg'}</span>
-            </div>
-            <div className="info-item">
-              <span className="info-key">Learning Rate</span>
-              <span className="info-value">{currentExp?.learning_rate || '1e-4'}</span>
-            </div>
-            <div className="info-item">
-              <span className="info-key">Batch Size / Epochs</span>
-              <span className="info-value">{currentExp?.batch_size || 2} / {currentExp?.local_epochs || 1}</span>
-            </div>
-            <div className="info-item">
-              <span className="info-key">Random Seed</span>
-              <span className="info-value">{currentExp?.seed || 42}</span>
-            </div>
-            <div className="info-item">
-              <span className="info-key">Differential Privacy</span>
-              <span className="info-value">{currentExp?.dp_enabled ? 'Enabled' : 'Disabled (Standard)'}</span>
-            </div>
-            <div className="info-item">
-              <span className="info-key">Homomorphic Enc.</span>
-              <span className="info-value">{currentExp?.he_enabled ? 'Enabled' : 'Disabled (Standard)'}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Benchmark Suite Leaderboard Table */}
-      {leaderboard.length > 0 && (
-        <div className="panel-card" style={{ marginBottom: '1.5rem' }}>
-          <div className="panel-header">
-            <div className="panel-title">
-              <div className="panel-title-icon" style={{ backgroundColor: 'var(--accent-cyan)' }}></div>
-              Benchmark Leaderboard ({currentBench?.benchmark_id || 'bm_suite'})
-            </div>
-            <div className="tag">TOP PERFORMING RUNS</div>
-          </div>
-
           <table className="data-table">
             <thead>
               <tr>
@@ -335,11 +390,7 @@ export default function App() {
             <tbody>
               {leaderboard.map((row) => (
                 <tr key={row.experiment_id}>
-                  <td>
-                    <span className="node-badge" style={{ backgroundColor: row.rank === 1 ? 'rgba(52, 211, 153, 0.2)' : 'rgba(56, 189, 248, 0.08)' }}>
-                      #{row.rank}
-                    </span>
-                  </td>
+                  <td><span className="node-badge">#{row.rank}</span></td>
                   <td>{row.experiment_id}</td>
                   <td>{row.strategy_name}</td>
                   <td>{row.partition_strategy}</td>
@@ -347,11 +398,7 @@ export default function App() {
                   <td style={{ color: 'var(--accent-purple)', fontWeight: 'bold' }}>{row.best_dice}</td>
                   <td style={{ color: 'var(--accent-cyan)' }}>{row.avg_loss}</td>
                   <td>{row.runtime_sec}s</td>
-                  <td>
-                    <span style={{ color: row.status === 'completed' ? 'var(--accent-green)' : 'var(--accent-amber)' }}>
-                      ● {row.status.toUpperCase()}
-                    </span>
-                  </td>
+                  <td><span style={{ color: row.status === 'completed' ? 'var(--accent-green)' : 'var(--accent-amber)' }}>● {row.status.toUpperCase()}</span></td>
                 </tr>
               ))}
             </tbody>
@@ -359,77 +406,76 @@ export default function App() {
         </div>
       )}
 
-      {/* Hospital Nodes Table */}
-      <div className="panel-card">
-        <div className="panel-header">
-          <div className="panel-title">
-            <div className="panel-title-icon" style={{ backgroundColor: 'var(--accent-green)' }}></div>
-            Hospital Client Silos
+      {/* TAB 4: REPRODUCIBILITY & MLFLOW */}
+      {activeTab === 'reproducibility' && (
+        <div className="charts-grid">
+          <div className="panel-card">
+            <div className="panel-header">
+              <div className="panel-title">Git & Software Metadata</div>
+              <div className="tag">REPRODUCIBILITY</div>
+            </div>
+            <div className="info-list">
+              <div className="info-item"><span className="info-key">Git Branch</span><span className="info-value"><code>{reproducibility?.git?.git_branch}</code></span></div>
+              <div className="info-item"><span className="info-key">Git Commit</span><span className="info-value"><code>{reproducibility?.git?.git_commit}</code></span></div>
+              <div className="info-item"><span className="info-key">Python Version</span><span className="info-value">{reproducibility?.dependencies?.python_version}</span></div>
+              <div className="info-item"><span className="info-key">PyTorch Version</span><span className="info-value">{reproducibility?.dependencies?.torch_version}</span></div>
+              <div className="info-item"><span className="info-key">MONAI Version</span><span className="info-value">{reproducibility?.dependencies?.monai_version}</span></div>
+              <div className="info-item"><span className="info-key">Flower Version</span><span className="info-value">{reproducibility?.dependencies?.flower_version}</span></div>
+            </div>
           </div>
-          <div className="tag">{currentExp?.num_clients || 2} SILOS REGISTERED</div>
-        </div>
 
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th>Hospital ID</th>
-              <th>Node Name</th>
-              <th>Status</th>
-              <th>Latency</th>
-              <th>Local Dataset</th>
-              <th>Engine</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>
-                <span className="node-badge">hospital_alpha</span>
-              </td>
-              <td>Hospital Alpha (Silo A)</td>
-              <td>
-                <div className="status-indicator">
-                  <div className="dot green"></div>
-                  <span>ACTIVE / TRAINING</span>
-                </div>
-              </td>
-              <td>12 ms</td>
-              <td>BraTS NIfTI (Dirichlet non-IID)</td>
-              <td>PyTorch 2.x MONAI</td>
-            </tr>
-            <tr>
-              <td>
-                <span className="node-badge">hospital_beta</span>
-              </td>
-              <td>Hospital Beta (Silo B)</td>
-              <td>
-                <div className="status-indicator">
-                  <div className="dot green"></div>
-                  <span>ACTIVE / TRAINING</span>
-                </div>
-              </td>
-              <td>18 ms</td>
-              <td>BraTS NIfTI (Dirichlet non-IID)</td>
-              <td>PyTorch 2.x MONAI</td>
-            </tr>
-            <tr>
-              <td>
-                <span className="node-badge">hospital_gamma</span>
-              </td>
-              <td>Hospital Gamma (Silo C)</td>
-              <td>
-                <div className="status-indicator">
-                  <div className="dot green"></div>
-                  <span>ACTIVE / TRAINING</span>
-                </div>
-              </td>
-              <td>15 ms</td>
-              <td>BraTS NIfTI (Dirichlet non-IID)</td>
-              <td>PyTorch 2.x MONAI</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+          <div className="panel-card">
+            <div className="panel-header">
+              <div className="panel-title">Hardware Context & Tracking Servers</div>
+              <div className="tag">ENVIRONMENT</div>
+            </div>
+            <div className="info-list">
+              <div className="info-item"><span className="info-key">Operating System</span><span className="info-value">{reproducibility?.hardware?.os_platform}</span></div>
+              <div className="info-item"><span className="info-key">CPU Cores / Arch</span><span className="info-value">{reproducibility?.hardware?.cpu_count} Cores ({reproducibility?.hardware?.cpu_arch})</span></div>
+              <div className="info-item"><span className="info-key">System RAM</span><span className="info-value">{reproducibility?.hardware?.ram_gb} GB</span></div>
+              <div className="info-item"><span className="info-key">CUDA Available</span><span className="info-value">{reproducibility?.hardware?.cuda_available ? 'Yes' : 'No (CPU Mode)'}</span></div>
+              <div className="info-item"><span className="info-key">MLflow URI</span><span className="info-value"><code>{mlflowStatus?.tracking_uri}</code></span></div>
+              <div className="info-item"><span className="info-key">TensorBoard Logdir</span><span className="info-value"><code>{tbStatus?.logdir}</code></span></div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 5: ARTIFACT VIEWER */}
+      {activeTab === 'artifacts' && (
+        <div className="panel-card">
+          <div className="panel-header">
+            <div className="panel-title">Discovered Research Artifacts</div>
+            <div className="tag">EXPORT ENGINE OUTPUTS</div>
+          </div>
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>Artifact Name</th>
+                <th>File Path</th>
+                <th>Type</th>
+                <th>Size (Bytes)</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {artifacts.map((a, i) => (
+                <tr key={i}>
+                  <td><b>{a.name}</b></td>
+                  <td><code>{a.path}</code></td>
+                  <td><span className="node-badge">{a.extension.toUpperCase()}</span></td>
+                  <td>{a.size_bytes.toLocaleString()} B</td>
+                  <td>
+                    <a href={`/api/v1/artifacts/download?path=${encodeURIComponent(a.path)}`} target="_blank" rel="noreferrer" style={{ color: '#38bdf8', fontWeight: 'bold' }}>
+                      Download ↓
+                    </a>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }
-

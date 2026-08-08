@@ -1,0 +1,18 @@
+{
+  "checkpoint_id": "chk_e2e_milestone_j_1_1786210497",
+  "file_path": "/Users/siddhant_patil/Projects/FedMed/checkpoints/last_model.pth",
+  "experiment_id": "e2e_milestone_j",
+  "benchmark_id": "standalone",
+  "strategy": "CentralizedBaseline",
+  "epoch": 1,
+  "round": null,
+  "dice": 0.012794296878520933,
+  "loss": 1.0333800315856934,
+  "privacy_settings": {
+    "dp_enabled": false,
+    "he_enabled": false
+  },
+  "config": {},
+  "file_hash": "8282643b6943aa60ca9b38d708d59eaea10437cd7941acdecaa3d00523d9b717",
+  "timestamp": "2026-08-08T17:34:57Z"
+}

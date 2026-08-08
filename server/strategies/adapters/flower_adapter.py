@@ -25,6 +25,9 @@ from flwr.server.client_proxy import ClientProxy
 import requests
 
 from server.strategies.base import BaseStrategy, EvaluateResult, FitResult
+from utils.mlflow_tracker import MLflowTracker
+from utils.tensorboard_logger import TensorBoardLogger
+from utils.checkpoint_registry import get_checkpoint_registry
 
 logger = logging.getLogger(__name__)
 
@@ -47,6 +50,20 @@ class FlowerStrategyAdapter(fl.server.strategy.Strategy):
         self.current_round = 0
         self.best_dice_score = 0.0
         self.best_round = 0
+
+        # Initialize Milestone J research trackers
+        meta = self.strategy.get_metadata()
+        self.mlflow_tracker = MLflowTracker(experiment_name="FedMed_v2_Research")
+        self.mlflow_tracker.start_run(run_name=f"FL_{meta.name}_{experiment_id}", tags={"strategy": meta.name, "type": "federated"})
+        self.mlflow_tracker.log_params({
+            "experiment_id": experiment_id,
+            "strategy": meta.name,
+            "min_fit_clients": getattr(strategy, "min_fit_clients", 2),
+            "min_available_clients": getattr(strategy, "min_available_clients", 2),
+        })
+
+        self.tb_logger = TensorBoardLogger(experiment_id=experiment_id)
+        self.ckpt_registry = get_checkpoint_registry()
 
     def initialize_parameters(self, client_manager: fl.server.client_manager.ClientManager) -> Optional[Parameters]:
         """Initialize parameters via underlying strategy or return None."""
@@ -147,6 +164,7 @@ class FlowerStrategyAdapter(fl.server.strategy.Strategy):
 
         avg_loss = float(metrics.get("training_loss", 0.0))
         avg_dice = float(metrics.get("dice_score", 0.0))
+        iou_score = float(metrics.get("iou_score", 0.0))
 
         if avg_dice > self.best_dice_score:
             self.best_dice_score = avg_dice
@@ -158,6 +176,35 @@ class FlowerStrategyAdapter(fl.server.strategy.Strategy):
             f"avg_loss: {avg_loss:.4f}, avg_dice: {avg_dice:.4f}, "
             f"time: {aggregation_time:.2f}s, hospitals: {hospital_ids}"
         )
+
+        # Milestone J Loggers & Registries
+        self.tb_logger.log_round_metrics(
+            global_step=server_round,
+            training_loss=avg_loss,
+            dice=avg_dice,
+            iou=iou_score,
+            aggregation_time_sec=aggregation_time,
+        )
+        self.mlflow_tracker.log_metrics({
+            "train_loss": avg_loss,
+            "dice": avg_dice,
+            "iou": iou_score,
+            "aggregation_time_sec": aggregation_time,
+        }, step=server_round)
+
+        # Checkpoint registration
+        try:
+            self.ckpt_registry.save_checkpoint(
+                model_state_dict={"parameters": aggregated_ndarrays},
+                experiment_id=self.experiment_id,
+                filename=f"fl_round_{server_round}.pth",
+                strategy=meta.name,
+                round=server_round,
+                dice=avg_dice,
+                loss=avg_loss,
+            )
+        except Exception as e:
+            logger.warning(f"Failed to record checkpoint for round {server_round}: {e}")
 
         # Post metrics to Dashboard API
         self._report_metrics(server_round, avg_loss, avg_dice, hospital_ids)

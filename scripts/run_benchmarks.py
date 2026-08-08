@@ -25,6 +25,8 @@ from datetime import datetime
 from typing import Any, Dict, List, Tuple
 
 from configs.loader import load_config, AppConfig, ConfigValidationError
+from utils.export_engine import ExportEngine
+from utils.mlflow_tracker import MLflowTracker
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - [BENCHMARK] - %(message)s")
 logger = logging.getLogger("benchmark")
@@ -159,61 +161,18 @@ def generate_benchmark_artifacts(
     """Generates summary.json, metrics.csv, leaderboard.csv, and comparison.md."""
     os.makedirs(output_dir, exist_ok=True)
 
-    # 1. Leaderboard CSV
-    leaderboard_csv = os.path.join(output_dir, "leaderboard.csv")
-    results_sorted = sorted(results, key=lambda x: x["best_dice"], reverse=True)
-    
-    with open(leaderboard_csv, "w", newline="") as f:
-        writer = csv.writer(f)
-        writer.writerow(["Rank", "Experiment ID", "Strategy", "Partition", "Seed", "Best Dice", "Avg Loss", "Convergence Round", "Runtime (s)", "Status"])
-        for rank, r in enumerate(results_sorted, start=1):
-            writer.writerow([
-                rank, r["experiment_id"], r["strategy_name"], r["partition_strategy"],
-                r["seed"], r["best_dice"], r["avg_loss"], r["convergence_round"], r["runtime_sec"], r["status"]
-            ])
-
-    # 2. Metrics CSV
-    metrics_csv = os.path.join(output_dir, "metrics.csv")
-    with open(metrics_csv, "w", newline="") as f:
-        writer = csv.writer(f)
-        writer.writerow(["Experiment ID", "Strategy", "Partition", "Best Dice", "Avg Loss", "Runtime (s)"])
-        for r in results:
-            writer.writerow([r["experiment_id"], r["strategy_name"], r["partition_strategy"], r["best_dice"], r["avg_loss"], r["runtime_sec"]])
-
-    # 3. Summary JSON
-    summary_json = os.path.join(output_dir, "summary.json")
-    best_run = results_sorted[0] if results_sorted else {}
-    summary_data = {
-        "benchmark_id": benchmark_id,
-        "name": name,
-        "timestamp": datetime.utcnow().isoformat(),
-        "total_experiments": len(results),
-        "completed_experiments": sum(1 for r in results if r["status"] == "completed"),
-        "best_experiment_id": best_run.get("experiment_id"),
-        "best_dice_score": best_run.get("best_dice"),
-        "average_dice_score": round(sum(r["best_dice"] for r in results) / max(len(results), 1), 4),
-    }
-    with open(summary_json, "w") as f:
-        json.dump(summary_data, f, indent=2)
-
-    # 4. Comparison Markdown Report
-    comparison_md = os.path.join(output_dir, "comparison.md")
-    with open(comparison_md, "w") as f:
-        f.write(f"# Benchmark Results Report: {name}\n\n")
-        f.write(f"**Benchmark ID:** `{benchmark_id}`  \n")
-        f.write(f"**Total Experiments:** {len(results)}  \n")
-        f.write(f"**Best Performing Strategy:** `{best_run.get('strategy_name')}` (Dice: `{best_run.get('best_dice')}`)  \n\n")
-        f.write("## Leaderboard Table\n\n")
-        f.write("| Rank | Strategy | Partition | Seed | Best Dice | Avg Loss | Runtime (s) |\n")
-        f.write("| :---: | :--- | :--- | :---: | :---: | :---: | :---: |\n")
-        for rank, r in enumerate(results_sorted, start=1):
-            f.write(f"| {rank} | `{r['strategy_name']}` | `{r['partition_strategy']}` | {r['seed']} | **{r['best_dice']}** | {r['avg_loss']} | {r['runtime_sec']}s |\n")
+    # Delegate multi-format (CSV, JSON, Markdown, PDF) generation to ExportEngine
+    exporter = ExportEngine(output_dir=os.path.dirname(output_dir))
+    files = exporter.export_benchmark_suite(
+        benchmark_id=benchmark_id,
+        name=name,
+        results=results,
+        custom_output_dir=output_dir,
+    )
 
     logger.info(f"Artifacts successfully generated in '{output_dir}':")
-    logger.info(f"  - {leaderboard_csv}")
-    logger.info(f"  - {metrics_csv}")
-    logger.info(f"  - {summary_json}")
-    logger.info(f"  - {comparison_md}")
+    for fmt, pth in files.items():
+        logger.info(f"  - [{fmt.upper()}] {pth}")
 
 
 def main():
