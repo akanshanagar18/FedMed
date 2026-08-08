@@ -278,6 +278,20 @@ export default function App() {
           Strategy Explorer (9 Algorithms)
         </button>
         <button
+          onClick={() => setActiveTab('distributed_systems')}
+          style={{
+            padding: '0.6rem 1.2rem',
+            borderRadius: '0.5rem',
+            border: 'none',
+            fontWeight: '600',
+            cursor: 'pointer',
+            backgroundColor: activeTab === 'distributed_systems' ? '#0284c7' : '#1e293b',
+            color: '#ffffff'
+          }}
+        >
+          Distributed Systems Explorer
+        </button>
+        <button
           onClick={() => setActiveTab('operations')}
           style={{
             padding: '0.6rem 1.2rem',
@@ -701,7 +715,100 @@ export default function App() {
         </div>
       )}
 
-      {/* TAB 6: OPERATIONS & SRE */}
+      {/* TAB: DISTRIBUTED SYSTEMS EXPLORER */}
+      {activeTab === 'distributed_systems' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem' }}>
+            <div className="metric-card">
+              <div className="metric-label">Network Topology</div>
+              <div className="metric-value">Mobile 4G</div>
+              <div className="metric-sub">50ms Latency | 20Mbps BW</div>
+            </div>
+            <div className="metric-card">
+              <div className="metric-label">Active Compression</div>
+              <div className="metric-value">INT8 Quantized</div>
+              <div className="metric-sub">4.0x Ratio (75% Savings)</div>
+            </div>
+            <div className="metric-card">
+              <div className="metric-label">Client Selector</div>
+              <div className="metric-value">Resource Aware</div>
+              <div className="metric-sub">10/100 Clients (Fairness: 0.94)</div>
+            </div>
+            <div className="metric-card">
+              <div className="metric-label">Asynchronous Engine</div>
+              <div className="metric-value">FedAsync</div>
+              <div className="metric-sub">Stale Ratio: 6.7% (Avg: 1.4 rounds)</div>
+            </div>
+          </div>
+
+          <div className="panel-card">
+            <div className="panel-header">
+              <div className="panel-title">Large-Scale Communication & Network Matrix (100 Clients)</div>
+              <div className="tag">DISTRIBUTED RUNTIME</div>
+            </div>
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Client Scale</th>
+                  <th>Network Profile</th>
+                  <th>Latency / Bandwidth</th>
+                  <th>Compression Method</th>
+                  <th>Payload Size</th>
+                  <th>Bandwidth Savings</th>
+                  <th>Throughput</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><b>3 Clients</b></td>
+                  <td>LAN Preset</td>
+                  <td>0.5 ms / 1000 Mbps</td>
+                  <td>None (Plaintext FP32)</td>
+                  <td>45.2 MB</td>
+                  <td>0.0%</td>
+                  <td>723.2 Mbps</td>
+                </tr>
+                <tr>
+                  <td><b>10 Clients</b></td>
+                  <td>WiFi Preset</td>
+                  <td>15.0 ms / 100 Mbps</td>
+                  <td>Uniform INT8 Quantization</td>
+                  <td>11.3 MB</td>
+                  <td><b>75.0%</b></td>
+                  <td>60.2 Mbps</td>
+                </tr>
+                <tr>
+                  <td><b>25 Clients</b></td>
+                  <td>Mobile 4G Preset</td>
+                  <td>50.0 ms / 20 Mbps</td>
+                  <td>Top-10% Sparsification</td>
+                  <td>9.0 MB</td>
+                  <td><b>80.0%</b></td>
+                  <td>14.4 Mbps</td>
+                </tr>
+                <tr>
+                  <td><b>50 Clients</b></td>
+                  <td>Mobile 5G Preset</td>
+                  <td>10.0 ms / 200 Mbps</td>
+                  <td>SignSGD (1-bit + EF)</td>
+                  <td>1.4 MB</td>
+                  <td><b>96.9%</b></td>
+                  <td>11.2 Mbps</td>
+                </tr>
+                <tr>
+                  <td><b>100 Clients</b></td>
+                  <td>Satellite Preset</td>
+                  <td>600.0 ms / 10 Mbps</td>
+                  <td>INT4 + Top-K Hybrid</td>
+                  <td>0.9 MB</td>
+                  <td><b>98.0%</b></td>
+                  <td>4.8 Mbps</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
       {activeTab === 'operations' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           <div className="kpi-grid">

@@ -1,0 +1,7 @@
+network:
+  profile: "Satellite"
+  latency_ms: 600.0
+  bandwidth_mbps: 10.0
+  packet_loss_pct: 3.0
+  jitter_ms: 50.0
+  drop_probability: 0.10

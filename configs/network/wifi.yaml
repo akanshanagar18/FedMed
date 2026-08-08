@@ -1,0 +1,7 @@
+network:
+  profile: "WiFi"
+  latency_ms: 15.0
+  bandwidth_mbps: 100.0
+  packet_loss_pct: 0.1
+  jitter_ms: 2.0
+  drop_probability: 0.01
