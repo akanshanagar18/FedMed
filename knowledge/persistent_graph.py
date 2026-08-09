@@ -157,9 +157,15 @@ class PersistentKnowledgeGraph:
     Persistent Knowledge Graph Manager supporting time-travel queries and versioning.
     """
 
-    def __init__(self, driver: Optional[GraphStoreDriver] = None):
-        self.driver = driver or SQLiteGraphDriver()
+    def __init__(self, driver: Optional[GraphStoreDriver] = None, db_path: Optional[str] = None):
+        if driver is None:
+            if db_path is not None:
+                driver = SQLiteGraphDriver(db_path=db_path)
+            else:
+                driver = SQLiteGraphDriver()
+        self.driver = driver
         self._seed_default_persistent_nodes()
+
 
     def _seed_default_persistent_nodes(self):
         ts = time.time()

@@ -10,8 +10,10 @@ import pytest
 from knowledge.persistent_graph import PersistentKnowledgeGraph
 
 
-def test_persistent_knowledge_graph_operations():
-    kg = PersistentKnowledgeGraph()
+def test_persistent_knowledge_graph_operations(tmp_path):
+    db_file = str(tmp_path / "test_kg.db")
+    kg = PersistentKnowledgeGraph(db_path=db_file)
+
     t_start = time.time()
 
     kg.add_node("node_test_1", "Model", "Test Model", {"accuracy": 0.85})

@@ -46,8 +46,24 @@ def train_one_epoch(
         images = batch["image"].to(device)
         masks = batch.get("label", batch.get("mask")).to(device)
 
+        # Adapt channel dimension if model expected input channels differ from input batch
+        expected_in_channels = None
+        if hasattr(model, "encoder1") and hasattr(model.encoder1, "block"):
+            expected_in_channels = model.encoder1.block[0].weight.shape[1]
+        elif hasattr(model, "in_channels"):
+            expected_in_channels = model.in_channels
+        elif hasattr(model, "model") and hasattr(model.model, "in_channels"):
+            expected_in_channels = model.model.in_channels
+
+        if expected_in_channels == 4 and images.shape[1] == 1:
+            images = images.repeat(1, 4, 1, 1, 1)
+        elif expected_in_channels == 1 and images.shape[1] == 4:
+            images = images[:, :1, ...]
+
         optimizer.zero_grad()
         predictions = model(images)
+
+
 
         # Ensure mask shape matches predictions for loss computation
         if masks.shape != predictions.shape:

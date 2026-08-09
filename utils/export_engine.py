@@ -111,6 +111,8 @@ class ExportEngine:
                     r.get("status", "completed"),
                 ])
         generated_files["leaderboard_csv"] = leaderboard_csv_path
+        generated_files["csv"] = leaderboard_csv_path
+
 
         # 3. Runtime CSV
         runtime_csv_path = os.path.join(target_dir, "runtime.csv")
@@ -257,11 +259,14 @@ class ExportEngine:
         with open(markdown_path, "w", encoding="utf-8") as f:
             f.write("\n".join(md_lines))
         generated_files["markdown_report"] = markdown_path
+        generated_files["markdown"] = markdown_path
 
         # 9. Benchmark PDF Report (benchmark_report.pdf)
         pdf_path = os.path.join(target_dir, "benchmark_report.pdf")
         self._generate_pdf_report(pdf_path, benchmark_id, name, summary_data, strategy_ranks, results_sorted, repro_meta, plot_paths)
         generated_files["pdf_report"] = pdf_path
+        generated_files["pdf"] = pdf_path
+
 
         logger.info(f"Exported publication benchmark suite to '{target_dir}'")
         return generated_files

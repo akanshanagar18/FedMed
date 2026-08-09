@@ -1,0 +1,12 @@
+{
+  "certificate_id": "gov_cert_1786280822",
+  "model_name": "brats_monai_3d_unet",
+  "version": "v2.1.0-demo",
+  "torchscript_path": "artifacts/exports/brats_monai_3d_unet_v2.1.0-demo_1786280822.pt",
+  "checksum_sha256": "579982920a50cb93a572c02f7cce2dec7d5ae4a7b76d03230eafff3d88077dab",
+  "hipaa_compliant": true,
+  "gdpr_compliant": true,
+  "zero_leakage_verified": true,
+  "privacy_guarantee": "Differential Privacy (Opacus) + TenSEAL CKKS Homomorphic Encryption",
+  "issued_at": 1786280822.6725812
+}

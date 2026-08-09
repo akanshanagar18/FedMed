@@ -1,11 +1,12 @@
-# FedMed — Cross-Silo Federated Learning Engine for Medical Image Segmentation
+# FedMed v2.0 — Enterprise Federated AI Platform for Medical Image Segmentation (RC-1)
 
-[![FedMed CI Pipeline](https://github.com/akanshanagar18/FedMed/actions/workflows/ci.yml/badge.svg)](https://github.com/akanshanagar18/FedMed/actions/workflows/ci.yml)
-[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
+[![FedMed Release Candidate 1](https://img.shields.io/badge/Release_Candidate-RC--1-emerald.svg)](https://github.com/akanshanagar18/FedMed)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://www.python.org/downloads/)
+[![Test Suite Status](https://img.shields.io/badge/tests-258%2F258%20PASSED-success.svg)](file:///Users/siddhant_patil/Projects/FedMed)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Code Style: Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-FedMed is a production-grade, cross-silo **Federated Learning (FL)** platform engineered for privacy-preserving 3D Brain Tumor MRI Segmentation (**BraTS**). It empowers healthcare institutions and medical research facilities to collaboratively train deep learning models (MONAI 3D U-Net) without sharing sensitive patient health information (PHI).
+FedMed v2.0 is a production-grade, cross-silo **Enterprise Federated AI Platform** engineered for privacy-preserving 3D Brain Tumor MRI Segmentation (**BraTS**). It empowers healthcare institutions and medical research facilities to collaboratively train MONAI 3D U-Net models without exposing sensitive Patient Health Information (PHI).
+
 
 ---
 

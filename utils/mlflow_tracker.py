@@ -65,6 +65,11 @@ class MLflowTracker:
             if tags:
                 full_tags.update({str(k): str(v) for k, v in tags.items()})
 
+            if mlflow.active_run() and not nested:
+                try:
+                    mlflow.end_run()
+                except Exception:
+                    pass
             self.current_run = mlflow.start_run(run_name=run_name, tags=full_tags, nested=nested)
             logger.info(f"Started MLflow Run '{run_name}' (ID: {self.current_run.info.run_id})")
             return self.current_run
@@ -108,15 +113,12 @@ class MLflowTracker:
         if not self.is_active or not self.current_run:
             return
 
-        if not os.path.exists(local_path):
-            logger.warning(f"Cannot upload non-existent artifact path: '{local_path}'")
-            return
-
         try:
-            mlflow.log_artifact(local_path, artifact_path=artifact_path)
-            logger.info(f"Uploaded artifact '{local_path}' to MLflow.")
+            if os.path.exists(local_path):
+                mlflow.log_artifact(local_path, artifact_path=artifact_path)
+                logger.debug(f"Logged artifact '{local_path}' to MLflow.")
         except Exception as e:
-            logger.warning(f"Error uploading artifact '{local_path}' to MLflow: {e}")
+            logger.warning(f"Error logging artifact to MLflow: {e}")
 
     def log_artifacts(self, local_dir: str, artifact_path: Optional[str] = None) -> None:
         """Uploads an entire local directory of artifacts to MLflow artifact store."""

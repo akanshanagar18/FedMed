@@ -1,0 +1,12 @@
+{
+  "certificate_id": "gov_cert_1786283163",
+  "model_name": "test_brats_api",
+  "version": "v1.0-test",
+  "torchscript_path": "artifacts/exports/test_brats_api_v1.0-test_1786283163.pt",
+  "checksum_sha256": "ef33d2c709f890d8c1341972f666769f06ad6f161687570909a32ff10c92e139",
+  "hipaa_compliant": true,
+  "gdpr_compliant": true,
+  "zero_leakage_verified": true,
+  "privacy_guarantee": "Differential Privacy (Opacus) + TenSEAL CKKS Homomorphic Encryption",
+  "issued_at": 1786283163.922379
+}
