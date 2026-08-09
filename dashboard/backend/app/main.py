@@ -4,13 +4,13 @@ Module: dashboard.backend.app.main
 Purpose:
 FastAPI application entrypoint.
 Bootstraps configuration, middleware, error handlers, routers,
-lifespan events, and static file serving for the React dashboard frontend.
+lifespan events, security headers, and static file serving for the React dashboard frontend.
 """
 
 import os
 import logging
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Response
+from fastapi import FastAPI, Response, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 
@@ -40,11 +40,21 @@ def create_app() -> FastAPI:
     """Application factory for FastAPI."""
     app = FastAPI(
         title=settings.PROJECT_NAME,
-        version="2.0.0-rc1",
+        version="2.0.0",
         openapi_url=f"{settings.API_V1_STR}/openapi.json",
-        description="Monitoring backend API contract for FedMed.",
+        description="Enterprise Federated AI Operating System Backend API Contract for FedMed.",
         lifespan=lifespan,
     )
+
+    # Security Headers Middleware
+    @app.middleware("http")
+    async def add_security_headers(request: Request, call_next):
+        response = await call_next(request)
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["X-XSS-Protection"] = "1; mode=block"
+        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        return response
 
     # Register core middleware and exception handlers
     register_cors(app)

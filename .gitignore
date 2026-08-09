@@ -48,3 +48,9 @@ checkpoints/*.pth
 
 # Training artifacts
 *.tfevents.*
+artifacts/exports/*.pt
+artifacts/exports/*_cert.json
+.cache/
+certs/*.pem
+certs/*.crt
+certs/*.key

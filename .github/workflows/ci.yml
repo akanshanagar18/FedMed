@@ -1,41 +1,89 @@
-name: FedMed CI Pipeline
+name: FedMed Enterprise CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, feature/* ]
+    branches: [ main, master, "release/*", "feature/*" ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, master, "release/*" ]
 
 jobs:
-  test:
-    name: Execute Automated Test Suite
+  backend-test:
+    name: Backend Test Suite & OpenAPI Spec Validation
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Set up Python 3.10
+      - name: Set up Python 3.9
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: '3.9'
           cache: 'pip'
 
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install -e .
           pip install pytest pytest-cov httpx
+
+      - name: Verify OpenAPI Spec Generation
+        run: |
+          PYTHONPATH=dashboard/backend:. python3 -c "from app.main import app; spec = app.openapi(); assert bool(spec); print('OpenAPI spec generated cleanly with routes:', len(app.routes))"
 
       - name: Run Unit Tests
         run: |
-          pytest tests/unit/ -v -m unit
+          pytest tests/unit/ -v
 
       - name: Run Integration Tests
         run: |
-          pytest tests/integration/ -v -m integration
+          pytest tests/integration/ -v
 
-      - name: Run End-to-End Simulation Smoke Test
+      - name: Run E2E Tests
         run: |
-          pytest tests/e2e/ -v -m e2e
+          pytest tests/e2e/ -v
+
+  frontend-build:
+    name: Frontend Production Build & Asset Verification
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: dashboard/frontend/package-lock.json
+
+      - name: Install Frontend Dependencies
+        run: |
+          cd dashboard/frontend
+          npm ci
+
+      - name: Build React Dashboard
+        run: |
+          cd dashboard/frontend
+          npm run build
+
+  docker-build:
+    name: Docker Image Build Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Build Backend Docker Image
+        run: |
+          docker build -t fedmed-backend:ci -f docker/backend.Dockerfile .
+
+      - name: Build Dashboard Docker Image
+        run: |
+          docker build -t fedmed-dashboard:ci -f docker/dashboard.Dockerfile .
+
+      - name: Build Flower Server Docker Image
+        run: |
+          docker build -t fedmed-flower-server:ci -f docker/flower_server.Dockerfile .

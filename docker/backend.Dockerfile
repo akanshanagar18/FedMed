@@ -17,13 +17,7 @@ WORKDIR /app
 RUN useradd -m -u 1000 fedmeduser
 
 COPY --from=builder /root/.local /home/fedmeduser/.local
-COPY --chown=fedmeduser:fedmeduser dashboard/backend /app/dashboard/backend
-COPY --chown=fedmeduser:fedmeduser configs /app/configs
-COPY --chown=fedmeduser:fedmeduser privacy /app/privacy
-COPY --chown=fedmeduser:fedmeduser data /app/data
-COPY --chown=fedmeduser:fedmeduser model /app/model
-COPY --chown=fedmeduser:fedmeduser server /app/server
-COPY --chown=fedmeduser:fedmeduser client /app/client
+COPY --chown=fedmeduser:fedmeduser . /app
 
 ENV PATH=/home/fedmeduser/.local/bin:$PATH \
     PYTHONPATH=/app \
