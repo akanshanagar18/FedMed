@@ -90,42 +90,51 @@ FedMed/
 
 ---
 
-## 🚀 Quick Start: Running the Simulation
+## 🚀 Standardized Execution Entrypoints
 
-Execute the single-command production orchestrator from the repository root:
+All platform operations are standardized via `Makefile` from the repository root:
 
 ```bash
-# 1. Clone repository
-git clone https://github.com/akanshanagar18/FedMed.git
-cd FedMed
+# 1. Zero-Setup Enterprise Demo (Single Command)
+make demo             # Or: python3 demo.py
 
-# 2. Install dependencies
-pip install -r requirements.txt
-pip install -e .
+# 2. Launch FastAPI Backend Server (Port 8000)
+make backend          # Or: uvicorn app.main:app --app-dir dashboard/backend --port 8000
 
-# 3. Launch End-to-End Simulation
-python3 scripts/run_simulation.py
+# 3. Launch React Frontend Dev Server (Port 3000)
+make frontend         # Or: cd dashboard/frontend && npm run dev
+
+# 4. Execute Multi-Hospital Federated Learning Simulation
+make simulation       # Or: python3 scripts/run_simulation.py
+
+# 5. Launch Containerized Platform Stack via Docker Compose
+make compose          # Or: docker compose up --build -d
 ```
 
-### 🌐 Accessing the Live System
-Once launched, open your web browser to access:
-* **Live Dashboard UI:** `http://127.0.0.1:8000/`
+### 🌐 Accessing System Services
+Once launched, open your browser:
+* **Live Dashboard UI:** `http://127.0.0.1:8000/` (or `http://localhost:3000` in dev)
 * **Swagger API Docs:** `http://127.0.0.1:8000/docs`
 * **WebSocket Telemetry Stream:** `ws://127.0.0.1:8000/api/v1/telemetry/ws`
+* **MLflow Tracking UI:** `http://127.0.0.1:5000` (`make mlflow`)
+* **TensorBoard UI:** `http://127.0.0.1:6006` (`make tensorboard`)
 
 ---
 
 ## 🧪 Automated Testing & CI Pipeline
 
-Run the full automated test suite locally:
+Run the automated test suite from repository root:
 
 ```bash
-# Run unit and integration tests
-pytest tests/unit tests/integration
+# Run complete test suite (Unit, Integration, E2E)
+make test             # Or: pytest
 
-# Run end-to-end simulation smoke test
-pytest tests/e2e/test_simulation_e2e.py
+# Run specific test suites
+make test-unit        # Or: pytest tests/unit
+make test-integration # Or: pytest tests/integration
+make test-e2e         # Or: pytest tests/e2e
 ```
+
 
 ### GitHub Actions Integration
 Every push to `main` or feature branches automatically triggers `.github/workflows/ci.yml`, running unit, integration, and e2e smoke tests on Ubuntu environments.

@@ -3,7 +3,7 @@ Unit tests for node resilience state tracking logic.
 """
 
 import pytest
-from dashboard.backend.app.api.v1.endpoints.nodes import _NODE_REGISTRY, NodeHeartbeatRequest, record_node_heartbeat, get_hospital_nodes
+from app.api.v1.endpoints.nodes import _NODE_REGISTRY, NodeHeartbeatRequest, record_node_heartbeat, get_hospital_nodes
 
 
 def test_node_heartbeat_recording():

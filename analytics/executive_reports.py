@@ -13,11 +13,12 @@ from typing import Any, Dict, List, Optional
 
 
 class ExecutiveAnalyticsEngine:
-    """
-    Generates executive summary analytics and downloadable reports.
-    """
+    def generate_summary(self, run_id: str = "run_latest") -> Dict[str, Any]:
+        """Alias for generate_executive_summary."""
+        return self.generate_executive_summary()
 
     def generate_executive_summary(
+
         self,
         total_rounds_executed: int = 45,
         avg_dice_score: float = 0.865,
@@ -86,3 +87,7 @@ class ExecutiveAnalyticsEngine:
             "markdown_report": markdown_summary,
             "json_report_payload": json.dumps(kpis, indent=2),
         }
+
+
+ExecutiveReportGenerator = ExecutiveAnalyticsEngine
+

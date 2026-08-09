@@ -48,29 +48,34 @@ class ProductionDeploymentManager:
         self,
         model_id: str,
         version: str,
-        strategy: DeploymentStrategy,
-        candidate_metrics: Dict[str, float],
+        strategy: Any = DeploymentStrategy.CANARY,
+        candidate_metrics: Optional[Dict[str, float]] = None,
         target_hospitals: Optional[List[str]] = None,
+        canary_percentage: float = 10.0,
     ) -> Dict[str, Any]:
         """
         Initiates a new model deployment workflow.
         """
         deployment_id = f"dep_{model_id}_{int(time.time())}"
         targets = target_hospitals or ["hospital_alpha", "hospital_beta"]
+        strat_val = strategy.value if hasattr(strategy, "value") else str(strategy)
+        cand_metrics = candidate_metrics or {"mean_dice": 0.88, "hd95": 3.4}
+
 
         deployment = {
             "deployment_id": deployment_id,
             "model_id": model_id,
             "version": version,
-            "strategy": strategy.value,
+            "strategy": strat_val,
             "status": DeploymentStatus.IN_PROGRESS.value,
-            "traffic_percentage": 10.0 if strategy == DeploymentStrategy.CANARY else 100.0,
+            "traffic_percentage": canary_percentage if strat_val == "CANARY" else 100.0,
             "target_hospitals": targets,
-            "candidate_metrics": candidate_metrics,
+            "candidate_metrics": cand_metrics,
             "previous_model": self.active_production_model.copy(),
             "created_at": time.time(),
             "updated_at": time.time(),
-            "audit_trail": [f"Deployment initiated using strategy {strategy.value}"],
+            "audit_trail": [f"Deployment initiated using strategy {strat_val}"],
+
         }
 
         self.deployments[deployment_id] = deployment

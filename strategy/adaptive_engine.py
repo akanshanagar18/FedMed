@@ -17,13 +17,26 @@ class AdaptiveStrategySelector:
     Evaluates real-time training telemetry and automatically selects the optimal strategy.
     """
 
-    SUPPORTED_STRATEGIES = ["FedAvg", "FedProx", "FedNova", "FedAdam", "FedYogi", "Scaffold", "Mime"]
-
     def __init__(self, event_bus: Optional[EventBus] = None):
         self.event_bus = event_bus or global_event_bus
         self.adaptation_history: List[Dict[str, Any]] = []
 
+    def select_strategy(self, current_strategy: str = "FedAvg", dropout_rate: float = 0.0, drift_detected: bool = False, latency_variance: float = 0.0, participation_rate: float = 1.0, avg_latency_ms: float = 120.0, gradient_divergence: float = 0.05, drift_mmd: float = 0.042, privacy_epsilon: float = 2.5, node_dropouts: int = 0) -> tuple:
+        """Alias for evaluate_and_select_strategy."""
+        res = self.evaluate_and_select_strategy(
+            current_strategy=current_strategy,
+            participation_rate=participation_rate,
+            avg_latency_ms=avg_latency_ms,
+            gradient_divergence=gradient_divergence,
+            drift_mmd=drift_mmd,
+            privacy_epsilon=privacy_epsilon,
+            node_dropouts=node_dropouts,
+        )
+        return res["recommended_strategy"], res["rationale"]
+
+
     def evaluate_and_select_strategy(
+
         self,
         current_strategy: str,
         participation_rate: float,

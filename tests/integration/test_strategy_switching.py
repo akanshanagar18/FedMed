@@ -5,7 +5,7 @@ Integration tests for strategy switching via configuration and REST API exposure
 from fastapi.testclient import TestClient
 import pytest
 from configs.loader import load_config
-from dashboard.backend.app.main import app
+from app.main import app
 from server.strategies import FlowerStrategyAdapter, StrategyRegistry
 
 

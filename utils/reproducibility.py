@@ -142,6 +142,10 @@ def collect_reproducibility_metadata(
     return metadata
 
 
+get_system_reproducibility_metadata = collect_reproducibility_metadata
+
+
+
 def save_reproducibility_report(filepath: str, seed: int = 42, config: Optional[Dict[str, Any]] = None) -> str:
     """Saves reproducibility metadata snapshot to a JSON file."""
     metadata = collect_reproducibility_metadata(seed=seed, config=config)

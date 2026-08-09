@@ -5,12 +5,12 @@ Integration tests for FastAPI Backend API Endpoints & Services
 import pytest
 from datetime import datetime
 from fastapi.testclient import TestClient
-from dashboard.backend.app.main import app
-from dashboard.backend.app.database.session import Base, engine, SessionLocal, init_db
-from dashboard.backend.app.services.hospital import HospitalService
-from dashboard.backend.app.services.experiment import ExperimentService
-from dashboard.backend.app.services.benchmark import BenchmarkService
-from dashboard.backend.app.schemas.node import HospitalStatus
+from app.main import app
+from app.database.session import Base, engine, SessionLocal, init_db
+from app.services.hospital import HospitalService
+from app.services.experiment import ExperimentService
+from app.services.benchmark import BenchmarkService
+from app.schemas.node import HospitalStatus
 from common.schemas import Experiment, ExperimentStatus, Benchmark, BenchmarkStatus
 from server.flower_server import MetricsReporterStrategy
 

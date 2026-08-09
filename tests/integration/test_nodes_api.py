@@ -4,7 +4,7 @@ Integration test for REST API /api/v1/nodes endpoints.
 
 import pytest
 from fastapi.testclient import TestClient
-from dashboard.backend.app.main import app
+from app.main import app
 
 client = TestClient(app)
 

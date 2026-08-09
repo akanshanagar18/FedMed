@@ -15,6 +15,8 @@ from fastapi.responses import JSONResponse
 from app.schemas.responses import ErrorResponse
 
 
+
+
 class FedMedException(Exception):
     """Base exception for custom FedMed business logic errors."""
     def __init__(self, message: str, status_code: int = 400):

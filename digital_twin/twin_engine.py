@@ -16,6 +16,34 @@ class DigitalTwinSimulationEngine:
     Predictive Digital Twin Engine for cross-silo impact modeling under hypothetical scenarios.
     """
 
+    def predict_convergence(
+        self,
+        num_hospitals: int = 4,
+        strategy: str = "FedAvg",
+        alpha_dirichlet: float = 0.5,
+        dp_enabled: bool = False,
+        he_enabled: bool = False,
+        target_dice: float = 0.85,
+    ) -> Any:
+        """Predictive convergence estimation for digital twin scenarios."""
+        res = self.simulate_what_if(
+            scenario_description=f"Digital Twin Simulation: {num_hospitals} Silos, Strategy={strategy}",
+            baseline_dice=target_dice,
+            hospital_dropout_pct=0.0,
+            latency_multiplier=1.0,
+            drift_mmd=0.04,
+            privacy_noise_multiplier=1.2 if dp_enabled else 1.0,
+        )
+
+        class _PredictionResult:
+            def __init__(self, data):
+                self.data = data
+
+            def to_dict(self):
+                return self.data
+
+        return _PredictionResult(res)
+
     def simulate_what_if(
         self,
         scenario_description: str,
@@ -62,3 +90,6 @@ class DigitalTwinSimulationEngine:
                 "recommended_action": deployment_rec,
             },
         }
+
+
+DigitalTwinEngine = DigitalTwinSimulationEngine

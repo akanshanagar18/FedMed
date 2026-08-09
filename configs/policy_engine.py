@@ -10,7 +10,8 @@ Supports live policy reloads.
 
 import os
 import logging
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
+
 import yaml
 
 logger = logging.getLogger("policy_engine")
@@ -96,8 +97,23 @@ class EnterprisePolicyEngine:
     def get_sla_policy(self) -> Dict[str, Any]:
         return self.policies.get("sla", {})
 
-    def get_deployment_policy(self) -> Dict[str, Any]:
-        return self.policies.get("deployment", {})
+    def list_rules(self) -> List[Any]:
+        """Returns list of active policy rules."""
+        rules = []
+        class _PolicyRule:
+            def __init__(self, sec, k, v):
+                self.section = sec
+                self.key = k
+                self.value = v
+            def to_dict(self):
+                return {"section": self.section, "key": self.key, "value": self.value}
+
+        for sec, items in self.policies.items():
+            if isinstance(items, dict):
+                for k, v in items.items():
+                    rules.append(_PolicyRule(sec, k, v))
+        return rules
 
 
 global_policy_engine = EnterprisePolicyEngine()
+

@@ -183,8 +183,8 @@ class PersistentKnowledgeGraph:
 
     def query_as_of(self, timestamp: float) -> Dict[str, Any]:
         """Time-travel query returning state of graph as of a historical timestamp."""
-        nodes = [n for n in self.driver.get_all_nodes() if n["timestamp"] <= timestamp]
-        edges = [e for e in self.driver.get_all_edges() if e["timestamp"] <= timestamp]
+        nodes = [n for n in self.driver.get_all_nodes() if n.get("timestamp", 0) <= timestamp]
+        edges = [e for e in self.driver.get_all_edges() if e.get("timestamp", 0) <= timestamp]
         return {
             "as_of_timestamp": timestamp,
             "total_nodes": len(nodes),
@@ -192,3 +192,17 @@ class PersistentKnowledgeGraph:
             "nodes": nodes,
             "edges": edges,
         }
+
+    def get_lineage_summary(self) -> Dict[str, Any]:
+        """Returns high level summary of stored knowledge graph lineage."""
+        return {
+            "total_nodes": len(self.driver.get_all_nodes()),
+            "total_edges": len(self.driver.get_all_edges()),
+            "lineage_active": True,
+        }
+
+
+
+global_persistent_graph = PersistentKnowledgeGraph()
+
+

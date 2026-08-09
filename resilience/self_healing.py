@@ -21,6 +21,15 @@ class SelfHealingRecoveryEngine:
         self.event_bus = event_bus or global_event_bus
         self.recovery_history: List[Dict[str, Any]] = []
 
+    def recover_node(self, node_id: str, failure_type: str = "GENERIC_FAILURE") -> Dict[str, Any]:
+        """Convenience wrapper around recover_node_failure for API endpoints."""
+        res = self.recover_node_failure(node_id=node_id, failure_reason=failure_type)
+        return {
+            "status": "COMPLETED" if res.get("success") else "FAILED",
+            "action_taken": res.get("action", "RESTART_CLIENT_AND_RECONNECT"),
+            "message": res.get("message", "Node recovery completed"),
+        }
+
     def recover_node_failure(self, node_id: str, failure_reason: str) -> Dict[str, Any]:
         """
         Executes client node failure recovery workflow: attempts reconnection, grace removal, or fallback.
@@ -89,3 +98,6 @@ class SelfHealingRecoveryEngine:
     def get_history(self) -> List[Dict[str, Any]]:
         """Returns log of all executed self-healing recoveries."""
         return self.recovery_history
+
+
+SelfHealingManager = SelfHealingRecoveryEngine

@@ -4,9 +4,10 @@ Module: events.choreography
 Purpose:
 Enterprise Event Choreography Engine for FedMed v2.0.
 Decouples all operating system subsystems by subscribing to Event Bus topics and orchestrating
-automatic multi-engine reactions across Drift, SLA, Recommendations, Adaptive Strategy, Resilience, and Deployment.
+automatic multi-engine reactions across Drift, SLA, Recommendations, Adaptive Strategy, Resilience, Deployment, and WebSocket Telemetry.
 """
 
+import asyncio
 import logging
 from typing import Any, Dict, Optional
 from events.event_bus import EventBus, EventTopic, EventType, SystemEvent, global_event_bus
@@ -39,9 +40,32 @@ class EventChoreographer:
 
     def _register_choreography_handlers(self):
         """Registers reactive event handlers across topics."""
+        for topic in EventTopic:
+            self.event_bus.subscribe(topic, self.on_telemetry_event)
+
         self.event_bus.subscribe(EventTopic.DRIFT, self.on_drift_event)
         self.event_bus.subscribe(EventTopic.HEALTH, self.on_health_event)
         self.event_bus.subscribe(EventTopic.SLA, self.on_sla_event)
+
+    def on_telemetry_event(self, event: SystemEvent) -> None:
+        """Broadcasts system events over WebSocket manager to stream live metrics to React frontend."""
+        try:
+            from app.websocket.manager import manager
+            ws_event = "metrics_updated" if event.topic == EventTopic.METRICS else event.event_type.value.lower()
+            ws_payload = {
+                "event": ws_event,
+                "event_type": event.event_type.value,
+                "topic": event.topic.value,
+                "data": event.payload,
+                "payload": event.payload,
+            }
+            try:
+                loop = asyncio.get_running_loop()
+                loop.create_task(manager.broadcast(ws_payload))
+            except RuntimeError:
+                pass
+        except Exception:
+            pass
 
     def on_drift_event(self, event: SystemEvent) -> None:
         """Reacts automatically to DRIFT_DETECTED events."""

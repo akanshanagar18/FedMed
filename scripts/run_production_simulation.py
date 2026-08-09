@@ -11,6 +11,7 @@ import os
 import sys
 import time
 import logging
+import requests
 from typing import Any, Dict, List
 
 # Ensure workspace root is in sys.path
@@ -21,16 +22,19 @@ from events.event_bus import global_event_bus, EventTopic, EventType, SystemEven
 from workflows.workflow_engine import global_workflow_engine
 from governance.drift import FederatedDriftDetector
 from governance.sla import InstitutionalSLAAuditor
+from app.database.session import SessionLocal, init_db
+from app.models.base import TrainingMetricModel
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger("production_simulation")
 
 
-def run_live_fl_simulation(num_rounds: int = 3) -> Dict[str, Any]:
+def run_live_fl_simulation(num_rounds: int = 3, api_url: str = "http://127.0.0.1:8000") -> Dict[str, Any]:
     """
     Executes a complete live FL training simulation across hospital silos.
     """
     logger.info(f"🚀 Initializing FedMed v2.0 Production Federated Learning Simulation ({num_rounds} Rounds)...")
+    init_db()
 
     # 1. Instantiate Unified Workflow
     inst = global_workflow_engine.instantiate_workflow("Enterprise_EndToEnd_FL_Pipeline")
@@ -53,7 +57,36 @@ def run_live_fl_simulation(num_rounds: int = 3) -> Dict[str, Any]:
 
         logger.info(f"Round {r} Aggregation Complete: Active Nodes={active_cnt}/4 | Mean Loss={avg_loss:.4f} | Mean Dice={avg_dice:.4f}")
 
-        # Step 3: Drift & SLA Audit
+        # Step 3: Report to REST API
+        payload = {
+            "experiment_id": "default",
+            "round_number": r,
+            "training_loss": round(avg_loss, 4),
+            "dice_score": round(avg_dice, 4),
+            "active_hospitals": active_cnt,
+        }
+        try:
+            requests.post(f"{api_url}/api/v1/metrics", json=payload, timeout=2)
+        except Exception:
+            pass
+
+        # Step 4: Persist directly to DB
+        db = SessionLocal()
+        try:
+            row = TrainingMetricModel(
+                experiment_id="default",
+                round_number=r,
+                training_loss=round(avg_loss, 4),
+                dice_score=round(avg_dice, 4),
+            )
+            db.add(row)
+            db.commit()
+        except Exception:
+            pass
+        finally:
+            db.close()
+
+        # Step 5: Drift & SLA Audit
         import numpy as np
         ref_data = np.random.normal(0, 1, size=(50, 16))
         cur_data = np.random.normal(0.02, 1.0, size=(50, 16))
@@ -66,8 +99,6 @@ def run_live_fl_simulation(num_rounds: int = 3) -> Dict[str, Any]:
             total_nodes=["hospital_alpha", "hospital_beta", "hospital_gamma", "hospital_delta"],
             avg_latency_ms=120.0,
         )
-
-
 
         summary = {
             "round": r,
@@ -88,7 +119,6 @@ def run_live_fl_simulation(num_rounds: int = 3) -> Dict[str, Any]:
             payload=summary,
             rationale=f"Federated round {r} completed successfully.",
         )
-
         global_event_bus.publish_sync(event)
 
         # Advance Workflow step

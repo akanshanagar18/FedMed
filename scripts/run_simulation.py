@@ -181,40 +181,62 @@ def run_simulation(
         tracker.cleanup_all()
         sys.exit(128 + signum)
 
-    signal.signal(signal.SIGINT, signal_handler)
-    signal.signal(signal.SIGTERM, signal_handler)
-
     try:
-        verify_ports_available(sim_config)
-
-        # 1. Spawn FastAPI Backend
-        log_subsystem("BACKEND", f"Launching FastAPI server at {sim_config.api_url}...")
-        backend_cmd = [
-            sys.executable,
-            "-m",
-            "uvicorn",
-            "app.main:app",
-            "--app-dir",
-            "dashboard/backend",
-            "--host",
-            sim_config.backend_host,
-            "--port",
-            str(sim_config.backend_port),
-        ]
-        backend_proc = subprocess.Popen(backend_cmd, cwd=PROJECT_ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
-        tracker.register("BACKEND", backend_proc)
-
-        # Readiness polling for backend
         health_url = f"{sim_config.api_url}/api/v1/health"
-        log_subsystem("BACKEND", f"Polling health readiness at {health_url}...")
-        if not poll_backend_health(health_url, timeout_sec=15.0, interval_sec=0.5, proc=backend_proc):
-            log_subsystem("BACKEND", "FastAPI server failed readiness health check!", logging.ERROR)
-            tracker.cleanup_all()
-            sys.exit(1)
-        log_subsystem("BACKEND", "FastAPI Backend active & healthy!")
+
+        backend_already_running = False
+        try:
+            r_health = requests.get(health_url, timeout=1.0)
+            if r_health.status_code == 200:
+                backend_already_running = True
+                log_subsystem("BACKEND", "FastAPI Backend is already running and healthy!")
+        except Exception:
+            pass
+
+        if not backend_already_running:
+            # Free port if bound by dead/orphaned process
+            if is_port_in_use(sim_config.backend_port, sim_config.backend_host):
+                subprocess.run(f"lsof -ti:{sim_config.backend_port} | xargs kill -9 2>/dev/null || true", shell=True)
+                for _ in range(10):
+                    if not is_port_in_use(sim_config.backend_port, sim_config.backend_host):
+                        break
+                    time.sleep(0.3)
+
+            log_subsystem("BACKEND", f"Launching FastAPI server at {sim_config.api_url}...")
+            backend_cmd = [
+                sys.executable,
+                "-m",
+                "uvicorn",
+                "app.main:app",
+                "--app-dir",
+                "dashboard/backend",
+                "--host",
+                sim_config.backend_host,
+                "--port",
+                str(sim_config.backend_port),
+            ]
+            backend_proc = subprocess.Popen(backend_cmd, cwd=PROJECT_ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+            tracker.register("BACKEND", backend_proc)
+
+            log_subsystem("BACKEND", f"Polling health readiness at {health_url}...")
+            if not poll_backend_health(health_url, timeout_sec=20.0, interval_sec=0.5, proc=backend_proc):
+                log_subsystem("BACKEND", "FastAPI server failed readiness health check!", logging.ERROR)
+                tracker.cleanup_all()
+                sys.exit(1)
+            log_subsystem("BACKEND", "FastAPI Backend active & healthy!")
+
 
         # 2. Spawn Flower Server
+        if is_port_in_use(sim_config.flower_port, sim_config.flower_host):
+            subprocess.run(f"lsof -ti:{sim_config.flower_port} | xargs kill -9 2>/dev/null || true", shell=True)
+            for _ in range(10):
+                if not is_port_in_use(sim_config.flower_port, sim_config.flower_host):
+                    break
+                time.sleep(0.3)
+
+
         log_subsystem("FLOWER", f"Launching Flower Server at {sim_config.flower_address} for {sim_config.num_rounds} rounds...")
+
         server_cmd = [
             sys.executable,
             "-m",

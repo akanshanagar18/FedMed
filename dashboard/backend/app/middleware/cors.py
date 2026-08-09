@@ -14,6 +14,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config.settings import settings
 
 
+
+
 def register_cors(app: FastAPI) -> None:
     """Registers CORS middleware using settings."""
     app.add_middleware(

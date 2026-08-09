@@ -34,9 +34,10 @@ def test_full_simulation_pipeline_execution():
         cwd=PROJECT_ROOT,
         env=env,
         stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
         text=True,
     )
+
 
     try:
         # Wait up to 180 seconds for full 3-round simulation to finish

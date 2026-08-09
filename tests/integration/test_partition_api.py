@@ -4,7 +4,7 @@ Integration tests for /api/v1/dataset/partitions REST API endpoint.
 
 from fastapi.testclient import TestClient
 import pytest
-from dashboard.backend.app.main import app
+from app.main import app
 
 
 @pytest.fixture

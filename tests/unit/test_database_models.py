@@ -5,7 +5,7 @@ Unit tests for SQLAlchemy Database ORM Models
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from dashboard.backend.app.models.base import Base, TrainingMetricModel, HospitalNodeModel, ExperimentModel
+from app.models.base import Base, TrainingMetricModel, HospitalNodeModel, ExperimentModel
 
 
 @pytest.fixture
