@@ -12,7 +12,8 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 import numpy as np
-from torch.utils.data import Dataset as PyTorchDataset
+from torch.utils.data import Dataset as PyTorchDataset, DataLoader
+
 
 from data.datasets.cache import build_monai_dataset
 from data.datasets.metadata import PatientMetadataIndexer
@@ -138,3 +139,9 @@ class BraTSDataset:
             cache_dir=self.cache_dir,
             num_workers=self.num_workers,
         )
+
+    def get_dataloader(self, split: str = "train", batch_size: int = 2) -> DataLoader:
+        """Returns PyTorch DataLoader for requested split."""
+        ds = self.get_train_dataset() if split == "train" else self.get_val_dataset()
+        return DataLoader(ds, batch_size=batch_size, shuffle=(split == "train"))
+

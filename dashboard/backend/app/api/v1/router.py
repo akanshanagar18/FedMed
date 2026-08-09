@@ -39,11 +39,14 @@ api_router.include_router(calibration.router, prefix="/calibration", tags=["Unce
 api_router.include_router(clinical.router, prefix="/clinical", tags=["Clinical Validation Suite"])
 api_router.include_router(audit.router, prefix="/audit", tags=["Audit Trail & Dataset Lineage"])
 
-from app.api.v1.endpoints import dataset_version, governance, autonomous_platform, enterprise_platform
+from app.api.v1.endpoints import dataset_version, governance, autonomous_platform, enterprise_platform, auth, dataset_mgmt
 api_router.include_router(dataset_version.router, prefix="/dataset-version", tags=["Dataset Versioning & Lineage"])
 api_router.include_router(governance.router, prefix="/governance", tags=["Enterprise Governance, Drift & SLA"])
 api_router.include_router(autonomous_platform.router, prefix="/autonomous", tags=["Autonomous Federated OS Engine"])
 api_router.include_router(enterprise_platform.router, prefix="/enterprise", tags=["Milestone T Enterprise Workflow Platform"])
+api_router.include_router(auth.router, prefix="/auth", tags=["Enterprise Auth & RBAC"])
+api_router.include_router(dataset_mgmt.router, prefix="/dataset-management", tags=["Dataset Management & Checksums"])
+
 
 
 

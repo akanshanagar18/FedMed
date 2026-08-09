@@ -1,44 +1,39 @@
-# FedMed v2.0 Production Deployment Guide
+# FedMed v2.0 — Enterprise Deployment Guide
 
-## 1. Quick Start with Docker Compose
+## Overview
 
-### Prerequisites
-- Docker Engine 20.10+
-- Docker Compose v2.0+
+FedMed v2.0 supports two enterprise deployment modes:
+1. **Containerized Multi-Container Stack (Docker Compose)**
+2. **Production Kubernetes Cluster (k8s / Helm)**
 
-```bash
-# 1. Clone Repository & Environment Setup
-cp .env.example .env
+---
 
-# 2. Build & Launch Container Suite
-docker compose up --build -d
+## Deployment Architectures
 
-# 3. Check Container Health Status
-docker compose ps
-
-# 4. View Container System Logs
-docker compose logs -f
+```
++-----------------------------------------------------------------------+
+|                           KUBERNETES INGRESS                          |
++-----------------------------------------------------------------------+
+                                   |
+           +-----------------------+-----------------------+
+           |                                               |
++-----------------------+                       +-----------------------+
+|  FedMed Backend (x2)  |                       |  FedMed Flower Server |
+|      (ClusterIP)      |                       |      (ClusterIP)      |
++-----------------------+                       +-----------------------+
+           |                                               |
+           +-----------------------+-----------------------+
+                                   |
++-----------------------------------------------------------------------+
+|                      MULTI-HOSPITAL EDGE RUNTIME                      |
+| (Hospital Alpha, Hospital Beta, Hospital Gamma, Hospital Delta Nodes) |
++-----------------------------------------------------------------------+
 ```
 
 ---
 
-## 2. Operational Control & Container Maintenance
+## Authentication & RBAC
 
-```bash
-# Restart single hospital node (Simulate node restart during training)
-docker compose restart hospital-beta
-
-# Stop platform cleanly
-docker compose down
-
-# Stop platform and remove volumes
-docker compose down -v
-```
-
----
-
-## 3. Healthcheck Specifications
-
-- **Backend**: `GET http://localhost:8000/api/v1/health`
-- **Flower Server**: TCP port 8080 readiness check
-- **Dashboard**: `GET http://localhost:80/`
+All administrative endpoints require JWT tokens:
+- Role permissions: `Administrator`, `Hospital Administrator`, `Research Scientist`, `Auditor`, `Viewer`.
+- Generate tokens via `POST /api/v1/auth/login`.

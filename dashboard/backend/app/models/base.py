@@ -290,4 +290,31 @@ class ExperimentLifecycleRecordModel(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
 
+class UserModel(Base):
+    """Persisted enterprise platform users and roles."""
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    username = Column(String, unique=True, nullable=False, index=True)
+    email = Column(String, unique=True, nullable=False)
+    hashed_password = Column(String, nullable=False)
+    role = Column(String, default="Viewer")
+    hospital_id = Column(String, nullable=True)
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class AuditLogModel(Base):
+    """Persisted security audit logs."""
+    __tablename__ = "audit_logs"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(String, nullable=False, index=True)
+    action = Column(String, nullable=False)
+    resource = Column(String, nullable=False)
+    status = Column(String, default="SUCCESS")
+    timestamp = Column(DateTime, default=datetime.utcnow)
+
+
+
 
