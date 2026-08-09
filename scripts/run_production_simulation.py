@@ -83,11 +83,12 @@ def run_live_fl_simulation(num_rounds: int = 3) -> Dict[str, Any]:
         # Publish Event to EventBus
         event = SystemEvent(
             topic=EventTopic.METRICS,
-            event_type=EventType.ROUND_COMPLETED,
+            event_type=EventType.METRIC_UPDATED,
             source="ProductionSimulation",
             payload=summary,
             rationale=f"Federated round {r} completed successfully.",
         )
+
         global_event_bus.publish_sync(event)
 
         # Advance Workflow step
