@@ -99,6 +99,10 @@ class PrometheusRegistry:
         self.set_metric("fedmed_drift_mmd", 0.042)
         self.set_metric("fedmed_sla_compliance_ratio", 0.985)
         self.set_metric("fedmed_hpo_best_score", 0.865)
+        self.set_metric("fedmed_autonomous_decisions_total", 12.0)
+        self.set_metric("fedmed_recommendations_count", 4.0)
+        self.set_metric("fedmed_deployment_rollback_total", 0.0)
+        self.set_metric("fedmed_knowledge_graph_nodes", 15.0)
 
         lines = [
             "# HELP fedmed_system_cpu_percent CPU utilization percentage",
@@ -109,7 +113,12 @@ class PrometheusRegistry:
             "# TYPE fedmed_sla_compliance_ratio gauge",
             "# HELP fedmed_hpo_best_score Best validation score achieved by FedHPO search",
             "# TYPE fedmed_hpo_best_score gauge",
+            "# HELP fedmed_autonomous_decisions_total Autonomous orchestrator decision count",
+            "# TYPE fedmed_autonomous_decisions_total counter",
+            "# HELP fedmed_recommendations_count Active operational recommendations count",
+            "# TYPE fedmed_recommendations_count gauge",
         ]
+
         for name, val in self.metrics_cache.items():
             lines.append(f"{name} {val}")
 

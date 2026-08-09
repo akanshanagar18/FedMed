@@ -75,3 +75,19 @@ sequenceDiagram
 
 ### F. Frontend Dashboard (`dashboard/frontend/`)
 * **Framework:** React 18 SPA built with Vite and Recharts, styled with custom dark glassmorphic CSS. Hosted automatically by FastAPI static file mounting.
+
+---
+
+## 3. Autonomous Operating System Architecture
+
+FedMed operates as an **Autonomous Federated Learning Operating System** comprising:
+* **Async Event Bus (`events/event_bus.py`)**: Asynchronous Pub/Sub engine connecting training, metrics, drift, SLA, recommendations, orchestrator, deployment, and WebSockets.
+* **Autonomous Orchestrator (`orchestrator/autonomous_orchestrator.py`)**: Evaluates system state across Drift, SLA, Governance, Metrics, Privacy, and Health to make explainable decisions.
+* **Adaptive Strategy Selector (`strategy/adaptive_engine.py`)**: Dynamically switches FL strategies (FedAvg, FedProx, Scaffold, FedNova, FedAdam) based on telemetry.
+* **Root Cause Analysis (RCA) Engine (`analytics/rca_engine.py`)**: Diagnoses performance degradation causes (client dropout, feature drift, DP noise, latency) with confidence scores and mitigations.
+* **Operational Recommendation Engine (`analytics/recommendation_engine.py`)**: Emits actionable advice (trigger HPO, reduce LR, promote model).
+* **Autonomous Experiment Planner (`analytics/experiment_planner.py`)**: Proposes future benchmark matrix sweeps.
+* **Self-Healing Recovery Engine (`resilience/self_healing.py`)**: Executes automated recovery workflows (node reconnection, checkpoint restore, strategy fallback).
+* **Production Deployment Manager (`deployment/manager.py`)**: Manages Canary, Rolling, Blue-Green, Shadow, and Emergency Rollback deployments with validation gates.
+* **System Knowledge Graph (`knowledge/graph.py`)**: In-memory property graph linking Hospitals, Rounds, Experiments, Models, Metrics, Drift Events, Governance, Privacy, Deployments, and Certificates.
+

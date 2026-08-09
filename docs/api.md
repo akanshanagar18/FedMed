@@ -108,3 +108,21 @@ Upon connecting, the client receives JSON text frames whenever new metrics are s
   }
 }
 ```
+
+---
+
+## 3. Autonomous Operating System REST APIs
+
+* **`GET /api/v1/autonomous/decisions`**: Retrieves log of all executed autonomous orchestrator decisions.
+* **`POST /api/v1/autonomous/orchestrate`**: Evaluates platform state across Drift, SLA, Governance, Metrics, Privacy, and Health to emit an autonomous decision (`CONTINUE`, `PAUSE`, `TRIGGER_RETRAINING`, `ABORT_ROUND`, `PROMOTE_MODEL`, `ROLLBACK_DEPLOYMENT`, `LAUNCH_HPO`).
+* **`POST /api/v1/autonomous/adaptive-strategy/recommend`**: Evaluates telemetry and selects optimal FL algorithm (`FedAvg`, `FedProx`, `Scaffold`, `FedNova`, `FedAdam`).
+* **`POST /api/v1/autonomous/rca/diagnose`**: Diagnoses probable root causes of training degradation with confidence scores and mitigations.
+* **`GET /api/v1/autonomous/recommendations`**: Lists active operational recommendations.
+* **`GET /api/v1/autonomous/experiment-planner/propose`**: Generates future experiment proposals.
+* **`POST /api/v1/autonomous/self-healing/recover`**: Triggers automated recovery workflow for node failure.
+* **`POST /api/v1/autonomous/deployments/initiate`**: Initiates production deployment (`CANARY`, `ROLLING`, `BLUE_GREEN`, `SHADOW`).
+* **`POST /api/v1/autonomous/deployments/{id}/promote`**: Promotes candidate model to 100% active production.
+* **`POST /api/v1/autonomous/deployments/{id}/rollback`**: Triggers emergency instant rollback to previous stable production version.
+* **`GET /api/v1/autonomous/knowledge-graph/summary`**: Returns System Knowledge Graph summary and node/edge topology.
+* **`GET /api/v1/autonomous/executive-reports/generate`**: Generates C-level executive report summary.
+

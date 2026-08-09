@@ -165,3 +165,67 @@ class SLACertificateModel(Base):
     encryption_scheme = Column(String, default="TenSEAL_CKKS")
     timestamp = Column(DateTime, default=datetime.utcnow)
 
+
+class AutonomousDecisionModel(Base):
+    """Persisted log of autonomous orchestrator decisions."""
+    __tablename__ = "autonomous_decisions"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    decision_id = Column(String, unique=True, nullable=False, index=True)
+    decision = Column(String, nullable=False)
+    current_round = Column(Integer, nullable=False)
+    rationale = Column(Text, nullable=False)
+    severity = Column(String, default="INFO")
+    timestamp = Column(DateTime, default=datetime.utcnow)
+
+
+class RecommendationModel(Base):
+    """Persisted operational recommendations."""
+    __tablename__ = "operational_recommendations"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    rec_id = Column(String, unique=True, nullable=False, index=True)
+    action = Column(String, nullable=False)
+    reason = Column(Text, nullable=False)
+    confidence = Column(Float, nullable=False)
+    expected_impact = Column(String, nullable=False)
+    auto_executable = Column(Boolean, default=False)
+    timestamp = Column(DateTime, default=datetime.utcnow)
+
+
+class DeploymentModel(Base):
+    """Persisted model deployment rollouts."""
+    __tablename__ = "deployments"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    deployment_id = Column(String, unique=True, nullable=False, index=True)
+    model_id = Column(String, nullable=False)
+    version = Column(String, nullable=False)
+    strategy = Column(String, default="CANARY")
+    status = Column(String, default="IN_PROGRESS")
+    traffic_percentage = Column(Float, default=10.0)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class KnowledgeGraphNodeModel(Base):
+    """Persisted Knowledge Graph nodes."""
+    __tablename__ = "kg_nodes"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    node_id = Column(String, unique=True, nullable=False, index=True)
+    node_type = Column(String, nullable=False)
+    label = Column(String, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class KnowledgeGraphEdgeModel(Base):
+    """Persisted Knowledge Graph edges."""
+    __tablename__ = "kg_edges"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    source_id = Column(String, nullable=False, index=True)
+    target_id = Column(String, nullable=False, index=True)
+    relationship = Column(String, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+

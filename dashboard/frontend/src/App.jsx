@@ -459,6 +459,20 @@ export default function App() {
         >
           Governance & HPO
         </button>
+        <button
+          onClick={() => setActiveTab('autonomous_os')}
+          style={{
+            padding: '0.6rem 1.2rem',
+            borderRadius: '0.5rem',
+            border: 'none',
+            fontWeight: '600',
+            cursor: 'pointer',
+            backgroundColor: activeTab === 'autonomous_os' ? '#0284c7' : '#1e293b',
+            color: '#ffffff'
+          }}
+        >
+          🤖 Autonomous OS & Intelligence
+        </button>
       </div>
 
       {/* Subsystem Health Bar */}
@@ -1333,10 +1347,35 @@ export default function App() {
               <div className="metric-value">0.8650</div>
               <div className="metric-sub">Best Config: Successive Halving (lr=0.001)</div>
             </div>
+          </div>
+        </div>
+      )}
+      {activeTab === 'autonomous_os' && (
+        <div className="panel-card">
+          <div className="panel-header">
+            <div className="panel-title">FedMed Autonomous Federated Learning Operating System</div>
+            <div className="tag">AUTONOMOUS OS INTELLIGENCE SUITE</div>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem', marginTop: '1rem' }}>
+            <div className="metric-card" style={{ borderLeft: '4px solid #10b981' }}>
+              <div className="metric-title">Autonomous Orchestrator Decision</div>
+              <div className="metric-value" style={{ color: '#10b981' }}>CONTINUE_TRAINING</div>
+              <div className="metric-sub">Explainable Rationale: Platform state optimal</div>
+            </div>
+            <div className="metric-card" style={{ borderLeft: '4px solid #38bdf8' }}>
+              <div className="metric-title">Adaptive Strategy Selector</div>
+              <div className="metric-value">FedAvg $\rightarrow$ Scaffold</div>
+              <div className="metric-sub">Variance Reduction active for Non-IID alpha=0.2</div>
+            </div>
             <div className="metric-card" style={{ borderLeft: '4px solid #f59e0b' }}>
-              <div className="metric-title">Active Model Lifecycle Stage</div>
-              <div className="metric-value">PRODUCTION</div>
-              <div className="metric-sub">Cryptographic HMAC Signature Validated</div>
+              <div className="metric-title">Root Cause Analysis (RCA)</div>
+              <div className="metric-value">FEATURE_DRIFT</div>
+              <div className="metric-sub">Confidence: 88% | Scanner MMD=0.124</div>
+            </div>
+            <div className="metric-card" style={{ borderLeft: '4px solid #a855f7' }}>
+              <div className="metric-title">Deployment Manager Strategy</div>
+              <div className="metric-value">CANARY (10%)</div>
+              <div className="metric-sub">Quality Validation Gate: PASSED (+1.5% Dice)</div>
             </div>
           </div>
         </div>
@@ -1344,4 +1383,5 @@ export default function App() {
     </div>
   );
 }
+
 
