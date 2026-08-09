@@ -126,3 +126,27 @@ Upon connecting, the client receives JSON text frames whenever new metrics are s
 * **`GET /api/v1/autonomous/knowledge-graph/summary`**: Returns System Knowledge Graph summary and node/edge topology.
 * **`GET /api/v1/autonomous/executive-reports/generate`**: Generates C-level executive report summary.
 
+---
+
+## 4. Milestone T — Enterprise Workflow Platform REST APIs
+
+* **`POST /api/v1/enterprise/workflows/instantiate`**: Instantiates a new 14-step canonical DAG workflow.
+* **`POST /api/v1/enterprise/workflows/{id}/step`**: Advances workflow execution by one step.
+* **`POST /api/v1/enterprise/workflows/{id}/run`**: Executes entire workflow instance to completion.
+* **`POST /api/v1/enterprise/workflows/{id}/pause`**: Pauses an in-progress workflow.
+* **`POST /api/v1/enterprise/workflows/{id}/resume`**: Resumes a paused workflow.
+* **`GET /api/v1/enterprise/workflows/instances`**: Lists all workflow instances and status states.
+* **`POST /api/v1/enterprise/simulator/trigger`**: Triggers scenario simulation (hospital failure, latency spike, poisoning, etc.).
+* **`GET /api/v1/enterprise/simulator/history`**: Lists history of executed scenario simulations.
+* **`GET /api/v1/enterprise/policies`**: Returns active policy configuration thresholds.
+* **`POST /api/v1/enterprise/policies/reload`**: Hot-reloads policy configuration YAMLs from disk.
+* **`POST /api/v1/enterprise/scheduler/jobs`**: Schedules a new background job (retraining, drift scan, HPO, etc.).
+* **`GET /api/v1/enterprise/scheduler/jobs`**: Lists all scheduled background jobs.
+* **`POST /api/v1/enterprise/scheduler/jobs/{id}/execute`**: Manually executes a scheduled job.
+* **`POST /api/v1/enterprise/digital-twin/predict`**: Executes predictive "What-If" digital twin impact simulation.
+* **`POST /api/v1/enterprise/lifecycle/create`**: Creates a new experiment lifecycle instance.
+* **`POST /api/v1/enterprise/lifecycle/{id}/transition`**: Transitions experiment stage (Dataset $\rightarrow$ Training $\rightarrow$ Deployment $\rightarrow$ Archive).
+* **`GET /api/v1/enterprise/lifecycle/experiments`**: Lists experiment lifecycle records.
+* **`GET /api/v1/enterprise/persistent-graph/time-travel`**: Queries persistent Knowledge Graph state as of a historical timestamp.
+
+

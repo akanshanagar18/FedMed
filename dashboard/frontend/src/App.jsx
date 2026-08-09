@@ -473,6 +473,20 @@ export default function App() {
         >
           🤖 Autonomous OS & Intelligence
         </button>
+        <button
+          onClick={() => setActiveTab('enterprise_workflows')}
+          style={{
+            padding: '0.6rem 1.2rem',
+            borderRadius: '0.5rem',
+            border: 'none',
+            fontWeight: '600',
+            cursor: 'pointer',
+            backgroundColor: activeTab === 'enterprise_workflows' ? '#0284c7' : '#1e293b',
+            color: '#ffffff'
+          }}
+        >
+          ⚡ Enterprise Workflows & Platform
+        </button>
       </div>
 
       {/* Subsystem Health Bar */}
@@ -1372,10 +1386,35 @@ export default function App() {
               <div className="metric-value">FEATURE_DRIFT</div>
               <div className="metric-sub">Confidence: 88% | Scanner MMD=0.124</div>
             </div>
+          </div>
+        </div>
+      )}
+      {activeTab === 'enterprise_workflows' && (
+        <div className="panel-card">
+          <div className="panel-header">
+            <div className="panel-title">FedMed Enterprise Workflow Orchestration & Platform Suite</div>
+            <div className="tag">MILESTONE T ENTERPRISE INTEGRATION</div>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem', marginTop: '1rem' }}>
+            <div className="metric-card" style={{ borderLeft: '4px solid #10b981' }}>
+              <div className="metric-title">Unified Workflow Engine</div>
+              <div className="metric-value" style={{ color: '#10b981' }}>RUNNING (Step 7/14)</div>
+              <div className="metric-sub">14-Step DAG: Hospital Reg $\rightarrow$ Exec Report</div>
+            </div>
+            <div className="metric-card" style={{ borderLeft: '4px solid #38bdf8' }}>
+              <div className="metric-title">Scenario Simulation Engine</div>
+              <div className="metric-value">20 Scenarios Active</div>
+              <div className="metric-sub">Simulating Hospital Failure & Network Latency</div>
+            </div>
+            <div className="metric-card" style={{ borderLeft: '4px solid #f59e0b' }}>
+              <div className="metric-title">Digital Twin Predictive Model</div>
+              <div className="metric-value">Dice: 0.8410</div>
+              <div className="metric-sub">What-If: Hospital Alpha Disconnect + Latency 2x</div>
+            </div>
             <div className="metric-card" style={{ borderLeft: '4px solid #a855f7' }}>
-              <div className="metric-title">Deployment Manager Strategy</div>
-              <div className="metric-value">CANARY (10%)</div>
-              <div className="metric-sub">Quality Validation Gate: PASSED (+1.5% Dice)</div>
+              <div className="metric-title">Persistent Knowledge Graph</div>
+              <div className="metric-value">Time-Travel Query Ready</div>
+              <div className="metric-sub">SQLite DB: fedmed_kg.db (Neo4j Abstraction)</div>
             </div>
           </div>
         </div>
@@ -1383,5 +1422,6 @@ export default function App() {
     </div>
   );
 }
+
 
 

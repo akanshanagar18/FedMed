@@ -103,6 +103,16 @@ class PrometheusRegistry:
         self.set_metric("fedmed_recommendations_count", 4.0)
         self.set_metric("fedmed_deployment_rollback_total", 0.0)
         self.set_metric("fedmed_knowledge_graph_nodes", 15.0)
+        self.set_metric("fedmed_workflow_duration_seconds", 42.5)
+        self.set_metric("fedmed_workflow_failures_total", 0.0)
+        self.set_metric("fedmed_workflow_retries_total", 1.0)
+        self.set_metric("fedmed_workflow_success_rate", 1.0)
+        self.set_metric("fedmed_scenario_runs_total", 5.0)
+        self.set_metric("fedmed_scheduler_jobs_total", 11.0)
+        self.set_metric("fedmed_scheduler_failures_total", 0.0)
+        self.set_metric("fedmed_knowledge_graph_queries_total", 24.0)
+        self.set_metric("fedmed_digital_twin_predictions_total", 8.0)
+        self.set_metric("fedmed_policy_reload_count", 2.0)
 
         lines = [
             "# HELP fedmed_system_cpu_percent CPU utilization percentage",
@@ -117,7 +127,10 @@ class PrometheusRegistry:
             "# TYPE fedmed_autonomous_decisions_total counter",
             "# HELP fedmed_recommendations_count Active operational recommendations count",
             "# TYPE fedmed_recommendations_count gauge",
+            "# HELP fedmed_workflow_success_rate Unified workflow execution success rate",
+            "# TYPE fedmed_workflow_success_rate gauge",
         ]
+
 
         for name, val in self.metrics_cache.items():
             lines.append(f"{name} {val}")

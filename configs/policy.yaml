@@ -1,0 +1,47 @@
+# FedMed v2.0 Enterprise Policy Configuration
+# Central dynamic policy engine configuration thresholds.
+
+policy:
+  version: "2.0.0"
+  environment: "production"
+  reload_interval_sec: 10
+
+governance:
+  significance_level: 0.05
+  psi_threshold: 0.20
+  mmd_drift_warning_threshold: 0.10
+  mmd_drift_critical_threshold: 0.25
+  min_dice_canary_improvement: 0.005
+  max_hd95_canary_degradation: 0.50
+
+deployment:
+  default_strategy: "CANARY"
+  canary_initial_traffic_pct: 10.0
+  canary_evaluation_window_sec: 300
+  auto_rollback_on_error_spike: true
+  auto_rollback_error_threshold_pct: 5.0
+
+sla:
+  max_epsilon: 10.0
+  max_delta: 0.0001
+  min_participation_rate: 0.75
+  max_latency_ms: 2000.0
+  signing_secret: "FedMed_HIPAA_GDPR_Compliance_Secret_2026"
+
+privacy:
+  default_scheme: "TenSEAL_CKKS"
+  dp_enabled: true
+  he_enabled: true
+  dp_noise_multiplier_bounds: [0.5, 2.0]
+  dp_max_grad_norm: 1.0
+
+strategy:
+  default_fl_strategy: "FedAvg"
+  adapt_on_drift: true
+  adapt_on_dropout: true
+  fallback_strategy: "FedProx"
+
+health:
+  heartbeat_interval_sec: 10
+  heartbeat_timeout_sec: 30
+  max_retry_attempts: 3

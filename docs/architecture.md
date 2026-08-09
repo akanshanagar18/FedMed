@@ -89,5 +89,19 @@ FedMed operates as an **Autonomous Federated Learning Operating System** compris
 * **Autonomous Experiment Planner (`analytics/experiment_planner.py`)**: Proposes future benchmark matrix sweeps.
 * **Self-Healing Recovery Engine (`resilience/self_healing.py`)**: Executes automated recovery workflows (node reconnection, checkpoint restore, strategy fallback).
 * **Production Deployment Manager (`deployment/manager.py`)**: Manages Canary, Rolling, Blue-Green, Shadow, and Emergency Rollback deployments with validation gates.
-* **System Knowledge Graph (`knowledge/graph.py`)**: In-memory property graph linking Hospitals, Rounds, Experiments, Models, Metrics, Drift Events, Governance, Privacy, Deployments, and Certificates.
+* **System Knowledge Graph (`knowledge/graph.py` & `knowledge/persistent_graph.py`)**: SQLite-backed persistent graph (`fedmed_kg.db`) with Neo4j driver abstraction, node/edge versioning, and time-travel query API (`query_as_of`).
+
+---
+
+## 4. Milestone T — Enterprise Workflow Integration Platform
+
+Milestone T unifies all subsystems into a single autonomous workflow-driven operating platform:
+* **Unified Workflow Engine (`workflows/workflow_engine.py`)**: Manages 14-step canonical DAG workflows, execution tracing, retries, pause/resume, cancel, and state transitions (`CREATED`, `RUNNING`, `WAITING`, `PAUSED`, `FAILED`, `RETRYING`, `COMPLETED`, `CANCELLED`).
+* **Scenario Simulation Engine (`simulation/scenario_engine.py`)**: Simulates 20 enterprise failure, disconnect, attack, scale-up, and resource exhaustion scenarios, publishing event streams over the Event Bus.
+* **Enterprise Policy Engine (`configs/policy_engine.py` & `configs/policy.yaml`)**: Central dynamic policy configuration engine supporting live YAML reloads and zero hardcoded magic numbers.
+* **Background Scheduler (`scheduler/scheduler_engine.py`)**: Cron, periodic, and event-triggered background job execution for retraining, drift scans, governance audits, privacy audits, checkpoint cleanup, HPO, and health monitoring.
+* **Experiment Lifecycle Manager (`experiments/lifecycle_manager.py`)**: Manages stage transitions: `DATASET_PREPARATION` $\rightarrow$ `TRAINING` $\rightarrow$ `VALIDATION` $\rightarrow$ `GOVERNANCE` $\rightarrow$ `DEPLOYMENT` $\rightarrow$ `MONITORING` $\rightarrow$ `RETIREMENT` $\rightarrow$ `ARCHIVE`.
+* **Enterprise Event Choreography (`events/choreography.py`)**: Subscribes to Event Bus topics so signals automatically propagate across recommendations, adaptive strategy, orchestrator, deployment manager, and WebSockets without module coupling.
+* **Digital Twin Predictive Simulation (`digital_twin/twin_engine.py`)**: Answers "What happens if..." hypothetical impact questions, estimating expected Dice, convergence, communication overhead, privacy impact, governance status, and deployment recommendations.
+
 

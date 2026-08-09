@@ -229,3 +229,65 @@ class KnowledgeGraphEdgeModel(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
 
+class WorkflowInstanceModel(Base):
+    """Persisted Workflow Engine instance states."""
+    __tablename__ = "workflow_instances"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    instance_id = Column(String, unique=True, nullable=False, index=True)
+    workflow_name = Column(String, nullable=False)
+    status = Column(String, default="CREATED")
+    current_step_index = Column(Integer, default=0)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow)
+
+
+class PolicyRecordModel(Base):
+    """Persisted policy configuration updates."""
+    __tablename__ = "policy_records"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    section = Column(String, nullable=False)
+    policy_key = Column(String, nullable=False)
+    policy_value = Column(String, nullable=False)
+    updated_at = Column(DateTime, default=datetime.utcnow)
+
+
+class ScheduledJobModel(Base):
+    """Persisted background scheduler job configurations."""
+    __tablename__ = "scheduled_jobs"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    job_id = Column(String, unique=True, nullable=False, index=True)
+    job_type = Column(String, nullable=False)
+    schedule_type = Column(String, default="PERIODIC")
+    interval_seconds = Column(Integer, default=300)
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class DigitalTwinPredictionModel(Base):
+    """Persisted Digital Twin predictive simulation runs."""
+    __tablename__ = "digital_twin_predictions"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    prediction_id = Column(String, unique=True, nullable=False, index=True)
+    scenario_description = Column(String, nullable=False)
+    expected_dice = Column(Float, nullable=False)
+    recommended_action = Column(String, nullable=False)
+    timestamp = Column(DateTime, default=datetime.utcnow)
+
+
+class ExperimentLifecycleRecordModel(Base):
+    """Persisted experiment lifecycle records."""
+    __tablename__ = "experiment_lifecycle_records"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    experiment_id = Column(String, unique=True, nullable=False, index=True)
+    name = Column(String, nullable=False)
+    owner = Column(String, default="research_team")
+    stage = Column(String, default="DATASET_PREPARATION")
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
+
