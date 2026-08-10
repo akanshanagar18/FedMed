@@ -1,0 +1,48 @@
+{
+  "session_id": "ws_trace_1786383791",
+  "timestamp": 1786383791.42683,
+  "frames": [
+    {
+      "sequence_id": 1,
+      "event": "connection_established",
+      "data": {
+        "status": "CONNECTED",
+        "client_id": "operations_console_01"
+      },
+      "timestamp": 1786383761.42683
+    },
+    {
+      "sequence_id": 2,
+      "event": "metrics_updated",
+      "data": {
+        "experiment_id": "exp_demo",
+        "round_number": 1,
+        "training_loss": 0.7955,
+        "dice_score": 0.0115
+      },
+      "timestamp": 1786383771.426831
+    },
+    {
+      "sequence_id": 3,
+      "event": "metrics_updated",
+      "data": {
+        "experiment_id": "exp_demo",
+        "round_number": 2,
+        "training_loss": 0.7451,
+        "dice_score": 0.0168
+      },
+      "timestamp": 1786383781.426831
+    },
+    {
+      "sequence_id": 4,
+      "event": "metrics_updated",
+      "data": {
+        "experiment_id": "exp_demo",
+        "round_number": 3,
+        "training_loss": 0.7336,
+        "dice_score": 0.0248
+      },
+      "timestamp": 1786383791.426831
+    }
+  ]
+}

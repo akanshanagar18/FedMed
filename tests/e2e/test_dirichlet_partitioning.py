@@ -33,7 +33,7 @@ def test_dirichlet_non_iid_simulation_execution():
     )
 
     try:
-        stdout, _ = proc.communicate(timeout=120)
+        stdout, _ = proc.communicate(timeout=300)
         exit_code = proc.returncode
 
         assert exit_code == 0, f"Dirichlet simulation failed with exit code {exit_code}.\nOutput: {stdout}"

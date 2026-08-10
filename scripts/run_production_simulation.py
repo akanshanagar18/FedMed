@@ -14,8 +14,9 @@ import logging
 import requests
 from typing import Any, Dict, List
 
-# Ensure workspace root is in sys.path
+# Ensure workspace root and dashboard backend are in sys.path
 sys.path.insert(0, os.path.abspath("."))
+sys.path.insert(0, os.path.abspath("dashboard/backend"))
 
 from client.hospital_runtime import global_hospital_runtime_manager
 from events.event_bus import global_event_bus, EventTopic, EventType, SystemEvent
@@ -52,8 +53,9 @@ def run_live_fl_simulation(num_rounds: int = 3, api_url: str = "http://127.0.0.1
         active_cnt = sum(1 for m in hospital_metrics if m.get("status") != "DISCONNECTED")
 
         # Step 2: FedAvg Weight Aggregation
-        avg_loss = sum(m.get("train_loss", 0.20) for m in hospital_metrics) / max(1, len(hospital_metrics))
-        avg_dice = min(0.95, 0.82 + (r * 0.025))
+        active_metrics = [m for m in hospital_metrics if m.get("status") != "DISCONNECTED"]
+        avg_loss = sum(m.get("train_loss", 0.0) for m in active_metrics) / max(1, len(active_metrics))
+        avg_dice = sum(m.get("dice_score", 0.0) for m in active_metrics) / max(1, len(active_metrics))
 
         logger.info(f"Round {r} Aggregation Complete: Active Nodes={active_cnt}/4 | Mean Loss={avg_loss:.4f} | Mean Dice={avg_dice:.4f}")
 

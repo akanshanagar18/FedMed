@@ -305,6 +305,49 @@ export default function App() {
     { id: 'security_audit', label: 'Security & Audit Trail', icon: Lock, category: 'SECURITY' }
   ];
 
+  // Handlers for Operations Control Actions
+  const handleStartExp = async (expId) => {
+    try {
+      await fetch(`/api/v1/experiments/${expId}/start`, { method: 'POST' });
+      fetchAllData();
+    } catch (e) {}
+  };
+
+  const handlePauseExp = async (expId) => {
+    try {
+      await fetch(`/api/v1/experiments/${expId}/pause`, { method: 'POST' });
+      fetchAllData();
+    } catch (e) {}
+  };
+
+  const handleResumeExp = async (expId) => {
+    try {
+      await fetch(`/api/v1/experiments/${expId}/resume`, { method: 'POST' });
+      fetchAllData();
+    } catch (e) {}
+  };
+
+  const handleCancelExp = async (expId) => {
+    try {
+      await fetch(`/api/v1/experiments/${expId}/cancel`, { method: 'POST' });
+      fetchAllData();
+    } catch (e) {}
+  };
+
+  const handleArchiveExp = async (expId) => {
+    try {
+      await fetch(`/api/v1/experiments/${expId}/archive`, { method: 'POST' });
+      fetchAllData();
+    } catch (e) {}
+  };
+
+  const handleRestartOS = async () => {
+    try {
+      await fetch('/api/v1/runtime/restart', { method: 'POST' });
+      fetchAllData();
+    } catch (e) {}
+  };
+
   return (
     <div className="app-container">
       {/* Sidebar Navigation */}
@@ -314,8 +357,8 @@ export default function App() {
             <Brain size={22} />
           </div>
           <div>
-            <div className="brand-title">FedMed v2.0</div>
-            <div className="brand-version">RELEASE CANDIDATE 1 (RC-1)</div>
+            <div className="brand-title">FedMed OS v2.1</div>
+            <div className="brand-version">RELEASE CANDIDATE 2 (RC-2)</div>
           </div>
         </div>
 
@@ -370,6 +413,10 @@ export default function App() {
               <span className={`pulse-dot ${connectionStatus === 'ONLINE' ? 'online' : 'connecting'}`}></span>
               <span>WS Telemetry: <b>{connectionStatus}</b></span>
             </div>
+
+            <button className="btn-action" onClick={handleRestartOS}>
+              <RefreshCw size={14} /> Restart FLOS
+            </button>
 
             <button className="btn-action" onClick={fetchAllData}>
               <RefreshCw size={14} /> Refresh Data

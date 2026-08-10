@@ -1,0 +1,27 @@
+{
+  "model_name": "brats_monai_3d_unet",
+  "dataset": "BraTS 3D Multi-Modal MRI",
+  "rounds": [
+    {
+      "round": 1,
+      "loss": 0.7955,
+      "dice": 0.0115,
+      "active_hospitals": 4
+    },
+    {
+      "round": 2,
+      "loss": 0.7451,
+      "dice": 0.0168,
+      "active_hospitals": 4
+    },
+    {
+      "round": 3,
+      "loss": 0.7336,
+      "dice": 0.0248,
+      "active_hospitals": 4
+    }
+  ],
+  "final_loss": 0.7336,
+  "final_dice": 0.0248,
+  "status": "CONVERGING"
+}

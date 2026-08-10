@@ -32,8 +32,16 @@ async def lifespan(app: FastAPI):
     logger.info("Starting up FedMed Backend...")
     init_db()
     logger.info("Database tables initialized.")
+
+    # Boot persistent FedMed OS RuntimeOrchestrator
+    from orchestrator.runtime_orchestrator import global_runtime_orchestrator
+    global_runtime_orchestrator.start()
+    logger.info("FedMed OS v2.1 RuntimeOrchestrator control plane active.")
+
     yield
+
     logger.info("Shutting down FedMed Backend...")
+    global_runtime_orchestrator.stop()
 
 
 def create_app() -> FastAPI:

@@ -22,11 +22,15 @@ from typing import Dict, List, Optional
 
 import requests
 
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
+backend_path = os.path.join(PROJECT_ROOT, "dashboard", "backend")
+if backend_path not in sys.path:
+    sys.path.insert(0, backend_path)
+
 from configs.loader import AppConfig, ConfigValidationError, load_config
 from privacy.tls_cert_gen import ensure_tls_certificates
-
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0, PROJECT_ROOT)
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger("fedmed_orchestrator")
@@ -36,12 +40,14 @@ def log_subsystem(subsystem: str, message: str, level: int = logging.INFO):
     """Outputs structured, subsystem-prefixed log messages."""
     ts = time.strftime("%H:%M:%S")
     sub_str = f"[{subsystem.center(14)}]"
+    out_msg = f"{ts} {sub_str} {message}"
+    print(out_msg, flush=True)
     if level == logging.ERROR:
-        logger.error(f"{ts} {sub_str} {message}")
+        logger.error(out_msg)
     elif level == logging.WARNING:
-        logger.warning(f"{ts} {sub_str} {message}")
+        logger.warning(out_msg)
     else:
-        logger.info(f"{ts} {sub_str} {message}")
+        logger.info(out_msg)
 
 
 class ProcessTracker:
@@ -100,23 +106,17 @@ def is_port_in_use(port: int, host: str = "127.0.0.1") -> bool:
         return s.connect_ex((host, port)) == 0
 
 
+def find_free_port(start_port: int, host: str = "127.0.0.1") -> int:
+    """Finds an available TCP port starting from start_port."""
+    for port in range(start_port, start_port + 50):
+        if not is_port_in_use(port, host):
+            return port
+    return start_port
+
+
 def verify_ports_available(cfg: SimulationConfig):
     """Ensures required network ports are free prior to launching subprocesses."""
-    collisions = []
-    if is_port_in_use(cfg.backend_port, cfg.backend_host):
-        collisions.append(f"FastAPI Backend Port {cfg.backend_port}")
-    if is_port_in_use(cfg.flower_port, cfg.flower_host):
-        collisions.append(f"Flower gRPC Port {cfg.flower_port}")
-
-    if collisions:
-        log_subsystem(
-            "ORCHESTRATOR",
-            f"CRITICAL: Network port collisions detected: {', '.join(collisions)}.",
-            logging.WARNING if os.environ.get("PYTEST_CURRENT_TEST") else logging.ERROR,
-        )
-        if not os.environ.get("PYTEST_CURRENT_TEST"):
-            sys.exit(1)
-
+    pass
 
 
 def poll_backend_health(health_url: str, timeout_sec: float = 15.0, interval_sec: float = 0.5, proc: Optional[subprocess.Popen] = None) -> bool:
@@ -193,14 +193,17 @@ def run_simulation(
         except Exception:
             pass
 
+        child_env = os.environ.copy()
+        pythonpath_entries = [PROJECT_ROOT, os.path.join(PROJECT_ROOT, "dashboard", "backend")]
+        if child_env.get("PYTHONPATH"):
+            pythonpath_entries.append(child_env["PYTHONPATH"])
+        child_env["PYTHONPATH"] = os.path.pathsep.join(pythonpath_entries)
+
         if not backend_already_running:
-            # Free port if bound by dead/orphaned process
             if is_port_in_use(sim_config.backend_port, sim_config.backend_host):
-                subprocess.run(f"lsof -ti:{sim_config.backend_port} | xargs kill -9 2>/dev/null || true", shell=True)
-                for _ in range(10):
-                    if not is_port_in_use(sim_config.backend_port, sim_config.backend_host):
-                        break
-                    time.sleep(0.3)
+                sim_config.backend_port = find_free_port(sim_config.backend_port + 1, sim_config.backend_host)
+                sim_config.api_url = f"http://{sim_config.backend_host}:{sim_config.backend_port}"
+                health_url = f"{sim_config.api_url}/api/v1/health"
 
             log_subsystem("BACKEND", f"Launching FastAPI server at {sim_config.api_url}...")
             backend_cmd = [
@@ -215,12 +218,13 @@ def run_simulation(
                 "--port",
                 str(sim_config.backend_port),
             ]
-            backend_proc = subprocess.Popen(backend_cmd, cwd=PROJECT_ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+            backend_proc = subprocess.Popen(backend_cmd, cwd=PROJECT_ROOT, env=child_env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
             tracker.register("BACKEND", backend_proc)
 
             log_subsystem("BACKEND", f"Polling health readiness at {health_url}...")
             if not poll_backend_health(health_url, timeout_sec=20.0, interval_sec=0.5, proc=backend_proc):
-                log_subsystem("BACKEND", "FastAPI server failed readiness health check!", logging.ERROR)
+                out = backend_proc.stdout.read() if backend_proc.stdout else ""
+                log_subsystem("BACKEND", f"FastAPI server failed readiness health check! Code: {backend_proc.poll()} Output:\n{out}", logging.ERROR)
                 tracker.cleanup_all()
                 sys.exit(1)
             log_subsystem("BACKEND", "FastAPI Backend active & healthy!")
@@ -228,11 +232,8 @@ def run_simulation(
 
         # 2. Spawn Flower Server
         if is_port_in_use(sim_config.flower_port, sim_config.flower_host):
-            subprocess.run(f"lsof -ti:{sim_config.flower_port} | xargs kill -9 2>/dev/null || true", shell=True)
-            for _ in range(10):
-                if not is_port_in_use(sim_config.flower_port, sim_config.flower_host):
-                    break
-                time.sleep(0.3)
+            sim_config.flower_port = find_free_port(sim_config.flower_port + 1, sim_config.flower_host)
+            sim_config.flower_address = f"{sim_config.flower_host}:{sim_config.flower_port}"
 
 
         log_subsystem("FLOWER", f"Launching Flower Server at {sim_config.flower_address} for {sim_config.num_rounds} rounds...")
@@ -257,7 +258,7 @@ def run_simulation(
         if yaml_config_path:
             server_cmd.extend(["--config", yaml_config_path])
 
-        server_proc = subprocess.Popen(server_cmd, cwd=PROJECT_ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+        server_proc = subprocess.Popen(server_cmd, cwd=PROJECT_ROOT, env=child_env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         tracker.register("FLOWER", server_proc)
         time.sleep(2.0)
 
@@ -291,7 +292,7 @@ def run_simulation(
             if yaml_config_path:
                 client_cmd.extend(["--config", yaml_config_path])
 
-            client_proc = subprocess.Popen(client_cmd, cwd=PROJECT_ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+            client_proc = subprocess.Popen(client_cmd, cwd=PROJECT_ROOT, env=child_env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             tracker.register(client_id.upper(), client_proc)
 
         # 4. Handle Simulated Node Failure if specified

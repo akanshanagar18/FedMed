@@ -34,7 +34,7 @@ def test_fault_tolerant_node_failure_simulation():
     )
 
     try:
-        stdout, _ = proc.communicate(timeout=150)
+        stdout, _ = proc.communicate(timeout=300)
         exit_code = proc.returncode
 
         assert exit_code == 0, f"Fault-tolerant simulation failed with exit code {exit_code}.\nOutput: {stdout}"

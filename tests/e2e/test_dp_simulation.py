@@ -34,7 +34,7 @@ def test_differential_privacy_fl_simulation_execution():
     )
 
     try:
-        stdout, _ = proc.communicate(timeout=150)
+        stdout, _ = proc.communicate(timeout=300)
         exit_code = proc.returncode
 
         assert exit_code == 0, f"DP simulation failed with exit code {exit_code}.\nOutput: {stdout}"

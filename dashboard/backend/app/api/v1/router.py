@@ -12,10 +12,12 @@ from app.api.v1.endpoints import (
     metrics_prometheus, distributed, personalization, continual, foundation,
     explainability, security, fairness, calibration, clinical, audit,
     dataset_version, governance, autonomous_platform, enterprise_platform,
-    auth, dataset_mgmt, inference_api, export_api
+    auth, dataset_mgmt, inference_api, export_api, runtime
 )
 
 api_router = APIRouter()
+
+api_router.include_router(runtime.router, prefix="/runtime", tags=["FedMed OS Runtime Control Plane"])
 
 api_router.include_router(health.router, prefix="/health", tags=["System Health"])
 api_router.include_router(config.router, prefix="/config", tags=["Configuration Engine"])
