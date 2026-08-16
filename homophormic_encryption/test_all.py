@@ -15,11 +15,17 @@ def main():
     ]
     sample_counts = [120, 340, 75]
 
-    print("Encrypting updates...")
-    encrypted_updates = [encrypt_state_dict(context, sd) for sd in hospital_state_dicts]
+    from homophormic_encryption.serialization import serialize_encrypted_state_dict, deserialize_encrypted_state_dict
 
-    print("Aggregating updates at server...")
-    aggregated = weighted_aggregate_encrypted_state_dicts(encrypted_updates, sample_counts)
+    print("Encrypting and serializing updates at hospitals...")
+    encrypted_updates = [encrypt_state_dict(context, sd) for sd in hospital_state_dicts]
+    serialized_updates = [serialize_encrypted_state_dict(eu) for eu in encrypted_updates]
+
+    print(f"Network Transfer... (Bytes sent: {[len(su) for su in serialized_updates]})")
+
+    print("Deserializing and aggregating updates at server...")
+    deserialized_updates = [deserialize_encrypted_state_dict(context, su) for su in serialized_updates]
+    aggregated = weighted_aggregate_encrypted_state_dicts(deserialized_updates, sample_counts)
 
     print("Decrypting aggregated result...")
     global_state_dict = decrypt_state_dict(aggregated)
