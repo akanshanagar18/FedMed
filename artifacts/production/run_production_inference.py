@@ -147,11 +147,26 @@ def main():
     out_img = nib.Nifti1Image(composite_mask, affine=np.eye(4))
     nib.save(out_img, args.output)
 
+    # Extract physical voxel volume (mm³ per voxel) from transformed affine
+    voxel_vol_mm3 = 1.0
+    if hasattr(processed.get("image"), "meta") and "affine" in processed["image"].meta:
+        try:
+            t_aff = np.array(processed["image"].meta["affine"])
+            det = float(np.abs(np.linalg.det(t_aff[:3, :3])))
+            if det > 0.001 and not np.isnan(det) and not np.isinf(det):
+                voxel_vol_mm3 = det
+        except Exception:
+            voxel_vol_mm3 = 1.0
+
+    tc_vol_mm3 = round(float(tc_vox) * voxel_vol_mm3, 1)
+    wt_vol_mm3 = round(float(wt_vox) * voxel_vol_mm3, 1)
+    et_vol_mm3 = round(float(et_vox) * voxel_vol_mm3, 1)
+
     logger.info("=" * 60)
-    logger.info("INFERENCE COMPLETE (Latency: %.2f ms)", t_inf)
-    logger.info("Tumor Core (TC):     %d voxels (%.1f mm³)", tc_vox, float(tc_vox))
-    logger.info("Whole Tumor (WT):    %d voxels (%.1f mm³)", wt_vox, float(wt_vox))
-    logger.info("Enhancing Tumor (ET): %d voxels (%.1f mm³)", et_vox, float(et_vox))
+    logger.info("INFERENCE COMPLETE (Latency: %.2f ms, Voxel Volume: %.4f mm³)", t_inf, voxel_vol_mm3)
+    logger.info("Tumor Core (TC):     %d voxels (%.1f mm³)", tc_vox, tc_vol_mm3)
+    logger.info("Whole Tumor (WT):    %d voxels (%.1f mm³)", wt_vox, wt_vol_mm3)
+    logger.info("Enhancing Tumor (ET): %d voxels (%.1f mm³)", et_vox, et_vol_mm3)
     logger.info("Saved Segmentation:  %s", args.output)
     logger.info("=" * 60)
 

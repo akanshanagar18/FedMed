@@ -339,6 +339,17 @@ class ClinicalInferenceEngine:
             output_file = str(output_nifti_path)
             t_save_ms = (time.time() - t_save_start) * 1000.0
 
+        # Extract physical voxel volume (mm³ per voxel) from transformed affine
+        voxel_vol_mm3 = 1.0
+        if hasattr(processed.get("image"), "meta") and "affine" in processed["image"].meta:
+            try:
+                t_aff = np.array(processed["image"].meta["affine"])
+                det = float(np.abs(np.linalg.det(t_aff[:3, :3])))
+                if det > 0.001 and not np.isnan(det) and not np.isinf(det):
+                    voxel_vol_mm3 = det
+            except Exception:
+                voxel_vol_mm3 = 1.0
+
         total_time_ms = t_val_ms + t_prep_ms + t_inf_ms + t_post_ms + t_save_ms
 
         tc_count = int(np.sum(mask_tc_vol))
@@ -350,15 +361,16 @@ class ClinicalInferenceEngine:
             "error_code": ClinicalErrorCode.OK.value,
             "device": str(self.device),
             "output_nifti_path": output_file,
+            "voxel_volume_mm3": round(voxel_vol_mm3, 4),
             "segmented_voxels": {
                 "TC_voxels": tc_count,
                 "WT_voxels": wt_count,
                 "ET_voxels": et_count,
             },
             "tumor_volumes_mm3": {
-                "tumor_core_tc": float(tc_count),
-                "whole_tumor_wt": float(wt_count),
-                "enhancing_tumor_et": float(et_count),
+                "tumor_core_tc": round(float(tc_count) * voxel_vol_mm3, 1),
+                "whole_tumor_wt": round(float(wt_count) * voxel_vol_mm3, 1),
+                "enhancing_tumor_et": round(float(et_count) * voxel_vol_mm3, 1),
             },
             "visual_slices": {
                 "axial": axial_b64,
@@ -464,6 +476,7 @@ class BraTSInferenceEngine:
                 "patient_id": patient_id,
                 "model_version": model_version,
                 "inference_time_ms": res.get("timing_ms", {}).get("total_inference_time_ms", 0.0),
+                "voxel_volume_mm3": res.get("voxel_volume_mm3", 1.0),
                 "tumor_volumes_mm3": res.get("tumor_volumes_mm3", {}),
                 "segmented_voxels": res.get("segmented_voxels", {}),
                 "visual_slices": res.get("visual_slices", {}),

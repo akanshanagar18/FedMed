@@ -1,6 +1,6 @@
 {
-  "audit_phase": "PHASE_13_FINAL_SMOKE_TEST",
-  "timestamp": "2026-08-18T15:09:17.428312+00:00",
+  "audit_phase": "PHASE_14_FINAL_PRODUCT_TRUTH_SMOKE_TEST",
+  "timestamp": "2026-08-18T15:38:47.933848+00:00",
   "overall_status": "PASS",
   "safe_demo_subject": "BraTS-GLI-00005-100",
   "checks": [
@@ -27,11 +27,17 @@
     {
       "check": "live_segmentation_and_slices",
       "status": "PASS",
-      "latency_ms": 1029.95,
+      "latency_ms": 795.09,
+      "voxel_volume_mm3": 1.2974,
+      "segmented_voxels": {
+        "TC_voxels": 920412,
+        "WT_voxels": 924396,
+        "ET_voxels": 561831
+      },
       "tumor_volumes_mm3": {
-        "tumor_core_tc": 1788524.0,
-        "whole_tumor_wt": 350577.0,
-        "enhancing_tumor_et": 791910.0
+        "tumor_core_tc": 1194166.7,
+        "whole_tumor_wt": 1199335.6,
+        "enhancing_tumor_et": 728934.3
       },
       "slices_verified": [
         "axial",
