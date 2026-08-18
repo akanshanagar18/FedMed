@@ -1,8 +1,9 @@
 """
 FedMed - NIfTI Prediction Output
 
-Saves segmentation predictions as NIfTI files while
-preserving the spatial metadata of the original MRI.
+Handles prediction output paths and saves segmentation
+predictions as NIfTI files while preserving the spatial
+metadata of the original MRI.
 """
 
 from pathlib import Path
@@ -10,6 +11,84 @@ from pathlib import Path
 import nibabel as nib
 import numpy as np
 import torch
+
+
+DEFAULT_PREDICTION_DIR = Path(
+    "outputs"
+) / "predictions"
+
+
+def get_case_name(
+    image_path,
+):
+    """
+    Extract the case name from an MRI filename.
+
+    Examples
+    --------
+    BRATS_001.nii.gz
+        -> BRATS_001
+
+    BRATS_001.nii
+        -> BRATS_001
+    """
+
+    image_path = Path(
+        image_path
+    )
+
+    filename = image_path.name
+
+    if filename.endswith(
+        ".nii.gz"
+    ):
+        return filename[:-7]
+
+    if filename.endswith(
+        ".nii"
+    ):
+        return filename[:-4]
+
+    return image_path.stem
+
+
+def get_prediction_path(
+    image_path,
+    output_dir=DEFAULT_PREDICTION_DIR,
+):
+    """
+    Create the standard prediction output path.
+
+    Parameters
+    ----------
+    image_path : str or Path
+        Input MRI path.
+
+    output_dir : str or Path
+        Directory where predictions are saved.
+
+    Returns
+    -------
+    Path
+        Standard prediction path.
+    """
+
+    image_path = Path(
+        image_path
+    )
+
+    output_dir = Path(
+        output_dir
+    )
+
+    case_name = get_case_name(
+        image_path
+    )
+
+    return (
+        output_dir
+        / f"{case_name}_prediction.nii.gz"
+    )
 
 
 def save_segmentation_nifti(
@@ -20,8 +99,8 @@ def save_segmentation_nifti(
     """
     Save a segmentation mask as a NIfTI file.
 
-    The affine transformation and spatial metadata from the
-    original MRI are preserved.
+    The affine transformation and spatial metadata from
+    the original MRI are preserved.
 
     Parameters
     ----------
@@ -113,12 +192,6 @@ def save_segmentation_nifti(
 
     # --------------------------------------------------------
     # Convert segmentation labels to uint8
-    #
-    # Expected labels:
-    # 0 = background
-    # 1 = class 1
-    # 2 = class 2
-    # 3 = class 3
     # --------------------------------------------------------
 
     segmentation = segmentation.astype(
@@ -142,21 +215,12 @@ def save_segmentation_nifti(
         reference_image.header.copy()
     )
 
-    # Explicitly set the output datatype to uint8.
-    #
-    # This is important because the prediction is a
-    # discrete segmentation mask rather than continuous
-    # MRI intensity data.
     output_header.set_data_dtype(
         np.uint8
     )
 
     # --------------------------------------------------------
     # Create prediction NIfTI
-    #
-    # The original affine is preserved so that the
-    # segmentation remains spatially aligned with
-    # the source MRI.
     # --------------------------------------------------------
 
     prediction_image = nib.Nifti1Image(
