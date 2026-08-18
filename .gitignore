@@ -5,3 +5,4 @@ venv/
 outputs/
 # Medical imaging dataset
 data/
+inference_data/
