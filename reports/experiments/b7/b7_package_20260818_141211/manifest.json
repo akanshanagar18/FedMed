@@ -1,0 +1,36 @@
+{
+  "artifact_name": "fedmed_brats_3dunet_v2",
+  "artifact_classification": "DEVELOPMENT_VALIDATION_ARTIFACT",
+  "creation_timestamp": "2026-08-18T14:12:11.252659+00:00",
+  "model_hash": "2ffbb9dc531af508cf331c8eadd36b20728af7a9c4d8f43075973972b9136d1f",
+  "architecture_hash": "fe7cab139a7b118f51cf04de84fc545d9840a83af0ecaeecfd359e378502f156",
+  "preprocessing_hash": "81d38357138fbee91f0b86dc899af945f69f57eb4418ae8c0976a9c8c74e5008",
+  "training_provenance": {
+    "training_dataset_mode": "DEVELOPMENT_SYNTHETIC",
+    "training_split_hash": "4ce10ac52c093ec0971f306b6d4145e383ad92eeb231c551c6f841b64864384f",
+    "training_algorithm": "FedAvg / Sample-Weighted Federated Aggregation",
+    "model_architecture": "MONAI 3D UNet (4,810,074 params)"
+  },
+  "software_environment": {
+    "python": "3.9.6",
+    "pytorch": "2.8.0"
+  },
+  "files": [
+    {
+      "path": "model.pt",
+      "sha256": "2ffbb9dc531af508cf331c8eadd36b20728af7a9c4d8f43075973972b9136d1f"
+    },
+    {
+      "path": "architecture.json",
+      "sha256": "fe7cab139a7b118f51cf04de84fc545d9840a83af0ecaeecfd359e378502f156"
+    },
+    {
+      "path": "preprocessing.yaml",
+      "sha256": "81d38357138fbee91f0b86dc899af945f69f57eb4418ae8c0976a9c8c74e5008"
+    },
+    {
+      "path": "README.md",
+      "sha256": "aeba75b6c81fb202ca1dc001f76213e6729a8679008dea7664565779b6d222ff"
+    }
+  ]
+}

@@ -1,0 +1,292 @@
+{
+  "benchmark_run_id": "benchmark_run_20260815_114224",
+  "dataset_mode": "DEVELOPMENT_SYNTHETIC",
+  "split_hash": "4ce10ac52c093ec0971f306b6d4145e383ad92eeb231c551c6f841b64864384f",
+  "seed": 42,
+  "fairness_verification": {
+    "same_split": true,
+    "same_initialization": true,
+    "initial_parameter_hash": "5ba650f3408c97c76d3146fd2a31044cc9d4e926add4964ae8b079e6988e1d93",
+    "same_model_architecture": true,
+    "same_parameter_count": 4810074,
+    "same_optimizer_and_lr": true,
+    "same_training_budget": true,
+    "no_static_benchmark_lookups": true
+  },
+  "algorithms": {
+    "Centralized": {
+      "algorithm": "Centralized",
+      "initial_parameter_hash": "5ba650f3408c97c76d3146fd2a31044cc9d4e926add4964ae8b079e6988e1d93",
+      "final_parameter_hash": "836aed86d2b2f55a8952c072f7adb645d393a52c9ecf195a308699e94ea6fdb8",
+      "execution_time_seconds": 0.18281078338623047,
+      "history": [
+        {
+          "epoch": 1,
+          "training_loss": 1.8747889399528503,
+          "validation_dice": {
+            "dice_TC": 0.453707,
+            "dice_WT": 0.626032,
+            "dice_ET": 0.0,
+            "mean_dice": 0.359913
+          },
+          "validation_iou": {
+            "iou_TC": 0.293416,
+            "iou_WT": 0.455638,
+            "iou_ET": 0.0,
+            "mean_iou": 0.249685
+          }
+        },
+        {
+          "epoch": 2,
+          "training_loss": 1.8667690753936768,
+          "validation_dice": {
+            "dice_TC": 0.454233,
+            "dice_WT": 0.628552,
+            "dice_ET": 0.0,
+            "mean_dice": 0.360928
+          },
+          "validation_iou": {
+            "iou_TC": 0.293856,
+            "iou_WT": 0.458313,
+            "iou_ET": 0.0,
+            "mean_iou": 0.250723
+          }
+        }
+      ],
+      "final_validation_dice": {
+        "dice_TC": 0.454233,
+        "dice_WT": 0.628552,
+        "dice_ET": 0.0,
+        "mean_dice": 0.360928
+      },
+      "final_validation_iou": {
+        "iou_TC": 0.293856,
+        "iou_WT": 0.458313,
+        "iou_ET": 0.0,
+        "mean_iou": 0.250723
+      },
+      "final_test_dice": {
+        "dice_TC": 0.453828,
+        "dice_WT": 0.625982,
+        "dice_ET": 0.0,
+        "mean_dice": 0.359937
+      },
+      "final_test_iou": {
+        "iou_TC": 0.293517,
+        "iou_WT": 0.455585,
+        "iou_ET": 0.0,
+        "mean_iou": 0.249701
+      },
+      "checkpoint_path": "/Users/siddhant_patil/Projects/FedMed/checkpoints/centralized/centralized_best.pt"
+    },
+    "FedAvg": {
+      "algorithm": "FedAvg",
+      "initial_parameter_hash": "5ba650f3408c97c76d3146fd2a31044cc9d4e926add4964ae8b079e6988e1d93",
+      "final_parameter_hash": "72ce26139e906e59ea642b6f5f0f55d3d89c3f9570f81f8504f6b44041362b18",
+      "execution_time_seconds": 0.4160010814666748,
+      "history": [
+        {
+          "round": 1,
+          "training_loss": 1.8757915496826172,
+          "client_losses": {
+            "hospital_alpha": 1.8791314363479614,
+            "hospital_beta": 1.872451663017273
+          },
+          "validation_dice": {
+            "dice_TC": 0.453907,
+            "dice_WT": 0.625643,
+            "dice_ET": 0.0,
+            "mean_dice": 0.35985
+          },
+          "validation_iou": {
+            "iou_TC": 0.293583,
+            "iou_WT": 0.455226,
+            "iou_ET": 0.0,
+            "mean_iou": 0.249603
+          }
+        },
+        {
+          "round": 2,
+          "training_loss": 1.8716037273406982,
+          "client_losses": {
+            "hospital_alpha": 1.8732013702392578,
+            "hospital_beta": 1.8700060844421387
+          },
+          "validation_dice": {
+            "dice_TC": 0.454752,
+            "dice_WT": 0.628036,
+            "dice_ET": 0.0,
+            "mean_dice": 0.360929
+          },
+          "validation_iou": {
+            "iou_TC": 0.29429,
+            "iou_WT": 0.457764,
+            "iou_ET": 0.0,
+            "mean_iou": 0.250685
+          }
+        }
+      ],
+      "final_validation_dice": {
+        "dice_TC": 0.454752,
+        "dice_WT": 0.628036,
+        "dice_ET": 0.0,
+        "mean_dice": 0.360929
+      },
+      "final_validation_iou": {
+        "iou_TC": 0.29429,
+        "iou_WT": 0.457764,
+        "iou_ET": 0.0,
+        "mean_iou": 0.250685
+      },
+      "final_test_dice": {
+        "dice_TC": 0.451961,
+        "dice_WT": 0.62247,
+        "dice_ET": 0.0,
+        "mean_dice": 0.358144
+      },
+      "final_test_iou": {
+        "iou_TC": 0.291957,
+        "iou_WT": 0.451874,
+        "iou_ET": 0.0,
+        "mean_iou": 0.247944
+      },
+      "checkpoint_path": "/Users/siddhant_patil/Projects/FedMed/checkpoints/fedavg/global_best.pt"
+    },
+    "FedProx": {
+      "algorithm": "FedProx",
+      "proximal_mu": 0.01,
+      "initial_parameter_hash": "5ba650f3408c97c76d3146fd2a31044cc9d4e926add4964ae8b079e6988e1d93",
+      "final_parameter_hash": "273019621de06ef6b2dbd015c6b3ef79b32170499a39545b1f71e6fb9552854a",
+      "execution_time_seconds": 0.5370140075683594,
+      "history": [
+        {
+          "round": 1,
+          "training_loss": 1.878058135509491,
+          "proximal_penalty": 0.0,
+          "total_loss": 1.878058135509491,
+          "client_losses": {
+            "hospital_alpha": 1.877392292022705,
+            "hospital_beta": 1.8787239789962769
+          },
+          "client_proximal_penalties": {
+            "hospital_alpha": 0.0,
+            "hospital_beta": 0.0
+          },
+          "validation_dice": {
+            "dice_TC": 0.452498,
+            "dice_WT": 0.626274,
+            "dice_ET": 0.0,
+            "mean_dice": 0.359591
+          },
+          "validation_iou": {
+            "iou_TC": 0.292406,
+            "iou_WT": 0.455895,
+            "iou_ET": 0.0,
+            "mean_iou": 0.249434
+          }
+        },
+        {
+          "round": 2,
+          "training_loss": 1.866342544555664,
+          "proximal_penalty": 0.0,
+          "total_loss": 1.866342544555664,
+          "client_losses": {
+            "hospital_alpha": 1.85800039768219,
+            "hospital_beta": 1.8746846914291382
+          },
+          "client_proximal_penalties": {
+            "hospital_alpha": 0.0,
+            "hospital_beta": 0.0
+          },
+          "validation_dice": {
+            "dice_TC": 0.453034,
+            "dice_WT": 0.627449,
+            "dice_ET": 0.0,
+            "mean_dice": 0.360161
+          },
+          "validation_iou": {
+            "iou_TC": 0.292854,
+            "iou_WT": 0.457141,
+            "iou_ET": 0.0,
+            "mean_iou": 0.249998
+          }
+        }
+      ],
+      "final_validation_dice": {
+        "dice_TC": 0.453034,
+        "dice_WT": 0.627449,
+        "dice_ET": 0.0,
+        "mean_dice": 0.360161
+      },
+      "final_validation_iou": {
+        "iou_TC": 0.292854,
+        "iou_WT": 0.457141,
+        "iou_ET": 0.0,
+        "mean_iou": 0.249998
+      },
+      "final_test_dice": {
+        "dice_TC": 0.451623,
+        "dice_WT": 0.622511,
+        "dice_ET": 0.0,
+        "mean_dice": 0.358045
+      },
+      "final_test_iou": {
+        "iou_TC": 0.291675,
+        "iou_WT": 0.451917,
+        "iou_ET": 0.0,
+        "mean_iou": 0.247864
+      },
+      "checkpoint_path": "/Users/siddhant_patil/Projects/FedMed/checkpoints/fedprox/fedprox_best.pt"
+    }
+  },
+  "results_summary": [
+    {
+      "algorithm": "Centralized",
+      "val_tc_dice": 0.454233,
+      "val_wt_dice": 0.628552,
+      "val_et_dice": 0.0,
+      "val_mean_dice": 0.360928,
+      "val_mean_iou": 0.250723,
+      "test_tc_dice": 0.453828,
+      "test_wt_dice": 0.625982,
+      "test_et_dice": 0.0,
+      "test_mean_dice": 0.359937,
+      "test_mean_iou": 0.249701,
+      "execution_time_s": 0.18281078338623047
+    },
+    {
+      "algorithm": "FedAvg",
+      "val_tc_dice": 0.454752,
+      "val_wt_dice": 0.628036,
+      "val_et_dice": 0.0,
+      "val_mean_dice": 0.360929,
+      "val_mean_iou": 0.250685,
+      "test_tc_dice": 0.451961,
+      "test_wt_dice": 0.62247,
+      "test_et_dice": 0.0,
+      "test_mean_dice": 0.358144,
+      "test_mean_iou": 0.247944,
+      "execution_time_s": 0.4160010814666748
+    },
+    {
+      "algorithm": "FedProx",
+      "val_tc_dice": 0.453034,
+      "val_wt_dice": 0.627449,
+      "val_et_dice": 0.0,
+      "val_mean_dice": 0.360161,
+      "val_mean_iou": 0.249998,
+      "test_tc_dice": 0.451623,
+      "test_wt_dice": 0.622511,
+      "test_et_dice": 0.0,
+      "test_mean_dice": 0.358045,
+      "test_mean_iou": 0.247864,
+      "execution_time_s": 0.5370140075683594
+    }
+  ],
+  "test_firewall_status": {
+    "TEST_ACCESSED_DURING_TRAINING": false,
+    "FINAL_TEST_EVALUATED": true,
+    "TEST_EVALUATION_COUNT_PER_ALGO": 1
+  },
+  "et_limitation_note": "ET metrics evaluate to 0.0 because ground truth ET active voxels are absent in this 4-case development cohort."
+}

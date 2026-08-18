@@ -1,0 +1,30 @@
+model:
+  name: "MONAI 3D U-Net"
+  checkpoint_path: "model.pt"
+  expected_sha256: "f6cd18dc5e05595ca88ad1675190aabb98595ee9f6d6dfed36c25b596f652f3a"
+  spatial_dims: 3
+  in_channels: 4
+  out_channels: 3
+  channels: [16, 32, 64, 128, 256]
+  strides: [2, 2, 2, 2]
+  num_res_units: 2
+  parameter_count: 4810074
+
+preprocessing:
+  spatial_shape: [128, 128, 128]
+  modalities: ["t1", "t1ce", "t2", "flair"]
+  normalize_intensity: true
+  orientation: "RAS"
+
+postprocessing:
+  activation: "sigmoid"
+  threshold: 0.5
+  channels:
+    0: "TC (Tumor Core)"
+    1: "WT (Whole Tumor)"
+    2: "ET (Enhancing Tumor)"
+
+execution:
+  allow_mps: true
+  batch_size: 1
+  save_nifti: true

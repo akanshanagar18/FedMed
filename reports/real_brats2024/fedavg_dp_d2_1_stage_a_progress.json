@@ -1,0 +1,23 @@
+{
+  "status": "COMPLETED",
+  "current_round": 1,
+  "total_rounds": 1,
+  "round_progress": "1/1",
+  "completed_clients": 4,
+  "total_clients": 4,
+  "current_client": null,
+  "elapsed_seconds": 97.68,
+  "estimated_remaining_seconds": 0.0,
+  "estimated_remaining_hours": 0.0,
+  "latest_validation_loss": 0.9905,
+  "latest_macro_dice": 0.0175,
+  "best_macro_dice": 0.0175,
+  "best_round": 1,
+  "current_epsilon": 1.4633,
+  "target_epsilon": 2.8934,
+  "accountant_steps": 1,
+  "target_accountant_steps": 4720,
+  "MPS_memory": 156.54,
+  "last_checkpoint": "/Users/siddhant_patil/Projects/FedMed/checkpoints/fedavg_dp_d2_1_stage_a/latest.pt",
+  "timestamp": "2026-08-17T13:35:04.453281+00:00"
+}

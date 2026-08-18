@@ -1,0 +1,67 @@
+{
+  "run_id": "benchmark_run_20260816_114656",
+  "execution_mode": "DEVELOPMENT_SYNTHETIC",
+  "dataset_mode": "DEVELOPMENT_SYNTHETIC",
+  "split_hash": "4ce10ac52c093ec0971f306b6d4145e383ad92eeb231c551c6f841b64864384f",
+  "seed": 42,
+  "train_subjects": [
+    "BraTS2021_00003",
+    "BraTS2021_00004"
+  ],
+  "validation_subjects": [
+    "BraTS2021_00002"
+  ],
+  "test_subjects": [
+    "BraTS2021_00001"
+  ],
+  "model_configuration": {
+    "name": "UNet3D",
+    "parameter_count": 4810074,
+    "channels": [
+      16,
+      32,
+      64,
+      128,
+      256
+    ],
+    "strides": [
+      2,
+      2,
+      2,
+      2
+    ],
+    "num_res_units": 2
+  },
+  "preprocessing_configuration": {
+    "spatial_shape": [
+      32,
+      32,
+      32
+    ],
+    "modalities": [
+      "t1",
+      "t1ce",
+      "t2",
+      "flair"
+    ]
+  },
+  "optimizer_configuration": {
+    "optimizer": "Adam",
+    "learning_rate": 0.0001,
+    "weight_decay": 1e-05,
+    "loss_fn": "DiceCELoss(sigmoid=True)"
+  },
+  "training_budget": {
+    "centralized_epochs": 2,
+    "federated_rounds": 2,
+    "federated_local_epochs": 1,
+    "total_cohort_sample_passes": 4
+  },
+  "algorithms": [
+    "Centralized",
+    "FedAvg",
+    "FedProx"
+  ],
+  "initial_parameter_hash": "5ba650f3408c97c76d3146fd2a31044cc9d4e926add4964ae8b079e6988e1d93",
+  "created_at": "2026-08-16T11:46:56.795425+00:00"
+}

@@ -1,0 +1,26 @@
+{
+  "dataset_mode": "DEVELOPMENT_SYNTHETIC",
+  "seed": 42,
+  "train_ratio": 0.7,
+  "val_ratio": 0.15,
+  "test_ratio": 0.15,
+  "total_subjects": 4,
+  "train_subjects": [
+    "BraTS2021_00003",
+    "BraTS2021_00004"
+  ],
+  "validation_subjects": [
+    "BraTS2021_00002"
+  ],
+  "test_subjects": [
+    "BraTS2021_00001"
+  ],
+  "counts": {
+    "train": 2,
+    "validation": 1,
+    "test": 1
+  },
+  "disjoint_verified": true,
+  "split_hash": "4ce10ac52c093ec0971f306b6d4145e383ad92eeb231c551c6f841b64864384f",
+  "warning": "WARNING: INSUFFICIENT_DATASET_SIZE_FOR_MEANINGFUL_EXPERIMENT"
+}

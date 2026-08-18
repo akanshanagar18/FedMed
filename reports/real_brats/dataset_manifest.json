@@ -1,0 +1,125 @@
+{
+  "dataset_name": "BraTS2021",
+  "data_directory": "/Users/siddhant_patil/Projects/FedMed/data/BraTS2021",
+  "dataset_mode": "DEVELOPMENT_SYNTHETIC",
+  "is_real_brats": false,
+  "status_message": "DEVELOPMENT SYNTHETIC COHORT ONLY (REAL BRATS ABSENT)",
+  "total_subjects_found": 4,
+  "valid_subjects_count": 4,
+  "invalid_subjects_count": 0,
+  "subjects": [
+    {
+      "subject_id": "BraTS2021_00001",
+      "valid": true,
+      "reason": "OK",
+      "spatial_shape": [
+        32,
+        32,
+        32
+      ],
+      "voxel_spacing": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "labels": [
+        0,
+        1,
+        2
+      ],
+      "tumor_voxels": 21895,
+      "file_hashes": {
+        "t1": "74ced1ccb0833869e6ba7c7c2092d253e60005af11e715d5a52dc4cbfc3bee37",
+        "t1ce": "4303e926cd6c98b1b4214d457ee4b5e2c012b33f425be1b0a7e2155017a6fa87",
+        "t2": "af3dae6c36dee186f3a2c6c6a5e7e11ca53e39f3aad32a67231bdc876aea6927",
+        "flair": "2c93fe824d4f289a06e41a1db631f73b0a507aa98aa98bf83c8ea89ba6f84df5",
+        "seg": "871ee4b6380f981d73e3f14451ca4d1a5876e3806255200bd88763d3a68d2fb3"
+      }
+    },
+    {
+      "subject_id": "BraTS2021_00002",
+      "valid": true,
+      "reason": "OK",
+      "spatial_shape": [
+        32,
+        32,
+        32
+      ],
+      "voxel_spacing": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "labels": [
+        0,
+        1,
+        2
+      ],
+      "tumor_voxels": 21856,
+      "file_hashes": {
+        "t1": "0067f276ab9b173c329574a560af853a8bac71ca5d2cd3d2ae66adb70c380545",
+        "t1ce": "b6cde3bc758e0c1f140741778deb8f61b4c32930f5b5692006fef1e2528b2a1a",
+        "t2": "1df9bbdc0012c433c8e0248c703ac76fb5dacb83a66a5b0eaa731f61c166b97e",
+        "flair": "11cebd9bb5713b560290fd5335ad783c261e1d9a2cf629d6f6feda648af46c3c",
+        "seg": "0f1a1bde46ed45b8fd8a336b1b7d861af5b3691683d1ccc4c0b14b1949956063"
+      }
+    },
+    {
+      "subject_id": "BraTS2021_00003",
+      "valid": true,
+      "reason": "OK",
+      "spatial_shape": [
+        32,
+        32,
+        32
+      ],
+      "voxel_spacing": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "labels": [
+        0,
+        1,
+        2
+      ],
+      "tumor_voxels": 21824,
+      "file_hashes": {
+        "t1": "d5112ffb88ae271e728b7b11596292df096c975025ee5a8d11773458435e952c",
+        "t1ce": "12b4f798f11ce01e6ef24b2da3f1103d3a763c2af78a5b2a37dadcc09f781373",
+        "t2": "373516d150264b522f873f0b98cb3c5bd84192138ac367c17e1f33105bde0651",
+        "flair": "2fbf33afd4bcfa39f54ffe374daabb0e21bfd3aa43c1f16a7ffc5eb6775044fc",
+        "seg": "0d73c4a343250e184c2a95d6cd4f48c2dd0741d4e28b5e6ecfc083cfdf6cc179"
+      }
+    },
+    {
+      "subject_id": "BraTS2021_00004",
+      "valid": true,
+      "reason": "OK",
+      "spatial_shape": [
+        32,
+        32,
+        32
+      ],
+      "voxel_spacing": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "labels": [
+        0,
+        1,
+        2
+      ],
+      "tumor_voxels": 21771,
+      "file_hashes": {
+        "t1": "62d32f608d42424068da3b0fed48191435d79be69f3d6d8422f6bc02cd43fb38",
+        "t1ce": "52453a32f8f1c3a731b172ebf3f08f52d208ef258797b75ed197b26f7ada8bd0",
+        "t2": "1b74bc79125d44a3a4abf07286e3ec8bc91b2954b11aa03b3bb1464cccc2069a",
+        "flair": "74c10a1789f07fd2fa15c7e6b43c326f154197a978d5afd4da1e2b0c6fb92be6",
+        "seg": "959509927a6e24155e86cfc7780390357bbf895ab96fceadfb2eae3b1f8a8611"
+      }
+    }
+  ],
+  "dataset_manifest_hash": "312b93f1bfb41b1e89526c1445840cb78b2624b155ad900b7dcf26a3c567d64f"
+}

@@ -2,22 +2,25 @@
 Module: tests.unit.test_mlflow_tracker
 
 Purpose:
-Unit test suite for MLflowTracker module.
+Unit test suite for MLflowTracker module, supporting both installed MLflow and graceful fallback modes.
 """
 
 import os
 import pytest
-from utils.mlflow_tracker import MLflowTracker, get_default_mlflow_tracker
+from utils.mlflow_tracker import MLflowTracker, get_default_mlflow_tracker, MLFLOW_AVAILABLE
 
 
 def test_mlflow_tracker_initialization(tmp_path):
     mlruns_dir = str(tmp_path / "mlruns")
     tracker = MLflowTracker(experiment_name="Test_Experiment", tracking_uri=f"file:{mlruns_dir}")
     assert tracker.experiment_name == "Test_Experiment"
-    assert tracker.is_active is True
+    assert tracker.is_active == MLFLOW_AVAILABLE
 
 
 def test_mlflow_run_lifecycle(tmp_path):
+    if not MLFLOW_AVAILABLE:
+        pytest.skip("MLflow is not installed in the local environment; skipping live MLflow API run test.")
+
     mlruns_dir = str(tmp_path / "mlruns")
     tracker = MLflowTracker(experiment_name="Test_Lifecycle", tracking_uri=f"file:{mlruns_dir}")
 
@@ -38,3 +41,4 @@ def test_mlflow_run_lifecycle(tmp_path):
 def test_default_factory():
     tracker = get_default_mlflow_tracker()
     assert tracker is not None
+

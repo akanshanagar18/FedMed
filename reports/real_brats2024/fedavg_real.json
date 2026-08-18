@@ -1,0 +1,651 @@
+{
+  "experiment_name": "EXPERIMENT_B_FEDAVG_REAL_DATA",
+  "timestamp_start": "2026-08-16T05:41:23.065806+00:00",
+  "timestamp_end": "2026-08-16T11:24:04.820087+00:00",
+  "status": "COMPLETED",
+  "dataset": {
+    "name": "BraTS-GLI",
+    "version": "2024",
+    "task": "adult_glioma_post_treatment",
+    "split_hash": "d0358ca42d4bf510624bbe7e86c3e4bc1e25a6174521b1280c0001eb2c66005c",
+    "partition_hash": "4d5905c88558883cadf9463517d3c9f856a353e4f3a570c40515f16b763fc4f8",
+    "total_subjects": 1350,
+    "train_subjects": 944,
+    "validation_subjects": 202,
+    "test_subjects": 204,
+    "hospital_silos": {
+      "hospital_alpha": 236,
+      "hospital_beta": 236,
+      "hospital_gamma": 236,
+      "hospital_delta": 236
+    },
+    "training_test_accesses": 0,
+    "test_firewall_verified": true
+  },
+  "model": {
+    "architecture": "MONAI 3D U-Net",
+    "spatial_dims": 3,
+    "in_channels": 4,
+    "out_channels": 3,
+    "channels": [
+      16,
+      32,
+      64,
+      128,
+      256
+    ],
+    "strides": [
+      2,
+      2,
+      2,
+      2
+    ],
+    "num_res_units": 2,
+    "total_parameters": 4810074
+  },
+  "federated_configuration": {
+    "strategy": "FedAvg",
+    "client_execution": "sequential",
+    "rounds": 20,
+    "clients_per_round": 4,
+    "local_epochs": 1,
+    "communication_payload_per_client_mb": 18.35,
+    "total_payload_per_round_mb": 73.4,
+    "loss_function": "DiceCELoss(sigmoid=True, lambda_dice=1.0, lambda_ce=0.2)",
+    "optimizer": "Adam(lr=1e-4, weight_decay=1e-5)",
+    "spatial_resolution": [
+      128,
+      128,
+      128
+    ],
+    "seed": 42,
+    "device": "mps",
+    "config_hash": "afd7f5de63419df8a98fafe8ce0fc0f636d4c0048939cc5e8862b1b252886ccd"
+  },
+  "performance_summary": {
+    "best_round": 20,
+    "best_validation_metrics": {
+      "val_loss": 0.649858,
+      "mean_dice": 0.3815,
+      "tc_dice": 0.1878,
+      "wt_dice": 0.784,
+      "et_dice": 0.1729,
+      "tc_iou": 0.1242,
+      "wt_iou": 0.6559,
+      "et_iou": 0.1106
+    },
+    "final_train_loss": 0.679523,
+    "final_val_loss": 0.649858,
+    "total_runtime_seconds": 20561.62,
+    "average_round_seconds": 1028.01,
+    "peak_mps_memory_mb": 484.8,
+    "oom_detected": false
+  },
+  "checkpoint": {
+    "best_checkpoint_path": "/Users/siddhant_patil/Projects/FedMed/checkpoints/fedavg_real/best.pt",
+    "best_checkpoint_sha256": "41e4f62ea2825097e7890ddc1b797807cfaac0b0ce31212430f2ed45e626aeb3",
+    "latest_checkpoint_path": "/Users/siddhant_patil/Projects/FedMed/checkpoints/fedavg_real/latest.pt"
+  },
+  "round_history": [
+    {
+      "round": 1,
+      "mean_client_train_loss": 0.978832,
+      "client_losses": {
+        "hospital_alpha": 0.980256,
+        "hospital_beta": 0.977955,
+        "hospital_gamma": 0.97781,
+        "hospital_delta": 0.979308
+      },
+      "client_timings_sec": {
+        "hospital_alpha": 200.95,
+        "hospital_beta": 200.07,
+        "hospital_gamma": 207.94,
+        "hospital_delta": 219.45
+      },
+      "global_parameter_delta": 16.05822,
+      "client_divergence": 11.43902,
+      "val_loss": 0.97308,
+      "mean_dice": 0.0617,
+      "tc_dice": 0.0086,
+      "wt_dice": 0.1537,
+      "et_dice": 0.0229,
+      "tc_iou": 0.0044,
+      "wt_iou": 0.0895,
+      "et_iou": 0.0121,
+      "val_time_sec": 99.17,
+      "round_total_sec": 927.72
+    },
+    {
+      "round": 2,
+      "mean_client_train_loss": 0.971265,
+      "client_losses": {
+        "hospital_alpha": 0.972588,
+        "hospital_beta": 0.970767,
+        "hospital_gamma": 0.970341,
+        "hospital_delta": 0.971363
+      },
+      "client_timings_sec": {
+        "hospital_alpha": 224.83,
+        "hospital_beta": 227.04,
+        "hospital_gamma": 226.74,
+        "hospital_delta": 227.41
+      },
+      "global_parameter_delta": 17.491689,
+      "client_divergence": 9.532983,
+      "val_loss": 0.967018,
+      "mean_dice": 0.0883,
+      "tc_dice": 0.0099,
+      "wt_dice": 0.2189,
+      "et_dice": 0.0361,
+      "tc_iou": 0.0051,
+      "wt_iou": 0.1357,
+      "et_iou": 0.0197,
+      "val_time_sec": 102.19,
+      "round_total_sec": 1008.34
+    },
+    {
+      "round": 3,
+      "mean_client_train_loss": 0.96611,
+      "client_losses": {
+        "hospital_alpha": 0.967862,
+        "hospital_beta": 0.96544,
+        "hospital_gamma": 0.96522,
+        "hospital_delta": 0.965917
+      },
+      "client_timings_sec": {
+        "hospital_alpha": 230.43,
+        "hospital_beta": 231.75,
+        "hospital_gamma": 231.05,
+        "hospital_delta": 231.74
+      },
+      "global_parameter_delta": 13.394684,
+      "client_divergence": 8.097952,
+      "val_loss": 0.961673,
+      "mean_dice": 0.1081,
+      "tc_dice": 0.0097,
+      "wt_dice": 0.2669,
+      "et_dice": 0.0477,
+      "tc_iou": 0.0049,
+      "wt_iou": 0.1724,
+      "et_iou": 0.0266,
+      "val_time_sec": 105.45,
+      "round_total_sec": 1030.56
+    },
+    {
+      "round": 4,
+      "mean_client_train_loss": 0.960965,
+      "client_losses": {
+        "hospital_alpha": 0.962855,
+        "hospital_beta": 0.960451,
+        "hospital_gamma": 0.95987,
+        "hospital_delta": 0.960683
+      },
+      "client_timings_sec": {
+        "hospital_alpha": 236.29,
+        "hospital_beta": 231.78,
+        "hospital_gamma": 234.9,
+        "hospital_delta": 233.59
+      },
+      "global_parameter_delta": 9.660419,
+      "client_divergence": 7.424053,
+      "val_loss": 0.956063,
+      "mean_dice": 0.1275,
+      "tc_dice": 0.0097,
+      "wt_dice": 0.3158,
+      "et_dice": 0.0571,
+      "tc_iou": 0.0049,
+      "wt_iou": 0.2106,
+      "et_iou": 0.0323,
+      "val_time_sec": 109.33,
+      "round_total_sec": 1046.04
+    },
+    {
+      "round": 5,
+      "mean_client_train_loss": 0.955113,
+      "client_losses": {
+        "hospital_alpha": 0.95723,
+        "hospital_beta": 0.954318,
+        "hospital_gamma": 0.953879,
+        "hospital_delta": 0.955025
+      },
+      "client_timings_sec": {
+        "hospital_alpha": 233.74,
+        "hospital_beta": 244.47,
+        "hospital_gamma": 248.29,
+        "hospital_delta": 240.82
+      },
+      "global_parameter_delta": 8.020066,
+      "client_divergence": 9.510595,
+      "val_loss": 0.949342,
+      "mean_dice": 0.1424,
+      "tc_dice": 0.0101,
+      "wt_dice": 0.3522,
+      "et_dice": 0.0649,
+      "tc_iou": 0.0052,
+      "wt_iou": 0.2396,
+      "et_iou": 0.0369,
+      "val_time_sec": 108.3,
+      "round_total_sec": 1075.76
+    },
+    {
+      "round": 6,
+      "mean_client_train_loss": 0.948306,
+      "client_losses": {
+        "hospital_alpha": 0.950691,
+        "hospital_beta": 0.947476,
+        "hospital_gamma": 0.94717,
+        "hospital_delta": 0.947887
+      },
+      "client_timings_sec": {
+        "hospital_alpha": 232.97,
+        "hospital_beta": 244.35,
+        "hospital_gamma": 229.68,
+        "hospital_delta": 232.65
+      },
+      "global_parameter_delta": 7.122789,
+      "client_divergence": 9.777534,
+      "val_loss": 0.941655,
+      "mean_dice": 0.1525,
+      "tc_dice": 0.0135,
+      "wt_dice": 0.374,
+      "et_dice": 0.07,
+      "tc_iou": 0.0069,
+      "wt_iou": 0.258,
+      "et_iou": 0.0401,
+      "val_time_sec": 102.83,
+      "round_total_sec": 1042.63
+    },
+    {
+      "round": 7,
+      "mean_client_train_loss": 0.940044,
+      "client_losses": {
+        "hospital_alpha": 0.942221,
+        "hospital_beta": 0.939175,
+        "hospital_gamma": 0.938718,
+        "hospital_delta": 0.94006
+      },
+      "client_timings_sec": {
+        "hospital_alpha": 233.62,
+        "hospital_beta": 231.08,
+        "hospital_gamma": 231.94,
+        "hospital_delta": 230.5
+      },
+      "global_parameter_delta": 6.510551,
+      "client_divergence": 9.573581,
+      "val_loss": 0.930912,
+      "mean_dice": 0.1862,
+      "tc_dice": 0.0153,
+      "wt_dice": 0.4611,
+      "et_dice": 0.0823,
+      "tc_iou": 0.0079,
+      "wt_iou": 0.3333,
+      "et_iou": 0.048,
+      "val_time_sec": 102.83,
+      "round_total_sec": 1030.12
+    },
+    {
+      "round": 8,
+      "mean_client_train_loss": 0.925531,
+      "client_losses": {
+        "hospital_alpha": 0.928313,
+        "hospital_beta": 0.924755,
+        "hospital_gamma": 0.924369,
+        "hospital_delta": 0.924685
+      },
+      "client_timings_sec": {
+        "hospital_alpha": 231.77,
+        "hospital_beta": 231.09,
+        "hospital_gamma": 230.45,
+        "hospital_delta": 229.03
+      },
+      "global_parameter_delta": 6.244739,
+      "client_divergence": 9.97633,
+      "val_loss": 0.909917,
+      "mean_dice": 0.2093,
+      "tc_dice": 0.0191,
+      "wt_dice": 0.5274,
+      "et_dice": 0.0815,
+      "tc_iou": 0.01,
+      "wt_iou": 0.3949,
+      "et_iou": 0.0475,
+      "val_time_sec": 102.38,
+      "round_total_sec": 1024.86
+    },
+    {
+      "round": 9,
+      "mean_client_train_loss": 0.902361,
+      "client_losses": {
+        "hospital_alpha": 0.904746,
+        "hospital_beta": 0.902358,
+        "hospital_gamma": 0.901513,
+        "hospital_delta": 0.900828
+      },
+      "client_timings_sec": {
+        "hospital_alpha": 234.04,
+        "hospital_beta": 233.04,
+        "hospital_gamma": 230.41,
+        "hospital_delta": 233.29
+      },
+      "global_parameter_delta": 5.854204,
+      "client_divergence": 9.994227,
+      "val_loss": 0.882269,
+      "mean_dice": 0.2516,
+      "tc_dice": 0.0627,
+      "wt_dice": 0.5898,
+      "et_dice": 0.1024,
+      "tc_iou": 0.0357,
+      "wt_iou": 0.4536,
+      "et_iou": 0.0606,
+      "val_time_sec": 103.6,
+      "round_total_sec": 1034.53
+    },
+    {
+      "round": 10,
+      "mean_client_train_loss": 0.873869,
+      "client_losses": {
+        "hospital_alpha": 0.875201,
+        "hospital_beta": 0.874707,
+        "hospital_gamma": 0.873868,
+        "hospital_delta": 0.871699
+      },
+      "client_timings_sec": {
+        "hospital_alpha": 247.72,
+        "hospital_beta": 233.36,
+        "hospital_gamma": 236.95,
+        "hospital_delta": 231.16
+      },
+      "global_parameter_delta": 5.985641,
+      "client_divergence": 10.59601,
+      "val_loss": 0.849744,
+      "mean_dice": 0.3019,
+      "tc_dice": 0.1239,
+      "wt_dice": 0.6626,
+      "et_dice": 0.1192,
+      "tc_iou": 0.0763,
+      "wt_iou": 0.5289,
+      "et_iou": 0.0717,
+      "val_time_sec": 101.71,
+      "round_total_sec": 1051.05
+    },
+    {
+      "round": 11,
+      "mean_client_train_loss": 0.841611,
+      "client_losses": {
+        "hospital_alpha": 0.844048,
+        "hospital_beta": 0.842055,
+        "hospital_gamma": 0.841736,
+        "hospital_delta": 0.838603
+      },
+      "client_timings_sec": {
+        "hospital_alpha": 245.13,
+        "hospital_beta": 252.48,
+        "hospital_gamma": 235.1,
+        "hospital_delta": 233.26
+      },
+      "global_parameter_delta": 5.566046,
+      "client_divergence": 10.714424,
+      "val_loss": 0.815872,
+      "mean_dice": 0.334,
+      "tc_dice": 0.1411,
+      "wt_dice": 0.7297,
+      "et_dice": 0.1313,
+      "tc_iou": 0.0883,
+      "wt_iou": 0.5963,
+      "et_iou": 0.0798,
+      "val_time_sec": 102.59,
+      "round_total_sec": 1068.72
+    },
+    {
+      "round": 12,
+      "mean_client_train_loss": 0.810301,
+      "client_losses": {
+        "hospital_alpha": 0.81261,
+        "hospital_beta": 0.810015,
+        "hospital_gamma": 0.810911,
+        "hospital_delta": 0.807667
+      },
+      "client_timings_sec": {
+        "hospital_alpha": 227.96,
+        "hospital_beta": 240.5,
+        "hospital_gamma": 235.7,
+        "hospital_delta": 229.38
+      },
+      "global_parameter_delta": 5.078479,
+      "client_divergence": 10.503076,
+      "val_loss": 0.783653,
+      "mean_dice": 0.3427,
+      "tc_dice": 0.1466,
+      "wt_dice": 0.746,
+      "et_dice": 0.1356,
+      "tc_iou": 0.0921,
+      "wt_iou": 0.6152,
+      "et_iou": 0.0826,
+      "val_time_sec": 102.54,
+      "round_total_sec": 1036.22
+    },
+    {
+      "round": 13,
+      "mean_client_train_loss": 0.783397,
+      "client_losses": {
+        "hospital_alpha": 0.785358,
+        "hospital_beta": 0.783754,
+        "hospital_gamma": 0.786248,
+        "hospital_delta": 0.778228
+      },
+      "client_timings_sec": {
+        "hospital_alpha": 241.44,
+        "hospital_beta": 230.55,
+        "hospital_gamma": 232.62,
+        "hospital_delta": 231.85
+      },
+      "global_parameter_delta": 4.832677,
+      "client_divergence": 10.503389,
+      "val_loss": 0.757611,
+      "mean_dice": 0.3486,
+      "tc_dice": 0.1492,
+      "wt_dice": 0.7594,
+      "et_dice": 0.1371,
+      "tc_iou": 0.0939,
+      "wt_iou": 0.6295,
+      "et_iou": 0.0837,
+      "val_time_sec": 100.37,
+      "round_total_sec": 1036.97
+    },
+    {
+      "round": 14,
+      "mean_client_train_loss": 0.760861,
+      "client_losses": {
+        "hospital_alpha": 0.766084,
+        "hospital_beta": 0.762816,
+        "hospital_gamma": 0.760405,
+        "hospital_delta": 0.75414
+      },
+      "client_timings_sec": {
+        "hospital_alpha": 226.59,
+        "hospital_beta": 230.14,
+        "hospital_gamma": 227.19,
+        "hospital_delta": 226.67
+      },
+      "global_parameter_delta": 5.396423,
+      "client_divergence": 11.954159,
+      "val_loss": 0.737763,
+      "mean_dice": 0.3509,
+      "tc_dice": 0.1546,
+      "wt_dice": 0.756,
+      "et_dice": 0.142,
+      "tc_iou": 0.0982,
+      "wt_iou": 0.629,
+      "et_iou": 0.0872,
+      "val_time_sec": 101.34,
+      "round_total_sec": 1012.08
+    },
+    {
+      "round": 15,
+      "mean_client_train_loss": 0.742596,
+      "client_losses": {
+        "hospital_alpha": 0.746149,
+        "hospital_beta": 0.743203,
+        "hospital_gamma": 0.746652,
+        "hospital_delta": 0.734381
+      },
+      "client_timings_sec": {
+        "hospital_alpha": 228.11,
+        "hospital_beta": 226.37,
+        "hospital_gamma": 225.84,
+        "hospital_delta": 228.06
+      },
+      "global_parameter_delta": 4.889794,
+      "client_divergence": 10.317536,
+      "val_loss": 0.716051,
+      "mean_dice": 0.3614,
+      "tc_dice": 0.1606,
+      "wt_dice": 0.7768,
+      "et_dice": 0.1468,
+      "tc_iou": 0.1025,
+      "wt_iou": 0.6516,
+      "et_iou": 0.0906,
+      "val_time_sec": 101.99,
+      "round_total_sec": 1010.51
+    },
+    {
+      "round": 16,
+      "mean_client_train_loss": 0.725712,
+      "client_losses": {
+        "hospital_alpha": 0.73675,
+        "hospital_beta": 0.722141,
+        "hospital_gamma": 0.726841,
+        "hospital_delta": 0.717116
+      },
+      "client_timings_sec": {
+        "hospital_alpha": 229.7,
+        "hospital_beta": 229.7,
+        "hospital_gamma": 228.45,
+        "hospital_delta": 229.42
+      },
+      "global_parameter_delta": 4.744462,
+      "client_divergence": 11.115254,
+      "val_loss": 0.699039,
+      "mean_dice": 0.3654,
+      "tc_dice": 0.1643,
+      "wt_dice": 0.7816,
+      "et_dice": 0.1503,
+      "tc_iou": 0.1051,
+      "wt_iou": 0.6561,
+      "et_iou": 0.093,
+      "val_time_sec": 102.39,
+      "round_total_sec": 1019.8
+    },
+    {
+      "round": 17,
+      "mean_client_train_loss": 0.710513,
+      "client_losses": {
+        "hospital_alpha": 0.717126,
+        "hospital_beta": 0.710065,
+        "hospital_gamma": 0.71229,
+        "hospital_delta": 0.702571
+      },
+      "client_timings_sec": {
+        "hospital_alpha": 228.77,
+        "hospital_beta": 227.53,
+        "hospital_gamma": 227.42,
+        "hospital_delta": 228.16
+      },
+      "global_parameter_delta": 4.458606,
+      "client_divergence": 11.339467,
+      "val_loss": 0.682066,
+      "mean_dice": 0.3725,
+      "tc_dice": 0.1704,
+      "wt_dice": 0.7913,
+      "et_dice": 0.1559,
+      "tc_iou": 0.1098,
+      "wt_iou": 0.6677,
+      "et_iou": 0.0971,
+      "val_time_sec": 106.91,
+      "round_total_sec": 1018.93
+    },
+    {
+      "round": 18,
+      "mean_client_train_loss": 0.697977,
+      "client_losses": {
+        "hospital_alpha": 0.706279,
+        "hospital_beta": 0.69632,
+        "hospital_gamma": 0.698704,
+        "hospital_delta": 0.690606
+      },
+      "client_timings_sec": {
+        "hospital_alpha": 234.59,
+        "hospital_beta": 231.16,
+        "hospital_gamma": 231.48,
+        "hospital_delta": 238.85
+      },
+      "global_parameter_delta": 4.365445,
+      "client_divergence": 11.617208,
+      "val_loss": 0.67458,
+      "mean_dice": 0.3742,
+      "tc_dice": 0.182,
+      "wt_dice": 0.7739,
+      "et_dice": 0.1669,
+      "tc_iou": 0.1191,
+      "wt_iou": 0.6446,
+      "et_iou": 0.1056,
+      "val_time_sec": 105.82,
+      "round_total_sec": 1042.06
+    },
+    {
+      "round": 19,
+      "mean_client_train_loss": 0.68736,
+      "client_losses": {
+        "hospital_alpha": 0.695358,
+        "hospital_beta": 0.683682,
+        "hospital_gamma": 0.689279,
+        "hospital_delta": 0.681121
+      },
+      "client_timings_sec": {
+        "hospital_alpha": 238.87,
+        "hospital_beta": 229.51,
+        "hospital_gamma": 228.25,
+        "hospital_delta": 227.45
+      },
+      "global_parameter_delta": 4.513724,
+      "client_divergence": 10.737636,
+      "val_loss": 0.660509,
+      "mean_dice": 0.3751,
+      "tc_dice": 0.1768,
+      "wt_dice": 0.7865,
+      "et_dice": 0.162,
+      "tc_iou": 0.1154,
+      "wt_iou": 0.6618,
+      "et_iou": 0.1021,
+      "val_time_sec": 101.29,
+      "round_total_sec": 1025.51
+    },
+    {
+      "round": 20,
+      "mean_client_train_loss": 0.679523,
+      "client_losses": {
+        "hospital_alpha": 0.685222,
+        "hospital_beta": 0.674698,
+        "hospital_gamma": 0.68298,
+        "hospital_delta": 0.675192
+      },
+      "client_timings_sec": {
+        "hospital_alpha": 226.7,
+        "hospital_beta": 233.58,
+        "hospital_gamma": 225.02,
+        "hospital_delta": 229.69
+      },
+      "global_parameter_delta": 4.487753,
+      "client_divergence": 10.39914,
+      "val_loss": 0.649858,
+      "mean_dice": 0.3815,
+      "tc_dice": 0.1878,
+      "wt_dice": 0.784,
+      "et_dice": 0.1729,
+      "tc_iou": 0.1242,
+      "wt_iou": 0.6559,
+      "et_iou": 0.1106,
+      "val_time_sec": 102.67,
+      "round_total_sec": 1017.83
+    }
+  ]
+}

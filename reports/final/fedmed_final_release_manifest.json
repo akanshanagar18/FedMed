@@ -1,0 +1,99 @@
+{
+  "manifest_name": "FEDMED_FINAL_RELEASE_MANIFEST",
+  "project_identity": "FedMed — Privacy-Preserving Federated AI Platform for 3D Brain Tumor Segmentation",
+  "release_tag": "v2.1.0-dp-prod",
+  "release_timestamp": "2026-08-18T15:10:00Z",
+  "status_flags": {
+    "SCIENTIFIC_STATUS": "FROZEN",
+    "MODEL_STATUS": "FROZEN",
+    "DP_STATUS": "FROZEN",
+    "TEST_COHORT_STATUS": "LOCKED",
+    "RELEASE_STATUS": "FINAL_CANDIDATE"
+  },
+  "model_specification": {
+    "canonical_checkpoint_path": "checkpoints/final/fedmed_dp_final_model.pt",
+    "canonical_sha256": "f6cd18dc5e05595ca88ad1675190aabb98595ee9f6d6dfed36c25b596f652f3a",
+    "architecture": "MONAI 3D U-Net",
+    "spatial_dims": 3,
+    "input_channels": 4,
+    "input_modalities": ["T1-native (t1n)", "T1-contrast (t1c)", "T2-weighted (t2w)", "T2-FLAIR (t2f)"],
+    "output_channels": 3,
+    "target_classes": ["Tumor Core (TC)", "Whole Tumor (WT)", "Enhancing Tumor (ET)"],
+    "channels": [16, 32, 64, 128, 256],
+    "strides": [2, 2, 2, 2],
+    "num_res_units": 2,
+    "spatial_resolution": [128, 128, 128],
+    "trainable_parameters": 4810074,
+    "non_trainable_parameters": 0
+  },
+  "privacy_ledger": {
+    "framework": "Differential Privacy (DP-SGD)",
+    "mechanism": "Poisson Subsampled Gaussian Mechanism",
+    "epsilon": 2.8934,
+    "delta": 0.00001,
+    "optimal_rdp_order_alpha": 7,
+    "total_training_steps_T": 4720,
+    "clipping_bound_C": 0.06,
+    "noise_multiplier_sigma": 0.87,
+    "physical_coord_noise_std": 0.0522,
+    "poisson_subsampling_rate_q": "1 / 236",
+    "training_silos_count": 4,
+    "subjects_per_silo": 236
+  },
+  "benchmark_and_evaluation": {
+    "dataset": "BraTS-GLI 2024",
+    "total_cohort_subjects": 1350,
+    "training_subjects": 944,
+    "validation_subjects": 202,
+    "locked_test_subjects": 204,
+    "validation_metrics": {
+      "macro_dice": 0.0800,
+      "tumor_core_tc_dice": 0.2177,
+      "enhancing_tumor_et_dice": 0.0147,
+      "whole_tumor_wt_dice": 0.0076,
+      "macro_iou": 0.0497,
+      "loss": 0.9604
+    },
+    "locked_test_metrics": {
+      "macro_dice": 0.0741,
+      "macro_dice_95ci": [0.0656, 0.0831],
+      "tumor_core_tc_dice": 0.2054,
+      "tumor_core_tc_95ci": [0.1816, 0.2306],
+      "enhancing_tumor_et_dice": 0.0111,
+      "enhancing_tumor_et_95ci": [0.0086, 0.0138],
+      "whole_tumor_wt_dice": 0.0059,
+      "whole_tumor_wt_95ci": [0.0046, 0.0073],
+      "macro_iou": 0.0451,
+      "macro_iou_95ci": [0.0393, 0.0516],
+      "test_loss": 0.9628
+    },
+    "test_firewall": {
+      "training_test_accesses": 0,
+      "firewall_status": "UNBREACHED"
+    }
+  },
+  "system_entrypoints": {
+    "full_platform_launcher": "start_fedmed.py",
+    "zero_setup_demo": "demo.py",
+    "backend_app": "dashboard/backend/app/main.py",
+    "frontend_bundle": "dashboard/frontend/dist",
+    "production_package": "artifacts/production",
+    "standalone_inference_cli": "artifacts/production/run_production_inference.py"
+  },
+  "test_suite_status": {
+    "test_command": "pytest tests/unit/ tests/integration/ -v",
+    "total_collected": 323,
+    "total_passed": 323,
+    "total_failed": 0,
+    "total_skipped": 0,
+    "status": "100% PASS"
+  },
+  "documentation": {
+    "readme": "README.md",
+    "project_overview": "docs/FINAL_PROJECT_OVERVIEW.md",
+    "demo_script": "docs/FINAL_DEMO_SCRIPT.md",
+    "viva_qa": "docs/FINAL_VIVA_QA.md",
+    "submission_checklist": "docs/FINAL_SUBMISSION_CHECKLIST.md",
+    "phase_13_report": "docs/PHASE_13_FINAL_SUBMISSION_REPORT.md"
+  }
+}

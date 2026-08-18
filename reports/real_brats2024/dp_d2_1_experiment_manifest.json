@@ -1,0 +1,65 @@
+{
+  "experiment_name": "EXPERIMENT_D2.1_DP_SGD_MOMENTUM_LR1E3",
+  "status": "D2_1_STAGE_C_COMPLETE",
+  "timestamp": "2026-08-18T09:35:21.400957+00:00",
+  "artifacts": {
+    "config": {
+      "path": "configs/experiments/real_brats_dp_d2_1.yaml",
+      "sha256": "c1229d6cb041d595b4b6d11c3c7ab40c928459a2ad5a0bd2bdd501751fbd292e"
+    },
+    "report": {
+      "path": "reports/real_brats2024/fedavg_dp_d2_1.json",
+      "sha256": "315bb218d5306e600c61d2f1db9dcfc83861c68fb2d983418c5e6026a58bd543"
+    },
+    "history": {
+      "path": "reports/real_brats2024/fedavg_dp_d2_1_history.json",
+      "sha256": "60b3934c9f5d86e24db443b309366a6dc4e9999e711c71de77b73147c5954690"
+    },
+    "progress": {
+      "path": "reports/real_brats2024/fedavg_dp_d2_1_progress.json",
+      "sha256": "40345ad5c7a19ddf4a75a7e89d77b3758bd98c15149cd877c7f60d9065502254"
+    },
+    "checkpoint_best": {
+      "path": "checkpoints/fedavg_dp_d2_1/best.pt",
+      "sha256": "f6cd18dc5e05595ca88ad1675190aabb98595ee9f6d6dfed36c25b596f652f3a",
+      "size_bytes": 19269207
+    },
+    "checkpoint_latest": {
+      "path": "checkpoints/fedavg_dp_d2_1/latest.pt",
+      "sha256": "39131d9f000cb119500e07df06ee3a9ae95628a37b2e5ddad78e0642c41a39de",
+      "size_bytes": 19282337
+    }
+  },
+  "final_metrics": {
+    "rounds_completed": 20,
+    "best_round": 20,
+    "val_loss": 0.9604,
+    "macro_dice": 0.08,
+    "tc_dice": 0.2177,
+    "et_dice": 0.0147,
+    "wt_dice": 0.0076,
+    "tc_iou": 0.1377,
+    "et_iou": 0.0076,
+    "wt_iou": 0.0038,
+    "macro_iou": 0.0497
+  },
+  "privacy_metrics": {
+    "mechanism": "DP-SGD (Poisson Subsampled Gaussian)",
+    "C": 0.06,
+    "sigma": 0.87,
+    "physical_noise_std": 0.0522,
+    "q": 0.00423728813559322,
+    "T": 4720,
+    "optimal_alpha": 7,
+    "epsilon": 2.8934,
+    "delta": 1e-05
+  },
+  "invariants": {
+    "trainable_parameters": 4810074,
+    "training_test_accesses": 0,
+    "test_firewall_verified": true,
+    "nan_count": 0,
+    "inf_count": 0,
+    "oom_detected": false
+  }
+}

@@ -7,18 +7,18 @@ __pycache__/
 venv/
 env/
 ENV/
-.venv
+.venv/
 
 # Database & Runtime Output
 fedmed.db
 *.db
 outputs/
 logs/*.log
-checkpoints/*.pth
+scratch/
+data/raw/
 
-# Node & Frontend Build
+# Node & Frontend
 dashboard/frontend/node_modules/
-dashboard/frontend/dist/
 npm-debug.log*
 
 # Testing & Coverage
@@ -32,25 +32,38 @@ htmlcov/
 .idea/
 *.swp
 
-# MLflow
+# MLflow & TensorBoard
 mlruns/
-
-# TensorBoard
 runs/
-
-# Runtime database
-fedmed.db
-*.db
-
-# Checkpoints
-checkpoints/*.json
-checkpoints/*.pth
-
-# Training artifacts
 *.tfevents.*
+.cache/
+
+# Intermediate Training Checkpoints (Keep only final frozen candidate)
+checkpoints/centralized/
+checkpoints/centralized_real/
+checkpoints/fedavg/
+checkpoints/fedavg_dp_d1/
+checkpoints/fedavg_dp_d1_stage_a/
+checkpoints/fedavg_dp_d2/
+checkpoints/fedavg_dp_d2_1/
+checkpoints/fedavg_dp_d2_1_stage_a/
+checkpoints/fedavg_dp_d2_1_stage_b/
+checkpoints/fedavg_dp_d2_stage_a/
+checkpoints/fedavg_dp_real/
+checkpoints/fedavg_real/
+checkpoints/fedprox/
+checkpoints/fedprox_real/
+checkpoints/privacy/
+checkpoints/local_baseline_best.pt
+
+# Production Exports
 artifacts/exports/*.pt
 artifacts/exports/*_cert.json
-.cache/
+
+# TLS Certificates
 certs/*.pem
 certs/*.crt
 certs/*.key
+checkpoints/*.json
+checkpoints/*.pth
+artifacts/fedmed_model/

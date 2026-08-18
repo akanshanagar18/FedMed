@@ -1,0 +1,36 @@
+{
+  "run_id": "privacy_run_20260818_143907",
+  "execution_mode": "DEVELOPMENT_SYNTHETIC",
+  "split_hash": "4ce10ac52c093ec0971f306b6d4145e383ad92eeb231c551c6f841b64864384f",
+  "seed": 42,
+  "model_parameter_count": 4810074,
+  "initial_parameter_hash": "5ba650f3408c97c76d3146fd2a31044cc9d4e926add4964ae8b079e6988e1d93",
+  "dp_config": {
+    "enabled": true,
+    "mechanism": "Sampled Gaussian Mechanism",
+    "accountant": "RDP (Renyi Differential Privacy) Accountant",
+    "max_grad_norm": 1.0,
+    "noise_multiplier": 0.8,
+    "target_delta": 1e-05,
+    "sample_rate": 0.004237
+  },
+  "he_config": {
+    "enabled": true,
+    "scheme": "CKKS",
+    "poly_modulus_degree": 8192,
+    "coeff_mod_bit_sizes": [
+      60,
+      40,
+      40,
+      60
+    ],
+    "global_scale_exp": 40,
+    "chunk_size": 4096
+  },
+  "experiments": [
+    "FedAvg Baseline",
+    "FedAvg + DP",
+    "FedAvg + HE",
+    "FedAvg + DP + HE"
+  ]
+}

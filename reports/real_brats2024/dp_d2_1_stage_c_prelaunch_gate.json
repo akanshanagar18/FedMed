@@ -1,0 +1,88 @@
+{
+  "timestamp": "2026-08-18T04:24:13.921808+00:00",
+  "audit_status": "D2_1_STAGE_C_READY",
+  "experiment_name": "EXPERIMENT_D2.1_DP_SGD_MOMENTUM_LR1E3",
+  "parent_baseline": "EXPERIMENT_D2_DP_SGD_MOMENTUM",
+  "causal_intervention": {
+    "parameter": "training.learning_rate",
+    "d2_baseline": 0.0001,
+    "d2_1_target": 0.001,
+    "strictly_isolated": true
+  },
+  "stage_b_promotion_gate": {
+    "passed": true,
+    "target_threshold": "Validation Loss < 0.9800 OR Macro Dice > 0.0250",
+    "round_1": {
+      "val_loss": 0.9875,
+      "macro_dice": 0.0219,
+      "tc_dice": 0.0519,
+      "et_dice": 0.0092
+    },
+    "round_2": {
+      "val_loss": 0.985,
+      "macro_dice": 0.0261,
+      "tc_dice": 0.0635,
+      "et_dice": 0.01
+    },
+    "round_3": {
+      "val_loss": 0.9832,
+      "macro_dice": 0.0291,
+      "tc_dice": 0.0715,
+      "et_dice": 0.0108
+    }
+  },
+  "differential_privacy_contract_20_rounds": {
+    "mechanism": "Poisson Subsampled Gaussian Mechanism (DP-SGD)",
+    "clipping_bound_C": 0.06,
+    "noise_multiplier_sigma": 0.87,
+    "physical_noise_std": 0.0522,
+    "subsampling_rate_q": 0.004237288,
+    "total_steps_T": 4720,
+    "calculated_epsilon_20_rounds": 2.8934,
+    "optimal_renyi_order_alpha": 7,
+    "target_delta": 1e-05,
+    "accountant_invariance_verified": true
+  },
+  "model_and_test_firewall": {
+    "architecture": "MONAI 3D U-Net (128^3)",
+    "total_parameters": 4810074,
+    "numerical_sanity": "0 NaN, 0 Inf, 0 OOM",
+    "locked_test_cohort_size": 204,
+    "training_test_accesses": 0,
+    "test_firewall_intact": true
+  },
+  "initialization_policy": {
+    "policy": "STAGE_B_CHECKPOINT_RESUME_OR_FRESH_20_ROUND",
+    "default_runner_behavior": "Resumes at Round 4 from checkpoints/fedavg_dp_d2_1/latest.pt preserving continuous 20-round RDP ledger, or executes 1-20 from clean initialization if --no-resume specified",
+    "deterministic_equivalence": "Guaranteed under random seed 42"
+  },
+  "runtime_projections": {
+    "observed_average_round_seconds": 1043.32,
+    "observed_average_round_minutes": 17.39,
+    "full_20_round_wall_clock_hours_optimistic": 5.28,
+    "full_20_round_wall_clock_hours_expected": 5.8,
+    "full_20_round_wall_clock_hours_conservative": 6.39,
+    "resumed_rounds_4_to_20_hours_expected": 4.93
+  },
+  "protected_baseline_hashes": {
+    "d_config": "6b7699951687654965935db414338313260e65de2f61f2c1dfb44a74c2bb5ef7",
+    "d1_config": "a7def27c80d1d10b738b9f7f4e8dc4e06a4cf0a39a00fb08c13f08f011763520",
+    "d2_config": "80dc6726110e1ceabff279ca60b78a39a0be4f4b708b294f7a3e2669199d368c",
+    "d2_1_config": "c1229d6cb041d595b4b6d11c3c7ab40c928459a2ad5a0bd2bdd501751fbd292e",
+    "d_ckpt": "3684075cc20783c86354ab3ae38b3c9d91c543e79e8b9c6a2b3df0a247654086",
+    "d_report": "78e54472bb44de3f330e1d78ee9829f17a993b471ac93987f576dc5334de3f5b",
+    "d_history": "1808f9356798a756e93825c2ba6b134e40331d5479d8d6eb0dedcb4ff71c7ef5",
+    "d_manifest": "382103fabe657bc58a985abb14565e38b93f5edda192f5f4178042e7191f9104",
+    "d1_report": "f64407613799cd111215e46371f66ca3aca281e6cccd169fc35af0ae8655e56a",
+    "d1_history": "f92c075d05d38ba8ba31f2adf15bb91c83d3da3ca26409a4370aeefb2a50e9a6",
+    "d1_manifest": "18848f3e59082d463b3c16ab6c915e7d346e4947113807ffbc6c558a9ce9c977",
+    "d2_ckpt": "bbc1d1e76a9e4bbc96125e94c17c1dd17e4eb92bf652b171547fff7ae71f4493",
+    "d2_report": "25608e9d69c17d19c2d9bcda42606b6a78ba473480132223792483be68b13cc2",
+    "d2_history": "36541487c0e4fb63a00ba5aa22eb9b4f623c7a5b106c2b418751bb496479a0bc",
+    "d2_manifest": "09523db58265c8a9722ceceec0a0e513d846f3dd3d65ed49bdc1403c1f08db5d",
+    "d2_1_stage_b_ckpt": "fb96cb7b4fb1866280e57fe35d376506c79bda195ecb5489862b2af0561efd00",
+    "d2_1_stage_b_report": "01908f5b7866e31e5250d683c44ea865de250238dcdb18a1e3829b1833345a06",
+    "d2_1_stage_b_history": "3a0f8de4aec9db8e0d5c5c29aa4cdb9af9a298d29920eb759627d145ebd4cf31",
+    "d2_1_stage_b_manifest": "6685d60c502d04c30e836571fa6b7fd5922bc11b19fbb5bdeb13f7153462789c"
+  }
+}

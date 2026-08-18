@@ -4,12 +4,14 @@ Module: data.datasets.validators
 Purpose:
 Automatic dataset validator for BraTS medical imaging datasets.
 Inspects subject directories, verifies modality file existence, reports missing files,
-and calculates dataset integrity statistics.
+and calculates dataset integrity statistics using the canonical adapter.
 """
 
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple, Union
 from pydantic import BaseModel, ConfigDict, Field
+
+from data.canonical_adapter import ModalityCanonicalizer, DatasetVersion
 
 
 class ValidationReport(BaseModel):
@@ -29,7 +31,7 @@ class ValidationReport(BaseModel):
 
 class DatasetValidator:
     """
-    Automatic validator for BraTS 2021 / 2023 NIfTI datasets.
+    Automatic validator for BraTS 2021 / 2024 NIfTI datasets.
     """
 
     REQUIRED_MODALITIES = ["t1", "t1ce", "t2", "flair"]
@@ -54,10 +56,18 @@ class DatasetValidator:
             report.warnings.append(f"Dataset directory '{path}' does not exist or is not a directory.")
             return report
 
-        # Locate subject subdirectories (e.g. BraTS2021_00001)
-        subject_dirs = [d for d in path.iterdir() if d.is_dir() and not d.name.startswith(".")]
+        # Locate subject subdirectories (supports direct or nested training_data1_v2/ folders)
+        subject_dirs = []
+        for d in sorted(list(path.iterdir())):
+            if d.is_dir() and not d.name.startswith("."):
+                if d.name.startswith("training_data"):
+                    for sub in sorted(list(d.iterdir())):
+                        if sub.is_dir() and not sub.name.startswith("."):
+                            subject_dirs.append(sub)
+                else:
+                    subject_dirs.append(d)
+
         if not subject_dirs:
-            # Check if files directly exist inside path
             report.warnings.append(f"No subject subdirectories found in '{path}'.")
             report.is_valid = False
             return report
@@ -69,30 +79,26 @@ class DatasetValidator:
             modality_counters[cls.MASK_MODALITY] = 0
 
         valid_count = 0
+        detected_version = "BraTS2021"
+
         for subj_dir in subject_dirs:
             subj_id = subj_dir.name
-            subj_missing: List[str] = []
+            version, mod_paths, missing = ModalityCanonicalizer.discover_subject_modalities(subj_dir)
+            detected_version = version.value
 
-            # Check each modality file
             for mod in target_modalities:
-                matching_files = list(subj_dir.glob(f"*{mod}.nii*"))
-                if matching_files:
+                if mod in mod_paths:
                     modality_counters[mod] += 1
-                else:
-                    subj_missing.append(f"{mod}.nii.gz")
 
-            if require_mask:
-                mask_files = list(subj_dir.glob(f"*{cls.MASK_MODALITY}.nii*"))
-                if mask_files:
-                    modality_counters[cls.MASK_MODALITY] += 1
-                else:
-                    subj_missing.append(f"{cls.MASK_MODALITY}.nii.gz")
+            if require_mask and "seg" in mod_paths:
+                modality_counters[cls.MASK_MODALITY] += 1
 
-            if subj_missing:
-                missing_files_map[subj_id] = subj_missing
+            if missing:
+                missing_files_map[subj_id] = missing
             else:
                 valid_count += 1
 
+        report.dataset_version = detected_version
         report.valid_subjects_count = valid_count
         report.corrupted_subjects_count = report.total_subjects_found - valid_count
         report.missing_files = missing_files_map

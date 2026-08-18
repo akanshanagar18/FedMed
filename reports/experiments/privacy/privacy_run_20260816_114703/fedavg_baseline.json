@@ -1,0 +1,78 @@
+{
+  "experiment_name": "FedAvg Baseline",
+  "dp_enabled": false,
+  "he_enabled": false,
+  "initial_parameter_hash": "5ba650f3408c97c76d3146fd2a31044cc9d4e926add4964ae8b079e6988e1d93",
+  "final_parameter_hash": "c2d35146005191dcc1d91b052426b3c3d84ac3660158151660559727d9e2d55b",
+  "execution_time_seconds": 0.41858410835266113,
+  "history": [
+    {
+      "round": 1,
+      "training_loss": 1.8780216574668884,
+      "client_losses": {
+        "hospital_alpha": 1.8774526119232178,
+        "hospital_beta": 1.878590703010559
+      },
+      "validation_dice": {
+        "dice_TC": 0.454268,
+        "dice_WT": 0.625281,
+        "dice_ET": 0.0,
+        "mean_dice": 0.35985
+      },
+      "validation_iou": {
+        "iou_TC": 0.293886,
+        "iou_WT": 0.454842,
+        "iou_ET": 0.0,
+        "mean_iou": 0.249576
+      }
+    },
+    {
+      "round": 2,
+      "training_loss": 1.8759307265281677,
+      "client_losses": {
+        "hospital_alpha": 1.8761440515518188,
+        "hospital_beta": 1.8757174015045166
+      },
+      "validation_dice": {
+        "dice_TC": 0.454882,
+        "dice_WT": 0.626452,
+        "dice_ET": 0.0,
+        "mean_dice": 0.360445
+      },
+      "validation_iou": {
+        "iou_TC": 0.2944,
+        "iou_WT": 0.456083,
+        "iou_ET": 0.0,
+        "mean_iou": 0.250161
+      }
+    }
+  ],
+  "final_validation_dice": {
+    "dice_TC": 0.454882,
+    "dice_WT": 0.626452,
+    "dice_ET": 0.0,
+    "mean_dice": 0.360445
+  },
+  "final_validation_iou": {
+    "iou_TC": 0.2944,
+    "iou_WT": 0.456083,
+    "iou_ET": 0.0,
+    "mean_iou": 0.250161
+  },
+  "final_test_dice": {
+    "dice_TC": 0.452281,
+    "dice_WT": 0.624967,
+    "dice_ET": 0.0,
+    "mean_dice": 0.359082
+  },
+  "final_test_iou": {
+    "iou_TC": 0.292224,
+    "iou_WT": 0.45451,
+    "iou_ET": 0.0,
+    "mean_iou": 0.248911
+  },
+  "privacy_budget": null,
+  "he_timings": null,
+  "he_errors": null,
+  "checkpoint_path": "/Users/siddhant_patil/Projects/FedMed/checkpoints/privacy/fedavg_baseline/best_model.pt"
+}

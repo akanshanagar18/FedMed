@@ -131,9 +131,16 @@ class FlowerStrategyAdapter(fl.server.strategy.Strategy):
         aggregated_parameters = ndarrays_to_parameters(aggregated_ndarrays)
         aggregation_time = time.time() - start_time
 
-        avg_loss = float(metrics.get("loss", metrics.get("train_loss", 0.35)))
-        avg_dice = float(metrics.get("dice", metrics.get("dice_score", 0.85)))
-        iou_score = float(metrics.get("iou", avg_dice * 0.92))
+        avg_loss = float(metrics.get("training_loss", metrics.get("loss", metrics.get("train_loss", 0.0))))
+        avg_dice = float(metrics.get("dice_score", metrics.get("dice", 0.0)))
+        
+        # Exact IoU from metrics or standard mathematical identity IoU = Dice / (2 - Dice)
+        if "iou_score" in metrics:
+            iou_score = float(metrics["iou_score"])
+        elif "iou" in metrics:
+            iou_score = float(metrics["iou"])
+        else:
+            iou_score = float(avg_dice / (2.0 - avg_dice + 1e-8)) if avg_dice > 0 else 0.0
 
         meta = self.strategy.get_metadata()
         logger.info(

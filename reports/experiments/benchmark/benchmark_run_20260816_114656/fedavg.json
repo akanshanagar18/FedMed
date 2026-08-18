@@ -1,0 +1,73 @@
+{
+  "algorithm": "FedAvg",
+  "initial_parameter_hash": "5ba650f3408c97c76d3146fd2a31044cc9d4e926add4964ae8b079e6988e1d93",
+  "final_parameter_hash": "44dc2b35a404535c1cbe8b0ca4b96fc67bba32cd259f8c61b4f438d0826da2f5",
+  "execution_time_seconds": 0.42063212394714355,
+  "history": [
+    {
+      "round": 1,
+      "training_loss": 1.876534879207611,
+      "client_losses": {
+        "hospital_alpha": 1.8756601810455322,
+        "hospital_beta": 1.87740957736969
+      },
+      "validation_dice": {
+        "dice_TC": 0.454529,
+        "dice_WT": 0.625653,
+        "dice_ET": 0.0,
+        "mean_dice": 0.360061
+      },
+      "validation_iou": {
+        "iou_TC": 0.294104,
+        "iou_WT": 0.455236,
+        "iou_ET": 0.0,
+        "mean_iou": 0.24978
+      }
+    },
+    {
+      "round": 2,
+      "training_loss": 1.8733741641044617,
+      "client_losses": {
+        "hospital_alpha": 1.8743555545806885,
+        "hospital_beta": 1.8723927736282349
+      },
+      "validation_dice": {
+        "dice_TC": 0.454478,
+        "dice_WT": 0.626571,
+        "dice_ET": 0.0,
+        "mean_dice": 0.360349
+      },
+      "validation_iou": {
+        "iou_TC": 0.294061,
+        "iou_WT": 0.456209,
+        "iou_ET": 0.0,
+        "mean_iou": 0.25009
+      }
+    }
+  ],
+  "final_validation_dice": {
+    "dice_TC": 0.454478,
+    "dice_WT": 0.626571,
+    "dice_ET": 0.0,
+    "mean_dice": 0.360349
+  },
+  "final_validation_iou": {
+    "iou_TC": 0.294061,
+    "iou_WT": 0.456209,
+    "iou_ET": 0.0,
+    "mean_iou": 0.25009
+  },
+  "final_test_dice": {
+    "dice_TC": 0.45246,
+    "dice_WT": 0.625052,
+    "dice_ET": 0.0,
+    "mean_dice": 0.359171
+  },
+  "final_test_iou": {
+    "iou_TC": 0.292374,
+    "iou_WT": 0.4546,
+    "iou_ET": 0.0,
+    "mean_iou": 0.248991
+  },
+  "checkpoint_path": "/Users/siddhant_patil/Projects/FedMed/checkpoints/fedavg/global_best.pt"
+}

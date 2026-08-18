@@ -1,0 +1,28 @@
+{
+  "dataset_mode": "DEVELOPMENT_SYNTHETIC",
+  "dataset_manifest_hash": "312b93f1bfb41b1e89526c1445840cb78b2624b155ad900b7dcf26a3c567d64f",
+  "seed": 42,
+  "split_hash": "715cadbe78d2a9669dd331d0681baa060d3a175d9afbb50cc21941609d0238df",
+  "counts": {
+    "total_valid": 4,
+    "train": 2,
+    "validation": 1,
+    "test": 1
+  },
+  "train_subjects": [
+    "BraTS2021_00002",
+    "BraTS2021_00004"
+  ],
+  "validation_subjects": [
+    "BraTS2021_00001"
+  ],
+  "test_subjects": [
+    "BraTS2021_00003"
+  ],
+  "leakage_verification": {
+    "train_val_overlap": 0,
+    "train_test_overlap": 0,
+    "val_test_overlap": 0,
+    "is_disjoint": true
+  }
+}

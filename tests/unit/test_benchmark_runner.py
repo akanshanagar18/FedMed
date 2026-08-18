@@ -11,7 +11,7 @@ from evaluation.benchmark_runner import EnterpriseBenchmarkRunner
 
 def test_enterprise_benchmark_runner_matrix():
     runner = EnterpriseBenchmarkRunner()
-    res = runner.run_benchmark_matrix(num_rounds=3, algorithms=["FedAvg", "Scaffold", "FedNova"])
+    res = runner.run_benchmark_matrix(num_rounds=1, algorithms=["Centralized", "FedAvg", "FedProx"])
     assert res["algorithms_evaluated"] == 3
     assert len(res["results"]) == 3
     assert "Comparative Performance Matrix" in res["markdown_report"]

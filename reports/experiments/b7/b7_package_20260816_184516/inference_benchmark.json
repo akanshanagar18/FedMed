@@ -1,0 +1,20 @@
+{
+  "status": "SUCCESS",
+  "error_code": "OK",
+  "device": "mps",
+  "output_nifti_path": "/Users/siddhant_patil/Projects/FedMed/reports/experiments/b7/b7_package_20260816_184516/benchmark_seg.nii.gz",
+  "segmented_voxels": {
+    "TC_voxels": 22456,
+    "WT_voxels": 19144,
+    "ET_voxels": 14436
+  },
+  "timing_ms": {
+    "model_load_time_ms": 63.81,
+    "validation_time_ms": 2.8,
+    "preprocessing_time_ms": 9.23,
+    "inference_time_ms": 7.24,
+    "postprocessing_time_ms": 0.47,
+    "nifti_save_time_ms": 1.29,
+    "total_inference_time_ms": 21.03
+  }
+}

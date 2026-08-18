@@ -1,0 +1,112 @@
+{
+  "algorithm": "FedProx",
+  "proximal_mu": 0.01,
+  "initial_parameter_hash": "5ba650f3408c97c76d3146fd2a31044cc9d4e926add4964ae8b079e6988e1d93",
+  "final_parameter_hash": "71961ad39b51ce21d5a95b8eaade5be6933a41ce51c510276516472e088fcf95",
+  "execution_time_seconds": 0.824901819229126,
+  "history": [
+    {
+      "round": 1,
+      "training_loss": 1.8766828179359436,
+      "proximal_penalty": 0.0,
+      "total_loss": 1.8766828179359436,
+      "client_losses": {
+        "hospital_alpha": 1.8768781423568726,
+        "hospital_beta": 1.8764874935150146
+      },
+      "client_proximal_penalties": {
+        "hospital_alpha": 0.0,
+        "hospital_beta": 0.0
+      },
+      "validation_dice": {
+        "dice_TC": 0.453722,
+        "dice_WT": 0.625872,
+        "dice_ET": 0.0,
+        "mean_dice": 0.359865
+      },
+      "validation_iou": {
+        "iou_TC": 0.293429,
+        "iou_WT": 0.455469,
+        "iou_ET": 0.0,
+        "mean_iou": 0.249632
+      }
+    },
+    {
+      "round": 2,
+      "training_loss": 1.870680332183838,
+      "proximal_penalty": 0.0,
+      "total_loss": 1.870680332183838,
+      "client_losses": {
+        "hospital_alpha": 1.8732292652130127,
+        "hospital_beta": 1.868131399154663
+      },
+      "client_proximal_penalties": {
+        "hospital_alpha": 0.0,
+        "hospital_beta": 0.0
+      },
+      "validation_dice": {
+        "dice_TC": 0.45363,
+        "dice_WT": 0.626599,
+        "dice_ET": 0.0,
+        "mean_dice": 0.360076
+      },
+      "validation_iou": {
+        "iou_TC": 0.293352,
+        "iou_WT": 0.456239,
+        "iou_ET": 0.0,
+        "mean_iou": 0.249864
+      }
+    },
+    {
+      "round": 3,
+      "training_loss": 1.8706063628196716,
+      "proximal_penalty": 0.0,
+      "total_loss": 1.8706063628196716,
+      "client_losses": {
+        "hospital_alpha": 1.872301697731018,
+        "hospital_beta": 1.8689110279083252
+      },
+      "client_proximal_penalties": {
+        "hospital_alpha": 0.0,
+        "hospital_beta": 0.0
+      },
+      "validation_dice": {
+        "dice_TC": 0.452812,
+        "dice_WT": 0.626715,
+        "dice_ET": 0.0,
+        "mean_dice": 0.359842
+      },
+      "validation_iou": {
+        "iou_TC": 0.292668,
+        "iou_WT": 0.456362,
+        "iou_ET": 0.0,
+        "mean_iou": 0.249676
+      }
+    }
+  ],
+  "final_validation_dice": {
+    "dice_TC": 0.452812,
+    "dice_WT": 0.626715,
+    "dice_ET": 0.0,
+    "mean_dice": 0.359842
+  },
+  "final_validation_iou": {
+    "iou_TC": 0.292668,
+    "iou_WT": 0.456362,
+    "iou_ET": 0.0,
+    "mean_iou": 0.249676
+  },
+  "final_test_dice": {
+    "dice_TC": 0.451381,
+    "dice_WT": 0.625899,
+    "dice_ET": 0.0,
+    "mean_dice": 0.359093
+  },
+  "final_test_iou": {
+    "iou_TC": 0.291473,
+    "iou_WT": 0.455497,
+    "iou_ET": 0.0,
+    "mean_iou": 0.24899
+  },
+  "checkpoint_path": "/Users/siddhant_patil/Projects/FedMed/checkpoints/fedprox/fedprox_best.pt"
+}

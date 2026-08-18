@@ -1,0 +1,89 @@
+{
+  "experiment_id": "local_train_20260815_102443",
+  "execution_mode": "DEVELOPMENT_SYNTHETIC",
+  "dataset_mode": "DEVELOPMENT_SYNTHETIC",
+  "subject_count": 4,
+  "train_subjects": [
+    "BraTS2021_00003",
+    "BraTS2021_00004"
+  ],
+  "validation_subjects": [
+    "BraTS2021_00002"
+  ],
+  "test_subjects": [
+    "BraTS2021_00001"
+  ],
+  "test_firewall": {
+    "TEST_SET_ACCESSED_DURING_TRAINING": false,
+    "TEST_METRICS_GENERATED": false,
+    "TEST_EVALUATION_STATUS": "NOT_EVALUATED"
+  },
+  "split_hash": "4ce10ac52c093ec0971f306b6d4145e383ad92eeb231c551c6f841b64864384f",
+  "seed": 42,
+  "hardware_device": "Apple Silicon MPS (GPU)",
+  "software_versions": {
+    "python": "3.9.6",
+    "pytorch": "2.8.0",
+    "monai": "1.3+"
+  },
+  "model_configuration": {
+    "name": "UNet3D",
+    "channels": [
+      16,
+      32,
+      64,
+      128,
+      256
+    ],
+    "strides": [
+      2,
+      2,
+      2,
+      2
+    ],
+    "num_res_units": 2,
+    "parameter_count": 4810074
+  },
+  "training_configuration": {
+    "loss": "DiceCELoss(sigmoid=True)",
+    "optimizer": "Adam",
+    "learning_rate": 0.0001,
+    "weight_decay": 1e-05,
+    "epochs": 1,
+    "batch_size": 1
+  },
+  "epoch_logs": [
+    {
+      "epoch": 1,
+      "training_loss": 1.873456,
+      "gradient_norm": 1.390112,
+      "max_parameter_delta": 0.00020014,
+      "l2_parameter_delta": 0.33512758,
+      "validation_metrics": {
+        "dice_TC": 0.454179,
+        "dice_WT": 0.626926,
+        "dice_ET": 0.0,
+        "mean_dice": 0.360368,
+        "iou_TC": 0.293811,
+        "iou_WT": 0.456586,
+        "iou_ET": 0.0,
+        "mean_iou": 0.250132
+      }
+    }
+  ],
+  "best_epoch": 1,
+  "best_validation_metrics": {
+    "dice_TC": 0.454179,
+    "dice_WT": 0.626926,
+    "dice_ET": 0.0,
+    "mean_dice": 0.360368,
+    "iou_TC": 0.293811,
+    "iou_WT": 0.456586,
+    "iou_ET": 0.0,
+    "mean_iou": 0.250132
+  },
+  "metric_source": "MODEL_INFERENCE_VS_VALIDATION_GROUND_TRUTH",
+  "checkpoint_path": "/Users/siddhant_patil/Projects/FedMed/checkpoints/local_baseline_best.pt",
+  "timestamp": "2026-08-15T10:24:43.458885+00:00",
+  "experimental_limitation": "The current development cohort is insufficient for meaningful medical or federated performance conclusions. This execution verifies software pipeline integrity, loss backpropagation, weight updates, and independent validation."
+}

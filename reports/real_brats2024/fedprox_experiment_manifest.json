@@ -1,0 +1,57 @@
+{
+  "experiment_name": "EXPERIMENT_C_FEDPROX_REAL_DATA",
+  "dataset_split_hash": "d0358ca42d4bf510624bbe7e86c3e4bc1e25a6174521b1280c0001eb2c66005c",
+  "hospital_partition_hash": "4d5905c88558883cadf9463517d3c9f856a353e4f3a570c40515f16b763fc4f8",
+  "configuration_hash": "ca6792829bd13918a753a8cb24ae4dfcab8207f02d0d55e5cd45ab9aa10559f9",
+  "random_seed": 42,
+  "invariant_parameters_with_experiment_b": {
+    "dataset": "BraTS-GLI 2024 Adult Glioma Post-Treatment",
+    "total_subjects": 1350,
+    "train_subjects": 944,
+    "validation_subjects": 202,
+    "test_subjects": 204,
+    "hospital_silos": [
+      "hospital_alpha",
+      "hospital_beta",
+      "hospital_gamma",
+      "hospital_delta"
+    ],
+    "subjects_per_silo": 236,
+    "model_architecture": "MONAI 3D U-Net",
+    "parameter_count": 4810074,
+    "spatial_resolution": [
+      128,
+      128,
+      128
+    ],
+    "input_modalities": [
+      "t1",
+      "t1ce",
+      "t2",
+      "flair"
+    ],
+    "target_regions": [
+      "TC",
+      "WT",
+      "ET"
+    ],
+    "loss_function": "DiceCELoss(sigmoid=True, lambda_dice=1.0, lambda_ce=0.2)",
+    "optimizer": "Adam(lr=1e-4, weight_decay=1e-5)",
+    "batch_size": 1,
+    "local_epochs": 1,
+    "rounds": 20,
+    "client_execution": "sequential",
+    "device": "mps",
+    "seed": 42
+  },
+  "changed_parameter_from_experiment_b": {
+    "parameter": "strategy",
+    "experiment_b_value": "FedAvg",
+    "experiment_c_value": "FedProx",
+    "proximal_mu": 0.01,
+    "objective_function": "L_prox(w) = L_base(w) + (mu/2) * ||w - w_global||^2"
+  },
+  "best_checkpoint_sha256": "ae6d6decaf1ecd25746a64d31ec8ce69679c3c932302a555deb68f4dafe94cba",
+  "status": "COMPLETED",
+  "timestamp": "2026-08-16T18:00:39.661465+00:00"
+}

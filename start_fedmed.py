@@ -22,14 +22,38 @@ import signal
 import subprocess
 import sys
 import time
+
 import requests
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+)
+
 logger = logging.getLogger("start_fedmed")
 
+# -----------------------------------------------------------------------------
+# Project Path Bootstrap
+# -----------------------------------------------------------------------------
+
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
-if PROJECT_ROOT not in sys.path:
-    sys.path.insert(0, PROJECT_ROOT)
+BACKEND_ROOT = os.path.join(PROJECT_ROOT, "dashboard", "backend")
+
+for path in (PROJECT_ROOT, BACKEND_ROOT):
+    if path not in sys.path:
+        sys.path.insert(0, path)
+
+# Also expose them to every spawned subprocess.
+os.environ["PYTHONPATH"] = os.pathsep.join(
+    filter(
+        None,
+        [
+            PROJECT_ROOT,
+            BACKEND_ROOT,
+            os.environ.get("PYTHONPATH"),
+        ],
+    )
+)
 
 
 class ProductionLauncher:
@@ -41,17 +65,33 @@ class ProductionLauncher:
         self.backend_url = f"http://127.0.0.1:{backend_port}"
 
     def setup_environment(self):
-        """Initializes database tables and directories."""
+        """Initializes database tables and runtime directories."""
+
         logger.info("Initializing database schemas and workspace directories...")
-        from dashboard.backend.app.database.session import init_db
+
+        from app.database.session import init_db
+
         init_db()
 
-        for d in ["artifacts", "checkpoints", "exports", "logs", ".cache/monai"]:
-            os.makedirs(os.path.join(PROJECT_ROOT, d), exist_ok=True)
+        runtime_dirs = [
+            "artifacts",
+            "checkpoints",
+            "exports",
+            "logs",
+            ".cache",
+            ".cache/monai",
+        ]
+
+        for directory in runtime_dirs:
+            os.makedirs(os.path.join(PROJECT_ROOT, directory), exist_ok=True)
 
     def launch_backend(self):
-        """Spawns FastAPI backend server process."""
-        logger.info(f"Launching FastAPI Backend Server on port {self.backend_port}...")
+        """Launch the FastAPI backend."""
+
+        logger.info(
+            f"Launching FastAPI Backend on http://127.0.0.1:{self.backend_port}"
+        )
+
         cmd = [
             sys.executable,
             "-m",
@@ -64,13 +104,13 @@ class ProductionLauncher:
             "--port",
             str(self.backend_port),
         ]
-        child_env = os.environ.copy()
-        pythonpath = [PROJECT_ROOT, os.path.join(PROJECT_ROOT, "dashboard", "backend")]
-        if child_env.get("PYTHONPATH"):
-            pythonpath.append(child_env["PYTHONPATH"])
-        child_env["PYTHONPATH"] = os.path.pathsep.join(pythonpath)
 
-        proc = subprocess.Popen(cmd, cwd=PROJECT_ROOT, env=child_env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        proc = subprocess.Popen(
+            cmd,
+            cwd=PROJECT_ROOT,
+            env=os.environ.copy(),
+        )
+
         self.processes.append(("FastAPI Backend", proc))
 
     def poll_health_readiness(self, timeout_sec: float = 20.0) -> bool:

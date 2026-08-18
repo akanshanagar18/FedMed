@@ -1,0 +1,129 @@
+{
+  "audit_phase": "PHASE_10.3_FEDPROX_READINESS_AUDIT",
+  "timestamp": "2026-08-16T11:47:55.000000+00:00",
+  "final_verdict": "READY_FOR_EXPERIMENT_C",
+  "all_audits_passed": true,
+  "benchmark_reference_baselines": {
+    "centralized_experiment_a": {
+      "wt_dice": 0.8056,
+      "tc_dice": 0.5548,
+      "et_dice": 0.5502,
+      "macro_dice": 0.6369,
+      "val_loss": 0.425585
+    },
+    "fedavg_experiment_b": {
+      "wt_dice": 0.784,
+      "tc_dice": 0.1878,
+      "et_dice": 0.1729,
+      "macro_dice": 0.3815,
+      "val_loss": 0.649858
+    }
+  },
+  "audit_results": {
+    "fedprox_implementation_audit": {
+      "status": "PASS",
+      "objective_formula": "L_prox(w) = L_base(w) + (mu / 2) * sum_i ||w_i - w_global_i||^2",
+      "configured_mu": 0.01,
+      "penalty_calculation_error": 3.725290284584126e-10,
+      "total_loss_calculation_error": 2.2351741776893697e-09,
+      "applied_to_all_trainable_parameters": true,
+      "excluded_from_validation_loss": true
+    },
+    "experiment_b_drift_analysis": {
+      "status": "PASS",
+      "divergence_definition": "Pairwise layer-wise L2 norm: sum_l ||W_{alpha, l} - W_{beta, l}||_2",
+      "smoke_test_divergence_1_step": 0.9688,
+      "full_training_mean_divergence_236_steps": 10.2562,
+      "min_round_divergence": 7.4241,
+      "max_round_divergence": 11.9542,
+      "mean_global_parameter_delta": 7.2338,
+      "forensic_explanation": "In Experiment B, Client Divergence is defined as the pairwise layer-wise L2 norm between Hospital Alpha and Hospital Beta weights post-local training: sum_l ||W_{alpha, l} - W_{beta, l}||_2. The increase in client divergence from 0.97 (1-step smoke test) to 10.3 (full 236-step round) is consistent with executing significantly more local optimization steps on heterogeneous client data cohorts. However, parameter divergence in non-convex neural network optimization is not expected to scale linearly with step count due to diminishing gradient magnitudes, weight decay regularization, optimizer momentum decay, and the geometry/curvature of the loss surface constraining local trajectory drift."
+    },
+    "fedprox_configuration_design": {
+      "status": "PASS",
+      "primary_mu": 0.01,
+      "sensitivity_mu_values": [
+        0.001,
+        0.01,
+        0.1
+      ],
+      "quantity_distinction": {
+        "global_parameter_delta_norm": 4.4878,
+        "local_client_update_norm_from_global": "~6.0 - 8.5",
+        "client_pairwise_divergence_norm": 10.3991,
+        "explanation": "The global parameter delta norm (||W_global^{r} - W_global^{r-1}||_2 \u2248 4.49) measures the net shift of the aggregated centroid. The actual quantity in the FedProx proximal penalty is the local client displacement (||w_client - w_global||_2 \u2248 6.0 - 8.5). With ||w_client - w_global||_2^2 \u2248 36 - 72, mu = 0.01 produces a proximal penalty of (0.01/2)*50 \u2248 0.25, representing ~25-35% of the base DiceCELoss (~0.65-0.95)."
+      },
+      "scientific_rationale": "With mean local client parameter displacement ||w_client - w_global|| \u2248 6.0-8.5, mu = 0.01 yields a proximal penalty of ~0.18-0.36, which represents ~20-35% of the base DiceCELoss value (~0.65-0.95). This provides a calibrated proximal regularization force that constrains client drift without freezing local adaptation.",
+      "configuration_path": "/Users/siddhant_patil/Projects/FedMed/configs/experiments/real_brats_fedprox.yaml"
+    },
+    "fair_comparison_guarantee": {
+      "status": "PASS",
+      "all_invariants_verified": true,
+      "single_changed_variable_verified": true,
+      "manifest_path": "/Users/siddhant_patil/Projects/FedMed/reports/real_brats2024/fedprox_experiment_manifest.json"
+    },
+    "test_firewall_audit": {
+      "status": "PASS",
+      "locked_test_cohort_size": 204,
+      "training_test_accesses": 0,
+      "test_firewall_verified": true
+    },
+    "checkpoint_audit": {
+      "status": "PASS",
+      "best_checkpoint_path": "/Users/siddhant_patil/Projects/FedMed/checkpoints/fedprox_real/best.pt",
+      "latest_checkpoint_path": "/Users/siddhant_patil/Projects/FedMed/checkpoints/fedprox_real/latest.pt",
+      "persisted_metadata": [
+        "round",
+        "model_state_dict",
+        "best_mean_dice",
+        "best_round",
+        "val_metrics",
+        "peak_rounds",
+        "proximal_mu",
+        "config_hash",
+        "split_hash",
+        "partition_hash",
+        "seed",
+        "timestamp"
+      ]
+    },
+    "validation_metrics_specification": {
+      "status": "PASS",
+      "primary_model_selection_metric": "Macro Dice ((WT + TC + ET) / 3.0)",
+      "tracked_peak_metrics": [
+        "wt_dice",
+        "tc_dice",
+        "et_dice",
+        "macro_dice"
+      ],
+      "unbiased_validation_loss": "DiceCELoss (excluding proximal term)"
+    },
+    "real_smoke_test": {
+      "status": "PASS",
+      "round_time_sec": 100.4,
+      "client_divergence_norm": 0.950904,
+      "global_parameter_delta_norm": 0.444899,
+      "1_step_empirical_metrics": {
+        "mean_base_dicece_loss": 0.989571,
+        "mean_proximal_penalty": 0.0,
+        "maximum_proximal_penalty": 0.0,
+        "mean_total_fedprox_loss": 0.989571,
+        "ratio_proximal_to_base_loss": 0.0,
+        "note": "At step 1 forward pass, local weights equal global weights before gradient step, yielding exact 0 proximal penalty."
+      },
+      "5_step_empirical_metrics": {
+        "mean_base_dicece_loss": 0.994777,
+        "mean_proximal_penalty": 0.000303,
+        "maximum_proximal_penalty": 0.000624,
+        "mean_total_fedprox_loss": 0.995079,
+        "ratio_proximal_to_base_loss": 0.000304
+      },
+      "val_loss": 0.989768,
+      "mean_val_dice": 0.0187,
+      "wt_val_dice": 0.043,
+      "tc_val_dice": 0.0053,
+      "et_val_dice": 0.0079,
+      "mps_peak_memory_mb": 131.72
+    }
+  }
+}

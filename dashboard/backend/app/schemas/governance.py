@@ -5,7 +5,7 @@ Purpose:
 Pydantic Schemas for Milestone R Governance, Drift, FedHPO, and SLA Compliance API requests & responses.
 """
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 from pydantic import BaseModel, Field
 
 
@@ -29,14 +29,15 @@ class DriftEvaluationResponse(BaseModel):
     risk_level: str
     recommended_action: str
     metrics: DriftMetricsData
+    drift_magnitude: Optional[float] = None
 
 
 class SlaAuditRequest(BaseModel):
     run_id: str = Field(default="run_milestone_r_001")
     epsilon_consumed: float = Field(default=2.5, ge=0.0)
     delta_consumed: float = Field(default=1e-5, ge=0.0)
-    participating_nodes: List[str] = Field(default_factory=lambda: ["hospital_alpha", "hospital_beta"])
-    total_nodes: List[str] = Field(default_factory=lambda: ["hospital_alpha", "hospital_beta", "hospital_gamma"])
+    participating_nodes: Union[List[str], int] = Field(default_factory=lambda: ["hospital_alpha", "hospital_beta"])
+    total_nodes: Union[List[str], int] = Field(default_factory=lambda: ["hospital_alpha", "hospital_beta", "hospital_gamma"])
     avg_latency_ms: float = Field(default=120.5, ge=0.0)
     encryption_scheme: str = Field(default="TenSEAL_CKKS")
 

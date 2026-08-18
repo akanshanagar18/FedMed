@@ -1,0 +1,152 @@
+{
+  "dataset_id": "BraTS2021",
+  "dataset_version": "BraTS2021",
+  "dataset_mode": "DEVELOPMENT_SYNTHETIC",
+  "dataset_path": "/Users/siddhant_patil/Projects/FedMed/data/BraTS2021",
+  "subject_count": 4,
+  "validated_subject_count": 4,
+  "invalid_subject_count": 0,
+  "subjects": [
+    {
+      "subject_id": "BraTS2021_00001",
+      "is_valid": true,
+      "errors": [],
+      "modality_paths": {
+        "flair": "data/BraTS2021/BraTS2021_00001/BraTS2021_00001_flair.nii.gz",
+        "t1": "data/BraTS2021/BraTS2021_00001/BraTS2021_00001_t1.nii.gz",
+        "t1ce": "data/BraTS2021/BraTS2021_00001/BraTS2021_00001_t1ce.nii.gz",
+        "t2": "data/BraTS2021/BraTS2021_00001/BraTS2021_00001_t2.nii.gz",
+        "seg": "data/BraTS2021/BraTS2021_00001/BraTS2021_00001_seg.nii.gz"
+      },
+      "spatial_shape": [
+        32,
+        32,
+        32
+      ],
+      "voxel_spacing": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "labels_found": [
+        0,
+        1,
+        2
+      ]
+    },
+    {
+      "subject_id": "BraTS2021_00002",
+      "is_valid": true,
+      "errors": [],
+      "modality_paths": {
+        "flair": "data/BraTS2021/BraTS2021_00002/BraTS2021_00002_flair.nii.gz",
+        "t1": "data/BraTS2021/BraTS2021_00002/BraTS2021_00002_t1.nii.gz",
+        "t1ce": "data/BraTS2021/BraTS2021_00002/BraTS2021_00002_t1ce.nii.gz",
+        "t2": "data/BraTS2021/BraTS2021_00002/BraTS2021_00002_t2.nii.gz",
+        "seg": "data/BraTS2021/BraTS2021_00002/BraTS2021_00002_seg.nii.gz"
+      },
+      "spatial_shape": [
+        32,
+        32,
+        32
+      ],
+      "voxel_spacing": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "labels_found": [
+        0,
+        1,
+        2
+      ]
+    },
+    {
+      "subject_id": "BraTS2021_00003",
+      "is_valid": true,
+      "errors": [],
+      "modality_paths": {
+        "flair": "data/BraTS2021/BraTS2021_00003/BraTS2021_00003_flair.nii.gz",
+        "t1": "data/BraTS2021/BraTS2021_00003/BraTS2021_00003_t1.nii.gz",
+        "t1ce": "data/BraTS2021/BraTS2021_00003/BraTS2021_00003_t1ce.nii.gz",
+        "t2": "data/BraTS2021/BraTS2021_00003/BraTS2021_00003_t2.nii.gz",
+        "seg": "data/BraTS2021/BraTS2021_00003/BraTS2021_00003_seg.nii.gz"
+      },
+      "spatial_shape": [
+        32,
+        32,
+        32
+      ],
+      "voxel_spacing": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "labels_found": [
+        0,
+        1,
+        2
+      ]
+    },
+    {
+      "subject_id": "BraTS2021_00004",
+      "is_valid": true,
+      "errors": [],
+      "modality_paths": {
+        "flair": "data/BraTS2021/BraTS2021_00004/BraTS2021_00004_flair.nii.gz",
+        "t1": "data/BraTS2021/BraTS2021_00004/BraTS2021_00004_t1.nii.gz",
+        "t1ce": "data/BraTS2021/BraTS2021_00004/BraTS2021_00004_t1ce.nii.gz",
+        "t2": "data/BraTS2021/BraTS2021_00004/BraTS2021_00004_t2.nii.gz",
+        "seg": "data/BraTS2021/BraTS2021_00004/BraTS2021_00004_seg.nii.gz"
+      },
+      "spatial_shape": [
+        32,
+        32,
+        32
+      ],
+      "voxel_spacing": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "labels_found": [
+        0,
+        1,
+        2
+      ]
+    }
+  ],
+  "modalities": {
+    "required": [
+      "flair",
+      "t1",
+      "t1ce",
+      "t2"
+    ],
+    "mask": "seg"
+  },
+  "label_statistics": {
+    "unique_labels_discovered": [
+      0,
+      1,
+      2
+    ],
+    "expected_labels": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "all_labels_valid": true
+  },
+  "shape_statistics": {
+    "(32, 32, 32)": 4
+  },
+  "spacing_statistics": {
+    "(1.0, 1.0, 1.0)": 4
+  },
+  "validation_status": "PASS",
+  "validation_timestamp": "2026-08-15T10:44:01.824271+00:00",
+  "git_commit": "e266612862ea03f92a7c8da6de2ab64580154dce"
+}

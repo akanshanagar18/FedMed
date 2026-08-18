@@ -1,0 +1,104 @@
+{
+  "experiment_name": "FedAvg + HE",
+  "dp_enabled": false,
+  "he_enabled": true,
+  "initial_parameter_hash": "5ba650f3408c97c76d3146fd2a31044cc9d4e926add4964ae8b079e6988e1d93",
+  "final_parameter_hash": "c44aa436c3e5636ff4efb699f73feb834f1b0edeb3ea10c6b884267681a039a2",
+  "execution_time_seconds": 19.065492868423462,
+  "history": [
+    {
+      "round": 1,
+      "training_loss": 1.875311017036438,
+      "client_losses": {
+        "hospital_alpha": 1.8787193298339844,
+        "hospital_beta": 1.8719027042388916
+      },
+      "validation_dice": {
+        "dice_TC": 0.454309,
+        "dice_WT": 0.626204,
+        "dice_ET": 0.0,
+        "mean_dice": 0.360171
+      },
+      "validation_iou": {
+        "iou_TC": 0.29392,
+        "iou_WT": 0.455821,
+        "iou_ET": 0.0,
+        "mean_iou": 0.249913
+      }
+    },
+    {
+      "round": 2,
+      "training_loss": 1.8666965961456299,
+      "client_losses": {
+        "hospital_alpha": 1.860759973526001,
+        "hospital_beta": 1.8726332187652588
+      },
+      "validation_dice": {
+        "dice_TC": 0.453655,
+        "dice_WT": 0.627865,
+        "dice_ET": 0.0,
+        "mean_dice": 0.360507
+      },
+      "validation_iou": {
+        "iou_TC": 0.293372,
+        "iou_WT": 0.457583,
+        "iou_ET": 0.0,
+        "mean_iou": 0.250318
+      }
+    }
+  ],
+  "final_validation_dice": {
+    "dice_TC": 0.453655,
+    "dice_WT": 0.627865,
+    "dice_ET": 0.0,
+    "mean_dice": 0.360507
+  },
+  "final_validation_iou": {
+    "iou_TC": 0.293372,
+    "iou_WT": 0.457583,
+    "iou_ET": 0.0,
+    "mean_iou": 0.250318
+  },
+  "final_test_dice": {
+    "dice_TC": 0.451578,
+    "dice_WT": 0.624075,
+    "dice_ET": 0.0,
+    "mean_dice": 0.358551
+  },
+  "final_test_iou": {
+    "iou_TC": 0.291638,
+    "iou_WT": 0.453567,
+    "iou_ET": 0.0,
+    "mean_iou": 0.248402
+  },
+  "privacy_budget": null,
+  "he_timings": [
+    {
+      "round": 1,
+      "encryption_time_ms": 6518.734931945801,
+      "aggregation_time_ms": 1942.842721939087,
+      "decryption_time_ms": 838.6108875274658,
+      "ciphertext_size_bytes": 287139393
+    },
+    {
+      "round": 2,
+      "encryption_time_ms": 6512.825727462769,
+      "aggregation_time_ms": 1955.2948474884033,
+      "decryption_time_ms": 807.053804397583,
+      "ciphertext_size_bytes": 287138539
+    }
+  ],
+  "he_errors": [
+    {
+      "round": 1,
+      "max_absolute_error": 2.9802322387695312e-08,
+      "relative_error": 1.1916163119403648e-07
+    },
+    {
+      "round": 2,
+      "max_absolute_error": 5.960464477539063e-08,
+      "relative_error": 2.3822799348065272e-07
+    }
+  ],
+  "checkpoint_path": "/Users/siddhant_patil/Projects/FedMed/checkpoints/privacy/fedavg___he/best_model.pt"
+}

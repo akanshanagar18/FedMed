@@ -1,0 +1,111 @@
+{
+  "experiment_name": "FedAvg + DP + HE",
+  "dp_enabled": true,
+  "he_enabled": true,
+  "initial_parameter_hash": "5ba650f3408c97c76d3146fd2a31044cc9d4e926add4964ae8b079e6988e1d93",
+  "final_parameter_hash": "c36b5b13925df7b6c5e6d89a4289f00540d0087210e72fc44c65af81090b7db2",
+  "execution_time_seconds": 19.35849404335022,
+  "history": [
+    {
+      "round": 1,
+      "training_loss": 1.878404676914215,
+      "client_losses": {
+        "hospital_alpha": 1.8796218633651733,
+        "hospital_beta": 1.8771874904632568
+      },
+      "validation_dice": {
+        "dice_TC": 0.455105,
+        "dice_WT": 0.624933,
+        "dice_ET": 0.0,
+        "mean_dice": 0.360013
+      },
+      "validation_iou": {
+        "iou_TC": 0.294587,
+        "iou_WT": 0.454474,
+        "iou_ET": 0.0,
+        "mean_iou": 0.249687
+      }
+    },
+    {
+      "round": 2,
+      "training_loss": 1.8743400573730469,
+      "client_losses": {
+        "hospital_alpha": 1.8770134449005127,
+        "hospital_beta": 1.871666669845581
+      },
+      "validation_dice": {
+        "dice_TC": 0.455132,
+        "dice_WT": 0.624951,
+        "dice_ET": 0.0,
+        "mean_dice": 0.360028
+      },
+      "validation_iou": {
+        "iou_TC": 0.294609,
+        "iou_WT": 0.454494,
+        "iou_ET": 0.0,
+        "mean_iou": 0.249701
+      }
+    }
+  ],
+  "final_validation_dice": {
+    "dice_TC": 0.455132,
+    "dice_WT": 0.624951,
+    "dice_ET": 0.0,
+    "mean_dice": 0.360028
+  },
+  "final_validation_iou": {
+    "iou_TC": 0.294609,
+    "iou_WT": 0.454494,
+    "iou_ET": 0.0,
+    "mean_iou": 0.249701
+  },
+  "final_test_dice": {
+    "dice_TC": 0.452406,
+    "dice_WT": 0.620681,
+    "dice_ET": 0.0,
+    "mean_dice": 0.357696
+  },
+  "final_test_iou": {
+    "iou_TC": 0.292329,
+    "iou_WT": 0.449991,
+    "iou_ET": 0.0,
+    "mean_iou": 0.24744
+  },
+  "privacy_budget": {
+    "epsilon": 11.59705227707093,
+    "delta": 1e-05,
+    "noise_multiplier": 0.5,
+    "max_grad_norm": 1.0,
+    "steps": 4,
+    "accountant": "RDP (Renyi Differential Privacy) Accountant"
+  },
+  "he_timings": [
+    {
+      "round": 1,
+      "encryption_time_ms": 6601.4368534088135,
+      "aggregation_time_ms": 1940.6218528747559,
+      "decryption_time_ms": 809.377908706665,
+      "ciphertext_size_bytes": 287137644
+    },
+    {
+      "round": 2,
+      "encryption_time_ms": 6524.96600151062,
+      "aggregation_time_ms": 2000.2989768981934,
+      "decryption_time_ms": 813.4908676147461,
+      "ciphertext_size_bytes": 287138822
+    }
+  ],
+  "he_errors": [
+    {
+      "round": 1,
+      "max_absolute_error": 2.9802322387695312e-08,
+      "relative_error": 1.1916163119403648e-07
+    },
+    {
+      "round": 2,
+      "max_absolute_error": 2.9802322387695312e-08,
+      "relative_error": 1.1916161699454383e-07
+    }
+  ],
+  "checkpoint_path": "/Users/siddhant_patil/Projects/FedMed/checkpoints/privacy/fedavg___dp___he/best_model.pt"
+}

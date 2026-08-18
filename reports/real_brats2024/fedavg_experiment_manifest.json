@@ -1,0 +1,83 @@
+{
+  "experiment_name": "EXPERIMENT_B_FEDAVG_REAL_DATA",
+  "dataset_split_hash": "d0358ca42d4bf510624bbe7e86c3e4bc1e25a6174521b1280c0001eb2c66005c",
+  "hospital_partition_hash": "4d5905c88558883cadf9463517d3c9f856a353e4f3a570c40515f16b763fc4f8",
+  "configuration_hash": "afd7f5de63419df8a98fafe8ce0fc0f636d4c0048939cc5e8862b1b252886ccd",
+  "random_seed": 42,
+  "model_architecture": {
+    "name": "MONAI 3D U-Net",
+    "spatial_dims": 3,
+    "in_channels": 4,
+    "out_channels": 3,
+    "channels": [
+      16,
+      32,
+      64,
+      128,
+      256
+    ],
+    "strides": [
+      2,
+      2,
+      2,
+      2
+    ],
+    "num_res_units": 2,
+    "total_parameters": 4810074
+  },
+  "preprocessing_configuration": {
+    "spatial_resolution": [
+      128,
+      128,
+      128
+    ],
+    "modalities": [
+      "t1",
+      "t1ce",
+      "t2",
+      "flair"
+    ],
+    "orientation": "RAS",
+    "spacing": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "normalization": "Non-zero channel-wise Z-score",
+    "target_canonicalization": {
+      "TC": "label == 1 | label == 3",
+      "WT": "label == 1 | label == 2 | label == 3",
+      "ET": "label == 3",
+      "RC": "label == 4 preserved in provenance"
+    }
+  },
+  "federated_parameters": {
+    "strategy": "FedAvg",
+    "rounds": 20,
+    "clients": [
+      "hospital_alpha",
+      "hospital_beta",
+      "hospital_gamma",
+      "hospital_delta"
+    ],
+    "sample_weights": {
+      "hospital_alpha": 0.25,
+      "hospital_beta": 0.25,
+      "hospital_gamma": 0.25,
+      "hospital_delta": 0.25
+    },
+    "client_execution": "sequential",
+    "batch_size": 1,
+    "local_epochs": 1,
+    "loss_function": "DiceCELoss(sigmoid=True, lambda_dice=1.0, lambda_ce=0.2)",
+    "optimizer": "Adam(lr=1e-4, weight_decay=1e-5)"
+  },
+  "hardware_environment": {
+    "device": "mps",
+    "torch_version": "2.8.0",
+    "mps_available": true
+  },
+  "best_checkpoint_sha256": "41e4f62ea2825097e7890ddc1b797807cfaac0b0ce31212430f2ed45e626aeb3",
+  "status": "COMPLETED",
+  "timestamp": "2026-08-16T11:24:04.820153+00:00"
+}

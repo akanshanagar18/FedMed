@@ -1,0 +1,146 @@
+{
+  "audit_phase": "PHASE_10.1_REAL_DATA_FEDAVG_READINESS",
+  "timestamp": "2026-08-16T03:31:49.944406+00:00",
+  "final_verdict": "READY_FOR_EXPERIMENT_B",
+  "all_audits_passed": true,
+  "frozen_centralized_baseline_reference": {
+    "wt_dice": 0.8056,
+    "tc_dice": 0.5548,
+    "et_dice": 0.5502,
+    "mean_dice": 0.6369,
+    "checkpoint_path": "checkpoints/centralized_real/best.pt"
+  },
+  "audit_results": {
+    "data_audit": {
+      "status": "PASS",
+      "total_discovered_subjects": 1350,
+      "train_subjects": 944,
+      "validation_subjects": 202,
+      "test_subjects": 204,
+      "hospital_silos": {
+        "hospital_alpha": 236,
+        "hospital_beta": 236,
+        "hospital_gamma": 236,
+        "hospital_delta": 236
+      },
+      "split_hash": "d0358ca42d4bf510624bbe7e86c3e4bc1e25a6174521b1280c0001eb2c66005c",
+      "partition_hash": "4d5905c88558883cadf9463517d3c9f856a353e4f3a570c40515f16b763fc4f8",
+      "leakage_detected": false
+    },
+    "model_audit": {
+      "status": "PASS",
+      "architecture": "MONAI 3D U-Net",
+      "spatial_dims": 3,
+      "in_channels": 4,
+      "out_channels": 3,
+      "parameter_count": 4810074,
+      "expected_parameter_count": 4810074,
+      "spatial_resolution": [
+        128,
+        128,
+        128
+      ]
+    },
+    "preprocessing_audit": {
+      "status": "PASS",
+      "modalities": [
+        "t1",
+        "t1ce",
+        "t2",
+        "flair"
+      ],
+      "target_classes": [
+        "TC (1|3)",
+        "WT (1|2|3)",
+        "ET (3)"
+      ],
+      "rc_preserved_in_provenance": true,
+      "spatial_transforms": [
+        "Orientationd(RAS)",
+        "Spacingd(1mm)",
+        "NormalizeIntensityd(Z-score)",
+        "Resized(128^3)"
+      ]
+    },
+    "training_audit": {
+      "status": "PASS",
+      "loss_function": "DiceCELoss",
+      "lambda_dice": 1.0,
+      "lambda_ce": 0.2,
+      "sigmoid": true,
+      "optimizer": "Adam",
+      "learning_rate": 0.0001,
+      "weight_decay": 1e-05,
+      "batch_size": 1
+    },
+    "fedavg_math_audit": {
+      "status": "PASS",
+      "max_aggregation_error": 0.0,
+      "sample_weights": [
+        0.25,
+        0.25,
+        0.25,
+        0.25
+      ],
+      "mathematical_equivalence_verified": true
+    },
+    "execution_audit": {
+      "status": "PASS",
+      "client_execution_mode": "sequential",
+      "hardware_device": "mps",
+      "gpu_memory_contention_prevented": true,
+      "checkpoint_support": {
+        "best_checkpoint_path": "checkpoints/fedavg_real/best.pt",
+        "latest_checkpoint_path": "checkpoints/fedavg_real/latest.pt"
+      }
+    },
+    "telemetry_audit": {
+      "status": "PASS",
+      "parameter_count": 4810074,
+      "payload_per_client_bytes": 19240296,
+      "payload_per_client_mb": 18.35,
+      "total_round_payload_mb": 73.4,
+      "tracked_metrics": [
+        "client_train_loss",
+        "global_val_loss",
+        "WT_Dice",
+        "TC_Dice",
+        "ET_Dice",
+        "mean_Dice",
+        "WT_IoU",
+        "TC_IoU",
+        "ET_IoU",
+        "client_divergence_norm",
+        "global_parameter_delta_norm",
+        "round_duration_seconds"
+      ]
+    },
+    "provenance_audit": {
+      "status": "PASS",
+      "manifest_path": "/Users/siddhant_patil/Projects/FedMed/reports/real_brats2024/experiment_configuration_manifest.json",
+      "dataset_split_hash": "d0358ca42d4bf510624bbe7e86c3e4bc1e25a6174521b1280c0001eb2c66005c",
+      "hospital_partitions_hash": "4d5905c88558883cadf9463517d3c9f856a353e4f3a570c40515f16b763fc4f8",
+      "canonical_config_path": "configs/experiments/canonical_real_brats_gli_2024.yaml",
+      "random_seed": 42
+    },
+    "test_firewall_audit": {
+      "status": "PASS",
+      "test_subjects_count": 204,
+      "training_test_accesses": 0,
+      "firewall_intact": true
+    },
+    "real_smoke_test": {
+      "status": "PASS",
+      "round_time_sec": 100.26,
+      "client_divergence_norm": 0.968795,
+      "global_parameter_delta_norm": 0.439807,
+      "mean_client_train_loss": 0.989577,
+      "val_loss": 0.989766,
+      "mean_val_dice": 0.0187,
+      "wt_val_dice": 0.043,
+      "tc_val_dice": 0.0053,
+      "et_val_dice": 0.0079,
+      "mps_peak_memory_mb": 50.42
+    }
+  }
+}

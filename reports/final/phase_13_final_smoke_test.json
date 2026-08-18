@@ -1,0 +1,43 @@
+{
+  "audit_phase": "PHASE_13_FINAL_SMOKE_TEST",
+  "timestamp": "2026-08-18T15:09:17.428312+00:00",
+  "overall_status": "PASS",
+  "safe_demo_subject": "BraTS-GLI-00005-100",
+  "checks": [
+    {
+      "check": "frontend_dist_index",
+      "status": "PASS",
+      "size_bytes": 689
+    },
+    {
+      "check": "backend_health_endpoint",
+      "status": "PASS",
+      "status_code": 200
+    },
+    {
+      "check": "model_metadata_endpoint",
+      "status": "PASS",
+      "sha256": "f6cd18dc5e05595ca88ad1675190aabb98595ee9f6d6dfed36c25b596f652f3a"
+    },
+    {
+      "check": "safe_demo_cases_retrieval",
+      "status": "PASS",
+      "cases_count": 4
+    },
+    {
+      "check": "live_segmentation_and_slices",
+      "status": "PASS",
+      "latency_ms": 1029.95,
+      "tumor_volumes_mm3": {
+        "tumor_core_tc": 1788524.0,
+        "whole_tumor_wt": 350577.0,
+        "enhancing_tumor_et": 791910.0
+      },
+      "slices_verified": [
+        "axial",
+        "coronal",
+        "sagittal"
+      ]
+    }
+  ]
+}

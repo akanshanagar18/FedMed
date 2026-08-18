@@ -1,0 +1,70 @@
+{
+  "timestamp": "2026-08-15T14:29:57.417080+00:00",
+  "phase": "PHASE_9.2_REAL_128_VALIDATION",
+  "spatial_resolution": [
+    128,
+    128,
+    128
+  ],
+  "loss_function": "DiceCELoss(sigmoid=True, lambda_dice=1.0, lambda_ce=0.2)",
+  "device": "mps",
+  "oom_detected": false,
+  "validation_status": "PASS",
+  "performance_profile": {
+    "round_time_sec": 3.7898,
+    "average_step_time_sec": 0.9474,
+    "mps_allocated_memory_mb": 249.73,
+    "total_parameter_delta": 1.929054,
+    "max_gradient_norm": 0.02681468240916729
+  },
+  "firewall_verification": {
+    "test_subjects_accessed": false,
+    "total_test_subjects_firewalled": 204
+  },
+  "client_steps": [
+    {
+      "hospital": "hospital_alpha",
+      "subject_id": "BraTS-GLI-00005-100",
+      "data_load_time_sec": 0.28,
+      "forward_time_sec": 0.3342,
+      "backward_time_sec": 0.103,
+      "optimizer_time_sec": 0.076,
+      "total_step_time_sec": 0.7932,
+      "loss": 0.99625,
+      "max_grad_norm": 0.026815
+    },
+    {
+      "hospital": "hospital_beta",
+      "subject_id": "BraTS-GLI-00006-100",
+      "data_load_time_sec": 0.2782,
+      "forward_time_sec": 0.0076,
+      "backward_time_sec": 0.0055,
+      "optimizer_time_sec": 0.0073,
+      "total_step_time_sec": 0.2986,
+      "loss": 0.997181,
+      "max_grad_norm": 0.014414
+    },
+    {
+      "hospital": "hospital_gamma",
+      "subject_id": "BraTS-GLI-00008-101",
+      "data_load_time_sec": 0.197,
+      "forward_time_sec": 0.0072,
+      "backward_time_sec": 0.0041,
+      "optimizer_time_sec": 0.0068,
+      "total_step_time_sec": 0.215,
+      "loss": 0.99875,
+      "max_grad_norm": 0.005081
+    },
+    {
+      "hospital": "hospital_delta",
+      "subject_id": "BraTS-GLI-00008-103",
+      "data_load_time_sec": 0.1974,
+      "forward_time_sec": 0.007,
+      "backward_time_sec": 0.0041,
+      "optimizer_time_sec": 0.007,
+      "total_step_time_sec": 0.2154,
+      "loss": 0.998315,
+      "max_grad_norm": 0.005729
+    }
+  ]
+}

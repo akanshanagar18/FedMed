@@ -1,0 +1,638 @@
+{
+  "timestamp": "2026-08-15T14:12:00.411740+00:00",
+  "audit_phase": "PHASE_9.1_REAL_BRATS_GLI_2024_READINESS",
+  "device": "mps",
+  "audit_4_resolution_retention": {
+    "subjects_analyzed": 10,
+    "et_survival_rate": {
+      "32x32x32": "10/10",
+      "64x64x64": "10/10",
+      "128x128x128": "10/10"
+    },
+    "details": [
+      {
+        "subject_id": "BraTS-GLI-00005-100",
+        "original_native_shape": [
+          182,
+          218,
+          182
+        ],
+        "original_voxels": {
+          "TC": 0,
+          "WT": 22960,
+          "ET": 0,
+          "RC": 4246
+        },
+        "resolutions": {
+          "32x32x32": {
+            "TC_voxels": 0,
+            "WT_voxels": 277,
+            "ET_voxels": 0,
+            "ET_survived": true,
+            "TC_survived": true,
+            "WT_survived": true
+          },
+          "64x64x64": {
+            "TC_voxels": 0,
+            "WT_voxels": 2266,
+            "ET_voxels": 0,
+            "ET_survived": true,
+            "TC_survived": true,
+            "WT_survived": true
+          },
+          "128x128x128": {
+            "TC_voxels": 0,
+            "WT_voxels": 18151,
+            "ET_voxels": 0,
+            "ET_survived": true,
+            "TC_survived": true,
+            "WT_survived": true
+          }
+        }
+      },
+      {
+        "subject_id": "BraTS-GLI-00006-100",
+        "original_native_shape": [
+          182,
+          218,
+          182
+        ],
+        "original_voxels": {
+          "TC": 0,
+          "WT": 17907,
+          "ET": 0,
+          "RC": 22074
+        },
+        "resolutions": {
+          "32x32x32": {
+            "TC_voxels": 0,
+            "WT_voxels": 181,
+            "ET_voxels": 0,
+            "ET_survived": true,
+            "TC_survived": true,
+            "WT_survived": true
+          },
+          "64x64x64": {
+            "TC_voxels": 0,
+            "WT_voxels": 1432,
+            "ET_voxels": 0,
+            "ET_survived": true,
+            "TC_survived": true,
+            "WT_survived": true
+          },
+          "128x128x128": {
+            "TC_voxels": 0,
+            "WT_voxels": 11534,
+            "ET_voxels": 0,
+            "ET_survived": true,
+            "TC_survived": true,
+            "WT_survived": true
+          }
+        }
+      },
+      {
+        "subject_id": "BraTS-GLI-00008-101",
+        "original_native_shape": [
+          182,
+          218,
+          182
+        ],
+        "original_voxels": {
+          "TC": 66,
+          "WT": 7837,
+          "ET": 66,
+          "RC": 1903
+        },
+        "resolutions": {
+          "32x32x32": {
+            "TC_voxels": 1,
+            "WT_voxels": 89,
+            "ET_voxels": 1,
+            "ET_survived": true,
+            "TC_survived": true,
+            "WT_survived": true
+          },
+          "64x64x64": {
+            "TC_voxels": 3,
+            "WT_voxels": 714,
+            "ET_voxels": 3,
+            "ET_survived": true,
+            "TC_survived": true,
+            "WT_survived": true
+          },
+          "128x128x128": {
+            "TC_voxels": 49,
+            "WT_voxels": 5502,
+            "ET_voxels": 49,
+            "ET_survived": true,
+            "TC_survived": true,
+            "WT_survived": true
+          }
+        }
+      },
+      {
+        "subject_id": "BraTS-GLI-00008-103",
+        "original_native_shape": [
+          182,
+          218,
+          182
+        ],
+        "original_voxels": {
+          "TC": 178,
+          "WT": 9766,
+          "ET": 178,
+          "RC": 1756
+        },
+        "resolutions": {
+          "32x32x32": {
+            "TC_voxels": 2,
+            "WT_voxels": 111,
+            "ET_voxels": 2,
+            "ET_survived": true,
+            "TC_survived": true,
+            "WT_survived": true
+          },
+          "64x64x64": {
+            "TC_voxels": 20,
+            "WT_voxels": 860,
+            "ET_voxels": 20,
+            "ET_survived": true,
+            "TC_survived": true,
+            "WT_survived": true
+          },
+          "128x128x128": {
+            "TC_voxels": 139,
+            "WT_voxels": 6953,
+            "ET_voxels": 139,
+            "ET_survived": true,
+            "TC_survived": true,
+            "WT_survived": true
+          }
+        }
+      },
+      {
+        "subject_id": "BraTS-GLI-00009-100",
+        "original_native_shape": [
+          182,
+          218,
+          182
+        ],
+        "original_voxels": {
+          "TC": 6488,
+          "WT": 79663,
+          "ET": 6311,
+          "RC": 2984
+        },
+        "resolutions": {
+          "32x32x32": {
+            "TC_voxels": 78,
+            "WT_voxels": 856,
+            "ET_voxels": 76,
+            "ET_survived": true,
+            "TC_survived": true,
+            "WT_survived": true
+          },
+          "64x64x64": {
+            "TC_voxels": 578,
+            "WT_voxels": 6865,
+            "ET_voxels": 563,
+            "ET_survived": true,
+            "TC_survived": true,
+            "WT_survived": true
+          },
+          "128x128x128": {
+            "TC_voxels": 4605,
+            "WT_voxels": 55047,
+            "ET_voxels": 4470,
+            "ET_survived": true,
+            "TC_survived": true,
+            "WT_survived": true
+          }
+        }
+      },
+      {
+        "subject_id": "BraTS-GLI-00020-100",
+        "original_native_shape": [
+          182,
+          218,
+          182
+        ],
+        "original_voxels": {
+          "TC": 23370,
+          "WT": 121807,
+          "ET": 21921,
+          "RC": 1660
+        },
+        "resolutions": {
+          "32x32x32": {
+            "TC_voxels": 225,
+            "WT_voxels": 1181,
+            "ET_voxels": 212,
+            "ET_survived": true,
+            "TC_survived": true,
+            "WT_survived": true
+          },
+          "64x64x64": {
+            "TC_voxels": 1830,
+            "WT_voxels": 9476,
+            "ET_voxels": 1717,
+            "ET_survived": true,
+            "TC_survived": true,
+            "WT_survived": true
+          },
+          "128x128x128": {
+            "TC_voxels": 14681,
+            "WT_voxels": 75996,
+            "ET_voxels": 13747,
+            "ET_survived": true,
+            "TC_survived": true,
+            "WT_survived": true
+          }
+        }
+      },
+      {
+        "subject_id": "BraTS-GLI-00020-101",
+        "original_native_shape": [
+          182,
+          218,
+          182
+        ],
+        "original_voxels": {
+          "TC": 30765,
+          "WT": 134477,
+          "ET": 29015,
+          "RC": 1702
+        },
+        "resolutions": {
+          "32x32x32": {
+            "TC_voxels": 302,
+            "WT_voxels": 1315,
+            "ET_voxels": 287,
+            "ET_survived": true,
+            "TC_survived": true,
+            "WT_survived": true
+          },
+          "64x64x64": {
+            "TC_voxels": 2410,
+            "WT_voxels": 10494,
+            "ET_voxels": 2270,
+            "ET_survived": true,
+            "TC_survived": true,
+            "WT_survived": true
+          },
+          "128x128x128": {
+            "TC_voxels": 19218,
+            "WT_voxels": 83849,
+            "ET_voxels": 18090,
+            "ET_survived": true,
+            "TC_survived": true,
+            "WT_survived": true
+          }
+        }
+      },
+      {
+        "subject_id": "BraTS-GLI-00027-100",
+        "original_native_shape": [
+          182,
+          218,
+          182
+        ],
+        "original_voxels": {
+          "TC": 4390,
+          "WT": 39428,
+          "ET": 4390,
+          "RC": 3228
+        },
+        "resolutions": {
+          "32x32x32": {
+            "TC_voxels": 43,
+            "WT_voxels": 389,
+            "ET_voxels": 43,
+            "ET_survived": true,
+            "TC_survived": true,
+            "WT_survived": true
+          },
+          "64x64x64": {
+            "TC_voxels": 347,
+            "WT_voxels": 3114,
+            "ET_voxels": 347,
+            "ET_survived": true,
+            "TC_survived": true,
+            "WT_survived": true
+          },
+          "128x128x128": {
+            "TC_voxels": 2833,
+            "WT_voxels": 24955,
+            "ET_voxels": 2833,
+            "ET_survived": true,
+            "TC_survived": true,
+            "WT_survived": true
+          }
+        }
+      },
+      {
+        "subject_id": "BraTS-GLI-00033-101",
+        "original_native_shape": [
+          182,
+          218,
+          182
+        ],
+        "original_voxels": {
+          "TC": 0,
+          "WT": 12445,
+          "ET": 0,
+          "RC": 67924
+        },
+        "resolutions": {
+          "32x32x32": {
+            "TC_voxels": 0,
+            "WT_voxels": 126,
+            "ET_voxels": 0,
+            "ET_survived": true,
+            "TC_survived": true,
+            "WT_survived": true
+          },
+          "64x64x64": {
+            "TC_voxels": 0,
+            "WT_voxels": 985,
+            "ET_voxels": 0,
+            "ET_survived": true,
+            "TC_survived": true,
+            "WT_survived": true
+          },
+          "128x128x128": {
+            "TC_voxels": 0,
+            "WT_voxels": 7904,
+            "ET_voxels": 0,
+            "ET_survived": true,
+            "TC_survived": true,
+            "WT_survived": true
+          }
+        }
+      },
+      {
+        "subject_id": "BraTS-GLI-00046-101",
+        "original_native_shape": [
+          182,
+          218,
+          182
+        ],
+        "original_voxels": {
+          "TC": 30218,
+          "WT": 94862,
+          "ET": 25306,
+          "RC": 9469
+        },
+        "resolutions": {
+          "32x32x32": {
+            "TC_voxels": 301,
+            "WT_voxels": 1005,
+            "ET_voxels": 252,
+            "ET_survived": true,
+            "TC_survived": true,
+            "WT_survived": true
+          },
+          "64x64x64": {
+            "TC_voxels": 2518,
+            "WT_voxels": 8103,
+            "ET_voxels": 2114,
+            "ET_survived": true,
+            "TC_survived": true,
+            "WT_survived": true
+          },
+          "128x128x128": {
+            "TC_voxels": 20286,
+            "WT_voxels": 64526,
+            "ET_voxels": 17039,
+            "ET_survived": true,
+            "TC_survived": true,
+            "WT_survived": true
+          }
+        }
+      }
+    ]
+  },
+  "audit_5_training_profile": {
+    "device": "mps",
+    "total_subjects": 4,
+    "total_local_round_sec": 1.0922,
+    "average_step_sec": 0.273,
+    "mps_allocated_mb": 80.11,
+    "timing_breakdown": [
+      {
+        "subject_id": "BraTS-GLI-00005-100",
+        "data_loading_sec": 0.0013,
+        "forward_sec": 0.1042,
+        "backward_sec": 0.0911,
+        "optimizer_sec": 0.0748,
+        "total_step_sec": 0.2713,
+        "loss": 1.007203
+      },
+      {
+        "subject_id": "BraTS-GLI-00006-100",
+        "data_loading_sec": 0.0013,
+        "forward_sec": 0.0047,
+        "backward_sec": 0.005,
+        "optimizer_sec": 0.0093,
+        "total_step_sec": 0.0204,
+        "loss": 1.005307
+      },
+      {
+        "subject_id": "BraTS-GLI-00008-101",
+        "data_loading_sec": 0.0006,
+        "forward_sec": 0.0042,
+        "backward_sec": 0.0037,
+        "optimizer_sec": 0.0075,
+        "total_step_sec": 0.0161,
+        "loss": 1.001641
+      },
+      {
+        "subject_id": "BraTS-GLI-00008-103",
+        "data_loading_sec": 0.0008,
+        "forward_sec": 0.0043,
+        "backward_sec": 0.0037,
+        "optimizer_sec": 0.0076,
+        "total_step_sec": 0.0163,
+        "loss": 1.002668
+      }
+    ]
+  },
+  "audit_6_learning_sanity": {
+    "status": "PASS",
+    "loss_decreased": true,
+    "dice_improved": true,
+    "initial_train_loss": 1.002304,
+    "final_train_loss": 0.99623,
+    "initial_train_wt_dice": 0.0117,
+    "final_train_wt_dice": 0.0208,
+    "epoch_history": [
+      {
+        "epoch": 1,
+        "train_loss": 1.002304,
+        "train_tc_dice": 0.0,
+        "train_wt_dice": 0.0117,
+        "train_et_dice": 0.0,
+        "val_loss": 1.001035,
+        "val_tc_dice": 0.0,
+        "val_wt_dice": 0.0156,
+        "val_et_dice": 0.0
+      },
+      {
+        "epoch": 2,
+        "train_loss": 1.000351,
+        "train_tc_dice": 0.0,
+        "train_wt_dice": 0.0144,
+        "train_et_dice": 0.0001,
+        "val_loss": 0.99863,
+        "val_tc_dice": 0.0,
+        "val_wt_dice": 0.0188,
+        "val_et_dice": 0.0
+      },
+      {
+        "epoch": 3,
+        "train_loss": 0.998804,
+        "train_tc_dice": 0.0,
+        "train_wt_dice": 0.0175,
+        "train_et_dice": 0.0,
+        "val_loss": 0.996252,
+        "val_tc_dice": 0.0,
+        "val_wt_dice": 0.0217,
+        "val_et_dice": 0.0
+      },
+      {
+        "epoch": 4,
+        "train_loss": 0.997141,
+        "train_tc_dice": 0.0,
+        "train_wt_dice": 0.0194,
+        "train_et_dice": 0.0,
+        "val_loss": 0.995522,
+        "val_tc_dice": 0.0,
+        "val_wt_dice": 0.0229,
+        "val_et_dice": 0.0
+      },
+      {
+        "epoch": 5,
+        "train_loss": 0.99623,
+        "train_tc_dice": 0.0,
+        "train_wt_dice": 0.0208,
+        "train_et_dice": 0.0,
+        "val_loss": 0.995464,
+        "val_tc_dice": 0.0,
+        "val_wt_dice": 0.0233,
+        "val_et_dice": 0.0
+      }
+    ]
+  },
+  "audit_7_overfitting_sanity": {
+    "status": "FAIL",
+    "subject_id": "BraTS-GLI-00005-100",
+    "initial_loss": 1.005517,
+    "final_loss": 0.988401,
+    "final_wt_dice": 0.0659,
+    "overfit_successful": false,
+    "trajectory": [
+      {
+        "step": 1,
+        "loss": 1.005517,
+        "TC_dice": 0.0,
+        "WT_dice": 0.0176,
+        "ET_dice": 0.0
+      },
+      {
+        "step": 5,
+        "loss": 0.992455,
+        "TC_dice": 0.0,
+        "WT_dice": 0.0323,
+        "ET_dice": 0.0
+      },
+      {
+        "step": 10,
+        "loss": 0.991607,
+        "TC_dice": 0.0,
+        "WT_dice": 0.0355,
+        "ET_dice": 0.0
+      },
+      {
+        "step": 15,
+        "loss": 0.989944,
+        "TC_dice": 0.0,
+        "WT_dice": 0.042,
+        "ET_dice": 0.0
+      },
+      {
+        "step": 20,
+        "loss": 0.98932,
+        "TC_dice": 0.0,
+        "WT_dice": 0.0477,
+        "ET_dice": 0.0
+      },
+      {
+        "step": 25,
+        "loss": 0.988757,
+        "TC_dice": 0.0,
+        "WT_dice": 0.059,
+        "ET_dice": 0.0
+      },
+      {
+        "step": 30,
+        "loss": 0.988401,
+        "TC_dice": 0.0,
+        "WT_dice": 0.0659,
+        "ET_dice": 0.0
+      }
+    ]
+  },
+  "audit_8_federated_profile": {
+    "round_time_sec": 1.1788,
+    "participating_hospitals": [
+      "hospital_alpha",
+      "hospital_beta",
+      "hospital_gamma",
+      "hospital_delta"
+    ],
+    "sample_counts": {
+      "hospital_alpha": 1,
+      "hospital_beta": 1,
+      "hospital_gamma": 1,
+      "hospital_delta": 1
+    },
+    "client_timings_sec": {
+      "hospital_alpha": 0.2621,
+      "hospital_beta": 0.2654,
+      "hospital_gamma": 0.2658,
+      "hospital_delta": 0.2773
+    },
+    "payload_per_client_bytes": 19240296,
+    "payload_per_client_mb": 18.35,
+    "global_parameter_delta": 0.373551,
+    "aggregation_verified": true,
+    "raw_image_transmission": false,
+    "test_firewall_maintained": true
+  },
+  "audit_9_dp_profile": {
+    "dp_enabled": true,
+    "max_grad_norm_C": 1.0,
+    "noise_multiplier_sigma": 0.8,
+    "target_epsilon": 5.0,
+    "target_delta": 1e-05,
+    "spent_epsilon": 0.1906,
+    "spent_delta": 1e-05,
+    "steps": 1,
+    "clipping_executed": true,
+    "noise_injected": true,
+    "compatible_with_real_shapes": true
+  },
+  "audit_10_he_profile": {
+    "he_scheme": "CKKS",
+    "poly_modulus_degree": 8192,
+    "tested_tensor_shape": [
+      50,
+      100
+    ],
+    "encryption_time_ms": 5843.4,
+    "aggregation_time_ms": 3.59,
+    "max_reconstruction_error": 4.76837158203125e-07,
+    "mean_reconstruction_error": 7.633403953377638e-08,
+    "he_aggregation_verified": true
+  }
+}

@@ -1,0 +1,230 @@
+{
+  "experiment_id": "fedavg_20260816_033434",
+  "execution_mode": "DEVELOPMENT_SYNTHETIC",
+  "dataset_mode": "DEVELOPMENT_SYNTHETIC",
+  "split_hash": "4ce10ac52c093ec0971f306b6d4145e383ad92eeb231c551c6f841b64864384f",
+  "seed": 42,
+  "flower_framework": "Flower NumPyClient / Pure Strategy FedAvg",
+  "model_configuration": {
+    "name": "UNet3D",
+    "channels": [
+      16,
+      32,
+      64,
+      128,
+      256
+    ],
+    "strides": [
+      2,
+      2,
+      2,
+      2
+    ],
+    "num_res_units": 2,
+    "parameter_count": 4810074
+  },
+  "participating_clients": [
+    "hospital_alpha",
+    "hospital_beta"
+  ],
+  "client_partitions": {
+    "hospital_alpha": [
+      "BraTS2021_00003"
+    ],
+    "hospital_beta": [
+      "BraTS2021_00004"
+    ],
+    "hospital_gamma": [],
+    "hospital_delta": []
+  },
+  "synchronization_records": [
+    {
+      "round": 1,
+      "synchronized": true,
+      "global_hash": "fc8465fe6f2c833552171515ca32e8b9682830f79ab4889b8d653858ae33a8c1",
+      "alpha_hash": "fc8465fe6f2c833552171515ca32e8b9682830f79ab4889b8d653858ae33a8c1",
+      "beta_hash": "fc8465fe6f2c833552171515ca32e8b9682830f79ab4889b8d653858ae33a8c1"
+    },
+    {
+      "round": 2,
+      "synchronized": true,
+      "global_hash": "dbc02be00481b1aa900100f159c2c8328b3edeb7dbec5f338e9ba16eb12e6536",
+      "alpha_hash": "dbc02be00481b1aa900100f159c2c8328b3edeb7dbec5f338e9ba16eb12e6536",
+      "beta_hash": "dbc02be00481b1aa900100f159c2c8328b3edeb7dbec5f338e9ba16eb12e6536"
+    },
+    {
+      "round": 3,
+      "synchronized": true,
+      "global_hash": "5adfb5437b5fafe81e50a751516c50103b89f287e008c565c662e215db5dbbb9",
+      "alpha_hash": "5adfb5437b5fafe81e50a751516c50103b89f287e008c565c662e215db5dbbb9",
+      "beta_hash": "5adfb5437b5fafe81e50a751516c50103b89f287e008c565c662e215db5dbbb9"
+    }
+  ],
+  "rounds": [
+    {
+      "round": 1,
+      "global_parameter_hash_before": "fc8465fe6f2c833552171515ca32e8b9682830f79ab4889b8d653858ae33a8c1",
+      "client_initial_hashes": {
+        "hospital_alpha": "fc8465fe6f2c833552171515ca32e8b9682830f79ab4889b8d653858ae33a8c1",
+        "hospital_beta": "fc8465fe6f2c833552171515ca32e8b9682830f79ab4889b8d653858ae33a8c1"
+      },
+      "client_final_hashes": {
+        "hospital_alpha": "56ab19d90c7e81fc24c5eeb79d6e6085c24ed457861c3584f180c32dede2e5ed",
+        "hospital_beta": "e85529d137d71cb38bcd2e8577e86dd57884f72a10de5139da29491b5af2586f"
+      },
+      "client_losses": {
+        "hospital_alpha": 1.8035688400268555,
+        "hospital_beta": 1.7985812425613403
+      },
+      "client_gradient_norms": {
+        "hospital_alpha": 1.1875531467075804,
+        "hospital_beta": 1.1962894040295249
+      },
+      "client_parameter_deltas": {
+        "hospital_alpha": 0.00010000169277191162,
+        "hospital_beta": 0.00010000169277191162
+      },
+      "client_sample_counts": {
+        "hospital_alpha": 1,
+        "hospital_beta": 1
+      },
+      "fedavg_weights": {
+        "hospital_alpha": 0.5,
+        "hospital_beta": 0.5
+      },
+      "independent_aggregation_error": {
+        "max_error": 0.0,
+        "l2_error": 0.0,
+        "tolerance": 1e-06,
+        "verified": true
+      },
+      "global_parameter_hash_after": "dbc02be00481b1aa900100f159c2c8328b3edeb7dbec5f338e9ba16eb12e6536",
+      "validation_metrics": {
+        "dice_TC": 0.335057,
+        "dice_WT": 0.664626,
+        "dice_ET": 0.0,
+        "mean_dice": 0.333228,
+        "iou_TC": 0.201243,
+        "iou_WT": 0.497708,
+        "iou_ET": 0.0,
+        "mean_iou": 0.232983
+      }
+    },
+    {
+      "round": 2,
+      "global_parameter_hash_before": "dbc02be00481b1aa900100f159c2c8328b3edeb7dbec5f338e9ba16eb12e6536",
+      "client_initial_hashes": {
+        "hospital_alpha": "dbc02be00481b1aa900100f159c2c8328b3edeb7dbec5f338e9ba16eb12e6536",
+        "hospital_beta": "dbc02be00481b1aa900100f159c2c8328b3edeb7dbec5f338e9ba16eb12e6536"
+      },
+      "client_final_hashes": {
+        "hospital_alpha": "0f37d3f715828b43322d8f3d916deaf4d68715423f70fedf3305379e0bf78a5e",
+        "hospital_beta": "89b32aa2ae70db4551515c2c92bf0ca29ad61efd0cb2861370d0f7cad182d2d0"
+      },
+      "client_losses": {
+        "hospital_alpha": 1.78754460811615,
+        "hospital_beta": 1.791895866394043
+      },
+      "client_gradient_norms": {
+        "hospital_alpha": 1.1432008575787642,
+        "hospital_beta": 1.182010836079356
+      },
+      "client_parameter_deltas": {
+        "hospital_alpha": 0.00010013580322265625,
+        "hospital_beta": 0.00010013580322265625
+      },
+      "client_sample_counts": {
+        "hospital_alpha": 1,
+        "hospital_beta": 1
+      },
+      "fedavg_weights": {
+        "hospital_alpha": 0.5,
+        "hospital_beta": 0.5
+      },
+      "independent_aggregation_error": {
+        "max_error": 0.0,
+        "l2_error": 0.0,
+        "tolerance": 1e-06,
+        "verified": true
+      },
+      "global_parameter_hash_after": "5adfb5437b5fafe81e50a751516c50103b89f287e008c565c662e215db5dbbb9",
+      "validation_metrics": {
+        "dice_TC": 0.337243,
+        "dice_WT": 0.666621,
+        "dice_ET": 0.0,
+        "mean_dice": 0.334621,
+        "iou_TC": 0.202821,
+        "iou_WT": 0.499948,
+        "iou_ET": 0.0,
+        "mean_iou": 0.234257
+      }
+    },
+    {
+      "round": 3,
+      "global_parameter_hash_before": "5adfb5437b5fafe81e50a751516c50103b89f287e008c565c662e215db5dbbb9",
+      "client_initial_hashes": {
+        "hospital_alpha": "5adfb5437b5fafe81e50a751516c50103b89f287e008c565c662e215db5dbbb9",
+        "hospital_beta": "5adfb5437b5fafe81e50a751516c50103b89f287e008c565c662e215db5dbbb9"
+      },
+      "client_final_hashes": {
+        "hospital_alpha": "90ef62e51b5f4bfdfbf3cc9d13e3d5a0107f20f4690cc4863799c7a36349ed7a",
+        "hospital_beta": "e8247d83a9862678526361435ad6c4680327456c5fb010c335a38a166def3f35"
+      },
+      "client_losses": {
+        "hospital_alpha": 1.7929731607437134,
+        "hospital_beta": 1.7948548793792725
+      },
+      "client_gradient_norms": {
+        "hospital_alpha": 1.1816103836179743,
+        "hospital_beta": 1.187491370694491
+      },
+      "client_parameter_deltas": {
+        "hospital_alpha": 0.0001003611832857132,
+        "hospital_beta": 0.00010036025196313858
+      },
+      "client_sample_counts": {
+        "hospital_alpha": 1,
+        "hospital_beta": 1
+      },
+      "fedavg_weights": {
+        "hospital_alpha": 0.5,
+        "hospital_beta": 0.5
+      },
+      "independent_aggregation_error": {
+        "max_error": 0.0,
+        "l2_error": 0.0,
+        "tolerance": 1e-06,
+        "verified": true
+      },
+      "global_parameter_hash_after": "c3f43a1ae8b8204bfce47c74ed4757fa61ceb02b139ece2cf2ebe0d4bfd721f3",
+      "validation_metrics": {
+        "dice_TC": 0.338526,
+        "dice_WT": 0.667904,
+        "dice_ET": 0.0,
+        "mean_dice": 0.335477,
+        "iou_TC": 0.20375,
+        "iou_WT": 0.501393,
+        "iou_ET": 0.0,
+        "mean_iou": 0.235048
+      }
+    }
+  ],
+  "test_firewall": {
+    "TEST_SET_ACCESSED": false,
+    "TEST_METRICS_GENERATED": false,
+    "TEST_EVALUATION_STATUS": "NOT_EVALUATED"
+  },
+  "label_semantics": {
+    "raw_labels": [
+      0,
+      1,
+      2
+    ],
+    "development_et_ground_truth_present": false,
+    "et_metric_interpretation": "NOT_MEANINGFUL_ON_DEVELOPMENT_COHORT"
+  },
+  "metric_provenance": "GLOBAL_MODEL_INFERENCE_VS_VALIDATION_GROUND_TRUTH",
+  "checkpoint_path": "/Users/siddhant_patil/Projects/FedMed/checkpoints/fedavg/global_best.pt",
+  "timestamp": "2026-08-16T03:34:34.800015+00:00",
+  "scientific_limitation": "The current dataset is a development cohort (2 train, 1 val, 1 test). This execution proves multi-hospital synchronization, local training on disjoint subjects, divergence of local weights, exact sample-weighted FedAvg aggregation, and firewalled validation."
+}

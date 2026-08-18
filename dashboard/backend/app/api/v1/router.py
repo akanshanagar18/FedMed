@@ -55,3 +55,6 @@ api_router.include_router(auth.router, prefix="/auth", tags=["Enterprise Auth & 
 api_router.include_router(dataset_mgmt.router, prefix="/dataset-management", tags=["Dataset Management & Checksums"])
 api_router.include_router(inference_api.router, prefix="/inference", tags=["3D BraTS MONAI Inference Engine"])
 api_router.include_router(export_api.router, prefix="/export", tags=["Production Model Exporter & Governance Certificate"])
+
+# Canonical shortcut for GET /api/v1/model
+api_router.add_api_route("/model", inference_api.get_model_info, methods=["GET"], tags=["Production Model Metadata"])

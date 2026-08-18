@@ -57,10 +57,12 @@ class FedMedClient(fl.client.NumPyClient):
         strategy: str = "fedavg",
         hospital_silos: Optional[List[str]] = None,
         config_path: Optional[str] = None,
+        image_size: Optional[Tuple[int, int, int]] = None,
     ):
         self.hospital_id = hospital_id
         self.device = device
         self.config = load_config(config_path)
+        self.spatial_size = image_size or tuple(self.config.data.image_size)
         self.strategy_name = strategy
         self.he_enabled = enable_he or self.config.privacy.he_enabled
         self.dp_enabled = enable_dp or self.config.privacy.dp_enabled
@@ -89,7 +91,7 @@ class FedMedClient(fl.client.NumPyClient):
         full_dataset = BraTSDataset(
             data_dir=self.config.data.data_dir,
             modalities=self.config.data.modalities,
-            image_size=tuple(self.config.data.image_size),
+            image_size=self.spatial_size,
             cache_type=self.config.data.cache_type,
             cache_dir=self.config.data.cache_dir,
             num_workers=self.config.data.num_workers,
@@ -117,7 +119,7 @@ class FedMedClient(fl.client.NumPyClient):
         )
 
         # Create MONAI DataLoader for assigned partition
-        transforms = get_brats_transforms(mode="train", image_size=tuple(self.config.data.image_size))
+        transforms = get_brats_transforms(mode="train", image_size=self.spatial_size)
         self.dataset = build_monai_dataset(
             data_list=self.partition_files,
             transforms=transforms,

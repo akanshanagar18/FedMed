@@ -1,0 +1,37 @@
+{
+  "run_id": "b6_scaling_20260818_143902",
+  "dataset_mode": "DEVELOPMENT_SYNTHETIC",
+  "device": "Apple Silicon MPS (GPU)",
+  "model_parameters": 4810074,
+  "model_size_mb": 18.35,
+  "scaling_topology": {
+    "world_size": 1,
+    "participating_clients": 2,
+    "client_ids": [
+      "BraTS2021_00003",
+      "BraTS2021_00004"
+    ],
+    "rounds": 2
+  },
+  "performance_metrics": {
+    "total_execution_time_s": 0.446,
+    "average_round_time_s": 0.223,
+    "average_local_train_time_s": 0.182,
+    "average_aggregation_time_ms": 8.909,
+    "samples_processed": 4,
+    "throughput_samples_per_sec": 8.96,
+    "throughput_rounds_per_sec": 4.482
+  },
+  "communication_metrics": {
+    "client_upload_mb": 18.35,
+    "server_broadcast_mb": 18.35,
+    "total_comm_payload_per_round_mb": 73.4,
+    "total_comm_payload_all_rounds_mb": 146.79
+  },
+  "final_metrics": {
+    "val_mean_dice": 0.360129,
+    "val_mean_iou": 0.249934,
+    "test_mean_dice": 0.358602,
+    "test_mean_iou": 0.24835
+  }
+}

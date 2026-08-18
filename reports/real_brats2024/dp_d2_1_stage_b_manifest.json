@@ -1,0 +1,51 @@
+{
+  "experiment_name": "EXPERIMENT_D2.1_DP_SGD_MOMENTUM_LR1E3",
+  "parent_baseline": "EXPERIMENT_D2_DP_SGD_MOMENTUM",
+  "causal_change": "learning_rate 1e-4 -> 1e-3 (SGD with Momentum=0.9, C=0.06, sigma=0.87)",
+  "dataset_split_hash": "d0358ca42d4bf510624bbe7e86c3e4bc1e25a6174521b1280c0001eb2c66005c",
+  "hospital_partition_hash": "4d5905c88558883cadf9463517d3c9f856a353e4f3a570c40515f16b763fc4f8",
+  "configuration_hash": "bf30a2492b4aa0a3abab8a6cf0ff9a721e9289d028885f04efc2baa9dd8adcfb",
+  "random_seed": 42,
+  "invariant_parameters": {
+    "dataset": "BraTS-GLI 2024 Adult Glioma Post-Treatment",
+    "total_subjects": 1350,
+    "train_subjects": 944,
+    "validation_subjects": 202,
+    "test_subjects": 204,
+    "hospital_silos": [
+      "hospital_alpha",
+      "hospital_beta",
+      "hospital_gamma",
+      "hospital_delta"
+    ],
+    "subjects_per_silo": 236,
+    "model_architecture": "MONAI 3D U-Net",
+    "parameter_count": 4810074,
+    "spatial_resolution": [
+      128,
+      128,
+      128
+    ],
+    "loss_function": "DiceCELoss(sigmoid=True, lambda_dice=1.0, lambda_ce=0.2)",
+    "optimizer": "SGD(lr=0.001, momentum=0.9, weight_decay=1e-05)",
+    "batch_size": 1,
+    "local_epochs": 1,
+    "rounds": 3,
+    "client_execution": "sequential",
+    "seed": 42
+  },
+  "privacy_parameters": {
+    "mechanism": "DP-SGD",
+    "level": "sample_level",
+    "max_grad_norm_C": 0.06,
+    "noise_multiplier_sigma": 0.87,
+    "physical_noise_std": 0.0522,
+    "target_delta": 1e-05,
+    "calculated_epsilon_20_rounds": 1.9636,
+    "sampling_mechanism": "Poisson / Bernoulli Subsampling (q=1/236)",
+    "accountant": "Exact Analytical R\u00e9nyi Differential Privacy (Poisson RDP)"
+  },
+  "best_checkpoint_sha256": "fb96cb7b4fb1866280e57fe35d376506c79bda195ecb5489862b2af0561efd00",
+  "status": "PARTIAL_3_ROUNDS",
+  "timestamp": "2026-08-17T14:34:25.304050+00:00"
+}

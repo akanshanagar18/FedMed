@@ -1,0 +1,8 @@
+{
+  "run_id": "b7_package_20260816_191043",
+  "artifact_path": "/Users/siddhant_patil/Projects/FedMed/artifacts/fedmed_model",
+  "model_hash": "5da6ce7c4a2ac2acda2722e5466b7b11d70072ac0bfaf9e7cc626606792738cd",
+  "architecture_hash": "fe7cab139a7b118f51cf04de84fc545d9840a83af0ecaeecfd359e378502f156",
+  "inference_latency_ms": 36.76,
+  "status": "PASS"
+}

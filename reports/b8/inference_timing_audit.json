@@ -1,0 +1,18 @@
+{
+  "timestamp": "2026-08-15T11:41:26.979770+00:00",
+  "device": "mps",
+  "device_synchronization": "ENABLED (torch.mps.synchronize / torch.cuda.synchronize)",
+  "measured_components_ms": {
+    "model_load_time_ms": 56.13,
+    "validation_time_ms": 2.49,
+    "preprocessing_time_ms": 8.11,
+    "inference_time_ms": 9.85,
+    "postprocessing_time_ms": 0.4,
+    "nifti_save_time_ms": 1.06,
+    "total_inference_time_ms": 21.91
+  },
+  "component_sum_ms": 21.91,
+  "total_reported_ms": 21.91,
+  "discrepancy_ms": 0.0,
+  "mathematical_consistency": true
+}

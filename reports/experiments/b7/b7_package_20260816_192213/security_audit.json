@@ -1,0 +1,7 @@
+{
+  "checkpoint_format": "PyTorch TorchScript / StateDict",
+  "pickle_safety": "Evaluated with trusted local weights",
+  "secret_keys_in_artifact": false,
+  "private_he_context_in_artifact": false,
+  "phi_logging_sanitized": true
+}

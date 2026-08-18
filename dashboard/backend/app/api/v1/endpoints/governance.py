@@ -78,6 +78,7 @@ async def evaluate_drift(request: DriftEvaluationRequest):
         risk_level=risk,
         recommended_action=rec,
         metrics=metrics_obj,
+        drift_magnitude=mmd_val,
     )
     return SuccessResponse(message="Drift evaluation completed", data=resp.model_dump())
 
@@ -86,8 +87,8 @@ async def evaluate_drift(request: DriftEvaluationRequest):
 @router.post("/sla", response_model=SuccessResponse)
 async def audit_sla_compliance(request: SlaAuditRequest):
     """Audits institutional SLA compliance for differential privacy budgets, latency, and participation rate."""
-    part_count = len(request.participating_nodes)
-    tot_count = len(request.total_nodes)
+    part_count = len(request.participating_nodes) if isinstance(request.participating_nodes, list) else int(request.participating_nodes)
+    tot_count = len(request.total_nodes) if isinstance(request.total_nodes, list) else int(request.total_nodes)
     overall_ok = request.epsilon_consumed <= 10.0 and request.avg_latency_ms <= 500.0
 
     cert_hash = hashlib.sha256(f"{request.run_id}_{time.time()}".encode("utf-8")).hexdigest()

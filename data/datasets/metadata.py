@@ -3,11 +3,14 @@ Module: data.datasets.metadata
 
 Purpose:
 Patient metadata indexer and manifest generator for medical MRI datasets.
+Supports both BraTS 2021 and BraTS-GLI 2024 naming schemes via canonical adapter.
 """
 
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 from pydantic import BaseModel, ConfigDict, Field
+
+from data.canonical_adapter import ModalityCanonicalizer, DatasetVersion
 
 
 class PatientMetadata(BaseModel):
@@ -43,28 +46,31 @@ class PatientMetadataIndexer:
         if not path.exists() or not path.is_dir():
             return []
 
-        subject_dirs = sorted([d for d in path.iterdir() if d.is_dir() and not d.name.startswith(".")])
+        subject_dirs = []
+        for d in sorted(list(path.iterdir())):
+            if d.is_dir() and not d.name.startswith("."):
+                if d.name.startswith("training_data"):
+                    for sub in sorted(list(d.iterdir())):
+                        if sub.is_dir() and not sub.name.startswith("."):
+                            subject_dirs.append(sub)
+                else:
+                    subject_dirs.append(d)
+
         index_list: List[PatientMetadata] = []
 
         for subj_dir in subject_dirs:
             patient_id = subj_dir.name
-            mod_map: Dict[str, str] = {}
-            for mod in target_modalities:
-                matches = list(subj_dir.glob(f"*{mod}.nii*"))
-                if matches:
-                    mod_map[mod] = str(matches[0])
+            version, mod_paths, missing = ModalityCanonicalizer.discover_subject_modalities(subj_dir)
 
-            mask_path = None
-            mask_matches = list(subj_dir.glob("*seg.nii*"))
-            if mask_matches:
-                mask_path = str(mask_matches[0])
+            mod_map = {m: str(mod_paths[m]) for m in target_modalities if m in mod_paths}
+            mask_path = str(mod_paths["seg"]) if "seg" in mod_paths else None
 
-            if mod_map:
-                meta = PatientMetadata(
+            if len(mod_map) == len(target_modalities) and mask_path:
+                index_list.append(PatientMetadata(
                     patient_id=patient_id,
+                    dataset_version=version.value,
                     modality_paths=mod_map,
                     mask_path=mask_path,
-                )
-                index_list.append(meta)
+                ))
 
         return index_list
