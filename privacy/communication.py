@@ -1,29 +1,23 @@
-from typing import List, Any
+
+from typing import Any
+import pickle
+
+try:
+    
+    from homophormic_encryption import serialization as he_serialization  
+except Exception:
+    he_serialization = None
 
 
-def receive_encrypted_updates() -> List[Any]:
-    """
-    Receive encrypted model updates from all federated clients.
-    """
-    pass
+def serialize_update(update: Any) -> bytes:
+    
+    if he_serialization is not None and hasattr(he_serialization, "serialize"):
+        return he_serialization.serialize(update)
+    return pickle.dumps(update)
 
 
-def send_global_model(global_model: Any) -> None:
-    """
-    Send the aggregated global model back to all connected clients.
-    """
-    pass
-
-
-def serialize_update(update):
-    """
-    Serialize encrypted update for transmission.
-    """
-    pass
-
-
-def deserialize_update(data):
-    """
-    Deserialize received encrypted update.
-    """
-    pass
+def deserialize_update(data: bytes) -> Any:
+   
+    if he_serialization is not None and hasattr(he_serialization, "deserialize"):
+        return he_serialization.deserialize(data)
+    return pickle.loads(data)
