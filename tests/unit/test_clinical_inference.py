@@ -77,3 +77,38 @@ def test_clinical_inference_engine_execution():
     assert "timing_ms" in res
     assert res["timing_ms"]["total_inference_time_ms"] > 0.0
     assert "segmented_voxels" in res
+
+
+def test_clinical_region_hierarchy_invariance():
+    """
+    Verifies that the inference pipeline strictly preserves the clinical BraTS inclusion hierarchy:
+    ET ⊆ TC ⊆ WT  =>  ET_volume <= TC_volume <= WT_volume.
+    """
+    engine = ClinicalInferenceEngine()
+    demo_subj_dir = PROJECT_ROOT / "data" / "raw" / "BraTS2024" / "training_data1_v2" / "BraTS-GLI-00005-100"
+    
+    if demo_subj_dir.exists():
+        mod_paths = {
+            "t1": demo_subj_dir / "BraTS-GLI-00005-100-t1n.nii.gz",
+            "t1ce": demo_subj_dir / "BraTS-GLI-00005-100-t1c.nii.gz",
+            "t2": demo_subj_dir / "BraTS-GLI-00005-100-t2w.nii.gz",
+            "flair": demo_subj_dir / "BraTS-GLI-00005-100-t2f.nii.gz",
+        }
+        res = engine.predict_subject(mod_paths)
+        assert res["status"] == "SUCCESS"
+        
+        vox = res["segmented_voxels"]
+        vols = res["tumor_volumes_mm3"]
+        
+        # 1. Non-negativity
+        assert vox["ET_voxels"] >= 0
+        assert vox["TC_voxels"] >= 0
+        assert vox["WT_voxels"] >= 0
+        
+        # 2. Strict Clinical Hierarchy Invariance: ET <= TC <= WT
+        assert vox["ET_voxels"] <= vox["TC_voxels"], f"ET {vox['ET_voxels']} > TC {vox['TC_voxels']}"
+        assert vox["TC_voxels"] <= vox["WT_voxels"], f"TC {vox['TC_voxels']} > WT {vox['WT_voxels']}"
+        
+        assert vols["enhancing_tumor_et"] <= vols["tumor_core_tc"]
+        assert vols["tumor_core_tc"] <= vols["whole_tumor_wt"]
+

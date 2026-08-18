@@ -261,22 +261,43 @@ class ClinicalInferenceEngine:
                 },
             }
 
-        # 5. Extract multi-planar slice overlays
-        # Use T1CE (channel 1) or FLAIR (channel 3) for background
-        bg_vol = img_np[1]  # T1CE
-        mask_tc_vol = pred_np[0] > 0
-        mask_wt_vol = pred_np[1] > 0
-        mask_et_vol = pred_np[2] > 0
+        # 5. Extract multi-planar slice overlays with Canonical BraTS Hierarchical Region Construction
+        # Use T1CE (channel 1) for anatomical background
+        bg_vol = img_np[1]
+        
+        # Foreground brain tissue mask (excludes empty air voxels outside cranial vault)
+        brain_mask = (np.abs(img_np).sum(axis=0) > 0.01)
 
-        # Select representative center slices with tumor or geometric center
+        # Raw channel thresholding restricted to intracranial volume:
+        # Channel 0: TC candidate, Channel 1: WT candidate, Channel 2: ET candidate
+        raw_tc = (pred_np[0] > 0) & brain_mask
+        raw_wt = (pred_np[1] > 0) & brain_mask
+        raw_et = (pred_np[2] > 0) & brain_mask
+
+        # Canonical BraTS Clinical Region Hierarchy:
+        # Whole Tumor (WT): Superset of all abnormal tumor subregions (NETC + SNFH + ET)
+        # Tumor Core (TC): Solid core & enhancing rim (NETC + ET) enclosed within WT
+        # Enhancing Tumor (ET): Active vascular rim enclosed within TC
+        mask_wt_vol = (raw_wt | raw_tc | raw_et)
+        mask_tc_vol = (raw_tc | raw_et) & mask_wt_vol
+        mask_et_vol = raw_et & mask_tc_vol
+
+        # Select representative center slices with peak tumor activity or geometric center
         d_center = spatial_shape[0] // 2
         h_center = spatial_shape[1] // 2
         w_center = spatial_shape[2] // 2
 
-        # If tumor detected, center on peak tumor slice
-        tc_slices = np.where(np.sum(mask_tc_vol, axis=(1, 2)) > 0)[0]
-        if len(tc_slices) > 0:
-            d_center = int(tc_slices[len(tc_slices) // 2])
+        wt_slices = np.where(np.sum(mask_wt_vol, axis=(1, 2)) > 0)[0]
+        if len(wt_slices) > 0:
+            d_center = int(wt_slices[len(wt_slices) // 2])
+
+        wt_coronal = np.where(np.sum(mask_wt_vol, axis=(0, 2)) > 0)[0]
+        if len(wt_coronal) > 0:
+            h_center = int(wt_coronal[len(wt_coronal) // 2])
+
+        wt_sagittal = np.where(np.sum(mask_wt_vol, axis=(0, 1)) > 0)[0]
+        if len(wt_sagittal) > 0:
+            w_center = int(wt_sagittal[len(wt_sagittal) // 2])
 
         axial_b64 = render_slice_to_base64(
             bg_vol[d_center, :, :],
@@ -308,9 +329,9 @@ class ClinicalInferenceEngine:
             output_nifti_path = Path(output_nifti_path)
             output_nifti_path.parent.mkdir(parents=True, exist_ok=True)
             composite_mask = np.zeros(spatial_shape, dtype=np.uint8)
-            composite_mask[mask_tc_vol] = 1
-            composite_mask[mask_wt_vol & ~mask_tc_vol] = 2
-            composite_mask[mask_et_vol] = 4
+            composite_mask[mask_wt_vol] = 2  # Edema / Whole Tumor envelope
+            composite_mask[mask_tc_vol] = 1  # Non-enhancing Tumor Core
+            composite_mask[mask_et_vol] = 3  # Enhancing Tumor
 
             ref_affine = np.array(meta.get("ref_affine", np.eye(4))) if meta else np.eye(4)
             out_img = nib.Nifti1Image(composite_mask, affine=ref_affine)

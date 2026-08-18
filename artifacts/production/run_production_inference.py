@@ -120,16 +120,29 @@ def main():
 
     t_inf = (time.perf_counter() - t0) * 1000.0
     preds_np = preds.squeeze(0).cpu().numpy()
+    img_np = image_tensor.squeeze(0).cpu().numpy()
 
-    tc_vox = int(np.sum(preds_np[0] > 0))
-    wt_vox = int(np.sum(preds_np[1] > 0))
-    et_vox = int(np.sum(preds_np[2] > 0))
+    # Foreground brain tissue mask
+    brain_mask = (np.abs(img_np).sum(axis=0) > 0.01)
+
+    raw_tc = (preds_np[0] > 0) & brain_mask
+    raw_wt = (preds_np[1] > 0) & brain_mask
+    raw_et = (preds_np[2] > 0) & brain_mask
+
+    # Canonical BraTS Clinical Region Hierarchy: ET ⊆ TC ⊆ WT
+    mask_wt_vol = (raw_wt | raw_tc | raw_et)
+    mask_tc_vol = (raw_tc | raw_et) & mask_wt_vol
+    mask_et_vol = raw_et & mask_tc_vol
+
+    tc_vox = int(np.sum(mask_tc_vol))
+    wt_vox = int(np.sum(mask_wt_vol))
+    et_vox = int(np.sum(mask_et_vol))
 
     # Build composite output mask
     composite_mask = np.zeros((128, 128, 128), dtype=np.uint8)
-    composite_mask[preds_np[0] > 0] = 1
-    composite_mask[(preds_np[1] > 0) & ~(preds_np[0] > 0)] = 2
-    composite_mask[preds_np[2] > 0] = 4
+    composite_mask[mask_wt_vol] = 2  # Whole Tumor envelope
+    composite_mask[mask_tc_vol] = 1  # Non-enhancing Tumor Core
+    composite_mask[mask_et_vol] = 3  # Enhancing Tumor
 
     out_img = nib.Nifti1Image(composite_mask, affine=np.eye(4))
     nib.save(out_img, args.output)
