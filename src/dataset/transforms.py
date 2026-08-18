@@ -1,90 +1,152 @@
 """
-MONAI Transform Pipeline
-------------------------
-This module defines preprocessing and augmentation
-for the BraTS MRI dataset.
+FedMed - MONAI Medical Image Transforms
+
+Defines preprocessing and augmentation pipelines for
+the MSD Task01 Brain Tumour dataset.
 """
 
 from monai.transforms import (
     Compose,
     LoadImaged,
     EnsureChannelFirstd,
+    Orientationd,
     NormalizeIntensityd,
+    RandCropByPosNegLabeld,
     RandFlipd,
     RandRotate90d,
-    RandSpatialCropd,
-    ToTensord,
+    EnsureTyped,
 )
 
 
-def get_train_transforms():
+def get_train_transforms(patch_size=(96, 96, 96)):
     """
-    Preprocessing + augmentation for training.
-    """
+    Create the training preprocessing pipeline.
 
-    train_transforms = Compose([
+    Args:
+        patch_size: 3D spatial size used for training patches.
 
-        # Load MRI and mask
-        LoadImaged(keys=["image", "mask"]),
-
-        # Ensure channel dimension exists
-        EnsureChannelFirstd(keys=["image", "mask"]),
-
-        # Normalize MRI intensities
-        NormalizeIntensityd(
-            keys="image",
-            nonzero=True,
-            channel_wise=True
-        ),
-
-        # Random crop
-        RandSpatialCropd(
-            keys=["image", "mask"],
-            roi_size=(128, 128, 128),
-            random_size=False
-        ),
-
-        # Random flip
-        RandFlipd(
-            keys=["image", "mask"],
-            prob=0.5,
-            spatial_axis=0
-        ),
-
-        # Random rotation
-        RandRotate90d(
-            keys=["image", "mask"],
-            prob=0.5,
-            max_k=3
-        ),
-
-        # Convert to tensors
-        ToTensord(keys=["image", "mask"])
-
-    ])
-
-    return train_transforms
-
-
-def get_validation_transforms():
-    """
-    Validation preprocessing.
+    Returns:
+        MONAI Compose transform.
     """
 
-    val_transforms = Compose([
+    return Compose(
+        [
+            # Load NIfTI files
+            LoadImaged(
+                keys=["image", "label"]
+            ),
 
-        LoadImaged(keys=["image", "mask"]),
+            # Image has shape:
+            # H x W x D x 4
+            #
+            # Convert to:
+            # 4 x H x W x D
+            EnsureChannelFirstd(
+                keys=["image"],
+                channel_dim=-1,
+            ),
 
-        EnsureChannelFirstd(keys=["image", "mask"]),
+            # Label has no channel dimension.
+            EnsureChannelFirstd(
+                keys=["label"],
+                channel_dim="no_channel",
+            ),
 
-        NormalizeIntensityd(
-            keys="image",
-            nonzero=True,
-            channel_wise=True
-        ),
+            # Standardize orientation
+            Orientationd(
+                keys=["image", "label"],
+                axcodes="RAS",
+            ),
 
-        ToTensord(keys=["image", "mask"])
+            # Normalize each MRI modality
+            NormalizeIntensityd(
+                keys=["image"],
+                nonzero=True,
+                channel_wise=True,
+            ),
 
-    ])
+            # Sample a patch containing positive
+            # or negative regions.
+            RandCropByPosNegLabeld(
+                keys=["image", "label"],
+                label_key="label",
+                spatial_size=patch_size,
+                pos=1,
+                neg=1,
+                num_samples=1,
+                image_key="image",
+                image_threshold=0,
+            ),
 
-    return val_transforms
+            # Random left/right type augmentation
+            RandFlipd(
+                keys=["image", "label"],
+                prob=0.5,
+                spatial_axis=0,
+            ),
+
+            # Random 90-degree rotation
+            RandRotate90d(
+                keys=["image", "label"],
+                prob=0.5,
+                max_k=3,
+            ),
+
+            # Convert to PyTorch-compatible tensors
+            EnsureTyped(
+                keys=["image", "label"],
+            ),
+        ]
+    )
+
+
+def get_validation_transforms(patch_size=(96, 96, 96)):
+    """
+    Create validation preprocessing pipeline.
+
+    Validation should avoid random augmentation.
+    """
+
+    return Compose(
+        [
+            LoadImaged(
+                keys=["image", "label"]
+            ),
+
+            EnsureChannelFirstd(
+                keys=["image"],
+                channel_dim=-1,
+            ),
+
+            EnsureChannelFirstd(
+                keys=["label"],
+                channel_dim="no_channel",
+            ),
+
+            Orientationd(
+                keys=["image", "label"],
+                axcodes="RAS",
+            ),
+
+            NormalizeIntensityd(
+                keys=["image"],
+                nonzero=True,
+                channel_wise=True,
+            ),
+
+            RandCropByPosNegLabeld(
+                keys=["image", "label"],
+                label_key="label",
+                spatial_size=patch_size,
+                pos=1,
+                neg=1,
+                num_samples=1,
+                image_key="image",
+                image_threshold=0,
+            ),
+
+            EnsureTyped(
+                keys=["image", "label"],
+            ),
+        ]
+    )
