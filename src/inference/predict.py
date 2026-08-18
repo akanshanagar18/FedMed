@@ -18,6 +18,7 @@ Segmentation postprocessing
 NIfTI output
 """
 
+import argparse
 from pathlib import Path
 
 import torch
@@ -25,6 +26,7 @@ import torch
 from configs.config import DEVICE
 
 from configs.inference_config import (
+    DEFAULT_INPUT_FILE,
     ROI_SIZE,
     SW_BATCH_SIZE,
     SW_OVERLAP,
@@ -60,10 +62,6 @@ from src.inference.output import (
 class Predictor:
     """
     End-to-end MRI prediction pipeline.
-
-    The predictor validates, preprocesses, runs inference,
-    postprocesses the model output, and saves the final
-    segmentation as a NIfTI file.
     """
 
     def __init__(
@@ -73,24 +71,9 @@ class Predictor:
     ):
         """
         Initialize the predictor.
-
-        Parameters
-        ----------
-        model : torch.nn.Module, optional
-            Trained model.
-
-            If None, the trained model is loaded
-            automatically.
-
-        device : str or torch.device
-            Inference device.
         """
 
         self.device = device
-
-        # ----------------------------------------------------
-        # Load model if one was not provided
-        # ----------------------------------------------------
 
         if model is None:
             self.model = load_model(
@@ -101,10 +84,6 @@ class Predictor:
                 self.device
             )
             self.model.eval()
-
-        # ----------------------------------------------------
-        # Create preprocessing transform
-        # ----------------------------------------------------
 
         self.transform = (
             get_inference_transform()
@@ -126,9 +105,6 @@ class Predictor:
         output_path : str or Path, optional
             Destination prediction path.
 
-            If None, a standard output path is
-            automatically generated.
-
         Returns
         -------
         Path
@@ -139,14 +115,14 @@ class Predictor:
             image_path
         )
 
-        # ----------------------------------------------------
-        # Step 1: Validate input
-        # ----------------------------------------------------
-
         print()
         print("=" * 60)
         print("FedMed Medical Image Inference")
         print("=" * 60)
+
+        # ----------------------------------------------------
+        # Step 1: Validate input
+        # ----------------------------------------------------
 
         print()
         print("Step 1/6 - Validating MRI...")
@@ -184,7 +160,6 @@ class Predictor:
             f"{tuple(image.shape)}"
         )
 
-        # Add batch dimension
         image = image.unsqueeze(
             0
         )
@@ -220,7 +195,7 @@ class Predictor:
         )
 
         # ----------------------------------------------------
-        # Step 4: Convert logits to segmentation
+        # Step 4: Postprocessing
         # ----------------------------------------------------
 
         print()
@@ -256,7 +231,7 @@ class Predictor:
         )
 
         # ----------------------------------------------------
-        # Step 5: Determine output path
+        # Step 5: Output path
         # ----------------------------------------------------
 
         print()
@@ -265,15 +240,12 @@ class Predictor:
         )
 
         if output_path is None:
-
             output_path = (
                 get_prediction_path(
                     image_path
                 )
             )
-
         else:
-
             output_path = Path(
                 output_path
             )
@@ -284,7 +256,7 @@ class Predictor:
         )
 
         # ----------------------------------------------------
-        # Step 6: Save NIfTI segmentation
+        # Step 6: Save NIfTI
         # ----------------------------------------------------
 
         print()
@@ -320,24 +292,6 @@ def predict(
     """
     Compatibility function for inference on an
     already-prepared tensor.
-
-    This preserves the simple API used by earlier code.
-
-    Parameters
-    ----------
-    model : torch.nn.Module
-        Trained model.
-
-    image : torch.Tensor
-        Preprocessed image tensor.
-
-    device : str or torch.device
-        Inference device.
-
-    Returns
-    -------
-    torch.Tensor
-        Raw model prediction.
     """
 
     model = model.to(
@@ -365,24 +319,7 @@ def run_prediction(
     device=DEVICE,
 ):
     """
-    Convenience function for running the complete
-    end-to-end inference pipeline.
-
-    Parameters
-    ----------
-    image_path : str or Path
-        Input MRI file.
-
-    output_path : str or Path, optional
-        Output segmentation file.
-
-    device : str or torch.device
-        Inference device.
-
-    Returns
-    -------
-    Path
-        Saved prediction path.
+    Run the complete inference pipeline.
     """
 
     predictor = Predictor(
@@ -395,17 +332,51 @@ def run_prediction(
     )
 
 
+def parse_arguments():
+    """
+    Parse command-line inference arguments.
+    """
+
+    parser = argparse.ArgumentParser(
+        description=(
+            "FedMed brain tumour "
+            "segmentation inference"
+        )
+    )
+
+    parser.add_argument(
+        "--input",
+        type=str,
+        default=str(
+            DEFAULT_INPUT_FILE
+        ),
+        help=(
+            "Path to input MRI NIfTI file. "
+            "Defaults to the configured "
+            "sample MRI."
+        ),
+    )
+
+    parser.add_argument(
+        "--output",
+        type=str,
+        default=None,
+        help=(
+            "Optional output prediction path. "
+            "If omitted, the standard output "
+            "path is generated automatically."
+        ),
+    )
+
+    return parser.parse_args()
+
+
 if __name__ == "__main__":
 
-    # --------------------------------------------------------
-    # Default local test MRI
-    # --------------------------------------------------------
-
-    input_path = Path(
-        "inference_data"
-    ) / "BRATS_001.nii.gz"
+    args = parse_arguments()
 
     run_prediction(
-        image_path=input_path,
+        image_path=args.input,
+        output_path=args.output,
         device=DEVICE,
     )
