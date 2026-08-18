@@ -1,131 +1,325 @@
 """
-FedMed - Prediction Pipeline
+FedMed - End-to-End Medical Image Prediction
 
-Provides a reusable interface for running the trained
-3D U-Net on an already-prepared MRI tensor.
+Complete inference pipeline:
+
+MRI
+    ↓
+Input validation
+    ↓
+Preprocessing
+    ↓
+Model loading
+    ↓
+Sliding-window inference
+    ↓
+Segmentation postprocessing
+    ↓
+NIfTI output
 """
 
+from pathlib import Path
+
 import torch
+
+from configs.config import DEVICE
+
+from src.inference.input_validator import (
+    validate_mri_file,
+)
+
+from src.inference.preprocess import (
+    get_inference_transform,
+)
+
+from src.inference.model_loader import (
+    load_model,
+)
+
+from src.inference.sliding_window import (
+    run_sliding_window_inference,
+)
+
+from src.inference.postprocess import (
+    logits_to_segmentation,
+    remove_batch_dimension,
+)
+
+from src.inference.output import (
+    get_prediction_path,
+    save_segmentation_nifti,
+)
 
 
 class Predictor:
     """
-    Handles model inference.
+    End-to-end MRI prediction pipeline.
 
-    This class expects an input tensor that has already
-    been preprocessed and has the expected channel and
-    spatial dimensions.
+    The predictor validates, preprocesses, runs inference,
+    postprocesses the model output, and saves the final
+    segmentation as a NIfTI file.
     """
 
     def __init__(
         self,
-        model,
-        device,
+        model=None,
+        device=DEVICE,
     ):
         """
         Initialize the predictor.
 
         Parameters
         ----------
-        model : torch.nn.Module
-            Trained medical segmentation model.
+        model : torch.nn.Module, optional
+            Trained model.
+
+            If None, the trained model is loaded
+            automatically.
 
         device : str or torch.device
-            Device used for inference.
+            Inference device.
         """
 
-        self.model = model
         self.device = device
 
-        # Move model to selected device
-        self.model.to(
-            self.device
+        # ----------------------------------------------------
+        # Load model if one was not provided
+        # ----------------------------------------------------
+
+        if model is None:
+            self.model = load_model(
+                device=self.device
+            )
+        else:
+            self.model = model.to(
+                self.device
+            )
+            self.model.eval()
+
+        # ----------------------------------------------------
+        # Create preprocessing transform
+        # ----------------------------------------------------
+
+        self.transform = (
+            get_inference_transform()
         )
 
-        # Put model in evaluation mode
-        self.model.eval()
-
-    @torch.no_grad()
     def predict(
         self,
-        image,
+        image_path,
+        output_path=None,
     ):
         """
-        Run inference on a preprocessed MRI tensor.
+        Run the complete prediction pipeline.
 
         Parameters
         ----------
-        image : torch.Tensor
-            Preprocessed MRI tensor.
+        image_path : str or Path
+            Input MRI NIfTI file.
 
-            Expected shape:
-                [B, 4, H, W, D]
+        output_path : str or Path, optional
+            Destination prediction path.
+
+            If None, a standard output path is
+            automatically generated.
 
         Returns
         -------
-        torch.Tensor
-            Raw model output/logits.
+        Path
+            Path to the saved segmentation.
         """
 
-        # ----------------------------------------------------
-        # Validate input type
-        # ----------------------------------------------------
-
-        if not isinstance(
-            image,
-            torch.Tensor,
-        ):
-            raise TypeError(
-                "Image input must be a torch.Tensor."
-            )
-
-        # ----------------------------------------------------
-        # Validate dimensions
-        # ----------------------------------------------------
-
-        if image.ndim != 5:
-            raise ValueError(
-                "Expected a 5-dimensional tensor "
-                "with shape [B, C, H, W, D]. "
-                f"Received shape: {tuple(image.shape)}"
-            )
-
-        # ----------------------------------------------------
-        # Validate MRI channels
-        # ----------------------------------------------------
-
-        if image.shape[1] != 4:
-            raise ValueError(
-                "Expected 4 MRI input channels. "
-                f"Received {image.shape[1]}."
-            )
-
-        # ----------------------------------------------------
-        # Move input to device
-        # ----------------------------------------------------
-
-        image = image.to(
-            self.device
+        image_path = Path(
+            image_path
         )
 
         # ----------------------------------------------------
-        # Run model
+        # Step 1: Validate input
         # ----------------------------------------------------
 
-        prediction = self.model(
-            image
+        print()
+        print("=" * 60)
+        print("FedMed Medical Image Inference")
+        print("=" * 60)
+
+        print()
+        print("Step 1/6 - Validating MRI...")
+
+        validation = validate_mri_file(
+            image_path
         )
 
-        return prediction
+        print(
+            f"  Valid MRI: {validation['valid']}"
+        )
+
+        print(
+            f"  Shape: {validation['shape']}"
+        )
+
+        print(
+            f"  Modalities: "
+            f"{validation['num_modalities']}"
+        )
+
+        # ----------------------------------------------------
+        # Step 2: Preprocess
+        # ----------------------------------------------------
+
+        print()
+        print("Step 2/6 - Preprocessing MRI...")
+
+        image = self.transform(
+            str(image_path)
+        )
+
+        print(
+            f"  Preprocessed shape: "
+            f"{tuple(image.shape)}"
+        )
+
+        # Add batch dimension
+        image = image.unsqueeze(
+            0
+        )
+
+        print(
+            f"  Model input shape: "
+            f"{tuple(image.shape)}"
+        )
+
+        # ----------------------------------------------------
+        # Step 3: Sliding-window inference
+        # ----------------------------------------------------
+
+        print()
+        print(
+            "Step 3/6 - Running sliding-window inference..."
+        )
+
+        logits = (
+            run_sliding_window_inference(
+                model=self.model,
+                image=image,
+                roi_size=(
+                    96,
+                    96,
+                    96,
+                ),
+                sw_batch_size=1,
+                overlap=0.25,
+                device=self.device,
+            )
+        )
+
+        print(
+            f"  Model output shape: "
+            f"{tuple(logits.shape)}"
+        )
+
+        # ----------------------------------------------------
+        # Step 4: Convert logits to segmentation
+        # ----------------------------------------------------
+
+        print()
+        print(
+            "Step 4/6 - Creating segmentation mask..."
+        )
+
+        segmentation = (
+            logits_to_segmentation(
+                logits
+            )
+        )
+
+        mask = (
+            remove_batch_dimension(
+                segmentation
+            )
+        )
+
+        print(
+            f"  Segmentation shape: "
+            f"{tuple(mask.shape)}"
+        )
+
+        print(
+            f"  Segmentation dtype: "
+            f"{mask.dtype}"
+        )
+
+        print(
+            f"  Predicted classes: "
+            f"{torch.unique(mask).tolist()}"
+        )
+
+        # ----------------------------------------------------
+        # Step 5: Determine output path
+        # ----------------------------------------------------
+
+        print()
+        print(
+            "Step 5/6 - Preparing output..."
+        )
+
+        if output_path is None:
+
+            output_path = (
+                get_prediction_path(
+                    image_path
+                )
+            )
+
+        else:
+
+            output_path = Path(
+                output_path
+            )
+
+        print(
+            f"  Output path: "
+            f"{output_path}"
+        )
+
+        # ----------------------------------------------------
+        # Step 6: Save NIfTI segmentation
+        # ----------------------------------------------------
+
+        print()
+        print(
+            "Step 6/6 - Saving segmentation..."
+        )
+
+        saved_path = (
+            save_segmentation_nifti(
+                segmentation=mask,
+                reference_image_path=image_path,
+                output_path=output_path,
+            )
+        )
+
+        print(
+            f"  Saved: {saved_path}"
+        )
+
+        print()
+        print("=" * 60)
+        print("Inference completed successfully.")
+        print("=" * 60)
+
+        return saved_path
 
 
 def predict(
     model,
     image,
+    device="cpu",
 ):
     """
-    Simple prediction function retained for
-    compatibility with existing code.
+    Compatibility function for inference on an
+    already-prepared tensor.
+
+    This preserves the simple API used by earlier code.
 
     Parameters
     ----------
@@ -133,15 +327,26 @@ def predict(
         Trained model.
 
     image : torch.Tensor
-        Preprocessed MRI tensor.
+        Preprocessed image tensor.
+
+    device : str or torch.device
+        Inference device.
 
     Returns
     -------
     torch.Tensor
-        Model prediction.
+        Raw model prediction.
     """
 
+    model = model.to(
+        device
+    )
+
     model.eval()
+
+    image = image.to(
+        device
+    )
 
     with torch.no_grad():
 
@@ -150,3 +355,55 @@ def predict(
         )
 
     return prediction
+
+
+def run_prediction(
+    image_path,
+    output_path=None,
+    device=DEVICE,
+):
+    """
+    Convenience function for running the complete
+    end-to-end inference pipeline.
+
+    Parameters
+    ----------
+    image_path : str or Path
+        Input MRI file.
+
+    output_path : str or Path, optional
+        Output segmentation file.
+
+    device : str or torch.device
+        Inference device.
+
+    Returns
+    -------
+    Path
+        Saved prediction path.
+    """
+
+    predictor = Predictor(
+        device=device
+    )
+
+    return predictor.predict(
+        image_path=image_path,
+        output_path=output_path,
+    )
+
+
+if __name__ == "__main__":
+
+    # --------------------------------------------------------
+    # Default local test MRI
+    # --------------------------------------------------------
+
+    input_path = Path(
+        "inference_data"
+    ) / "BRATS_001.nii.gz"
+
+    run_prediction(
+        image_path=input_path,
+        device=DEVICE,
+    )
