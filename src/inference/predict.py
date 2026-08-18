@@ -24,6 +24,12 @@ import torch
 
 from configs.config import DEVICE
 
+from configs.inference_config import (
+    ROI_SIZE,
+    SW_BATCH_SIZE,
+    SW_OVERLAP,
+)
+
 from src.inference.input_validator import (
     validate_mri_file,
 )
@@ -201,13 +207,9 @@ class Predictor:
             run_sliding_window_inference(
                 model=self.model,
                 image=image,
-                roi_size=(
-                    96,
-                    96,
-                    96,
-                ),
-                sw_batch_size=1,
-                overlap=0.25,
+                roi_size=ROI_SIZE,
+                sw_batch_size=SW_BATCH_SIZE,
+                overlap=SW_OVERLAP,
                 device=self.device,
             )
         )
