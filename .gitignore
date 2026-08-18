@@ -6,3 +6,4 @@ outputs/
 # Medical imaging dataset
 data/
 inference_data/
+evaluation_data/
