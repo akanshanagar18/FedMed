@@ -74,7 +74,12 @@ class BaseStrategy(ABC):
 
     def initialize_parameters(self) -> Optional[NDArrays]:
         """Optionally return initial global model parameters."""
-        return None
+        try:
+            from model.unet3d import UNet3D
+            model = UNet3D()
+            return [val.cpu().numpy() for _, val in model.state_dict().items()]
+        except Exception:
+            return None
 
     @abstractmethod
     def aggregate_fit(

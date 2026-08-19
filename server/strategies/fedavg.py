@@ -13,8 +13,8 @@ from typing import Any, Dict, List, Optional, Tuple
 import numpy as np
 
 from privacy.aggregation import aggregate_encrypted_updates
-from privacy.communication import deserialize_encrypted_payload
-from privacy.context import create_ckks_context
+from privacy.communication import deserialize_encrypted_payload, serialize_encrypted_payload
+from privacy.context import create_ckks_context, get_public_context
 from privacy.decrypt import decrypt_model_parameters
 from server.strategies.base import BaseStrategy, EvaluateResult, FitResult, NDArrays, StrategyMetadata
 from server.strategies.registry import register_strategy

@@ -12,6 +12,7 @@ Usage:
 
 import argparse
 import logging
+import time
 from collections import OrderedDict
 from typing import Dict, List, Optional, Tuple
 
@@ -230,7 +231,6 @@ class FedMedClient(fl.client.NumPyClient):
             "hospital_id": self.hospital_id,
             "he_enabled": bool(self.he_enabled),
             "dp_enabled": bool(self.dp_enabled),
-            "control_variate_delta": [d.tolist() for d in c_delta],
         }
 
         # Track Differential Privacy budget if active

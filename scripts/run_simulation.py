@@ -84,6 +84,7 @@ class SimulationConfig:
         client_ids: Optional[List[str]] = None,
         partition_strategy: str = "dirichlet",
         dirichlet_alpha: float = 0.5,
+        experiment_id: str = "default",
     ):
         self.backend_host = backend_host
         self.backend_port = backend_port
@@ -96,7 +97,7 @@ class SimulationConfig:
         self.dirichlet_alpha = dirichlet_alpha
         self.api_url = f"http://{backend_host}:{backend_port}"
         self.flower_address = f"{flower_host}:{flower_port}"
-        self.experiment_id = f"sim_{int(time.time())}"
+        self.experiment_id = experiment_id or "default"
 
 
 def is_port_in_use(port: int, host: str = "127.0.0.1") -> bool:
@@ -143,6 +144,7 @@ def run_simulation(
     enable_dp: bool = False,
     enable_tls: bool = False,
     simulate_failure: Optional[str] = None,
+    experiment_id: str = "default",
 ):
     """Orchestrates the entire execution pipeline."""
     try:
@@ -172,6 +174,7 @@ def run_simulation(
         min_clients=app_cfg.federated.min_clients,
         partition_strategy=p_strat,
         dirichlet_alpha=p_alpha,
+        experiment_id=experiment_id,
     )
 
     tracker = ProcessTracker()
@@ -258,7 +261,11 @@ def run_simulation(
         if yaml_config_path:
             server_cmd.extend(["--config", yaml_config_path])
 
-        server_proc = subprocess.Popen(server_cmd, cwd=PROJECT_ROOT, env=child_env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        os.makedirs(os.path.join(PROJECT_ROOT, "logs"), exist_ok=True)
+        server_log_path = os.path.join(PROJECT_ROOT, "logs", "simulation_server.log")
+        server_log_file = open(server_log_path, "w")
+
+        server_proc = subprocess.Popen(server_cmd, cwd=PROJECT_ROOT, env=child_env, stdout=server_log_file, stderr=subprocess.STDOUT)
         tracker.register("FLOWER", server_proc)
         time.sleep(2.0)
 
@@ -292,7 +299,9 @@ def run_simulation(
             if yaml_config_path:
                 client_cmd.extend(["--config", yaml_config_path])
 
-            client_proc = subprocess.Popen(client_cmd, cwd=PROJECT_ROOT, env=child_env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            client_log_path = os.path.join(PROJECT_ROOT, "logs", f"simulation_{client_id}.log")
+            client_log_file = open(client_log_path, "w")
+            client_proc = subprocess.Popen(client_cmd, cwd=PROJECT_ROOT, env=child_env, stdout=client_log_file, stderr=subprocess.STDOUT)
             tracker.register(client_id.upper(), client_proc)
 
         # 4. Handle Simulated Node Failure if specified
@@ -349,6 +358,7 @@ if __name__ == "__main__":
     parser.add_argument("--enable-dp", action="store_true", help="Enable Opacus Differential Privacy")
     parser.add_argument("--enable-tls", "--tls", action="store_true", help="Enable production TLS gRPC transport")
     parser.add_argument("--simulate-failure", type=str, default=None, help="Simulate node failure during FL training (e.g. hospital_beta)")
+    parser.add_argument("--experiment-id", "-e", type=str, default="default", help="Experiment identifier (default: 'default')")
     args = parser.parse_args()
 
     run_simulation(
@@ -359,4 +369,5 @@ if __name__ == "__main__":
         enable_dp=args.enable_dp,
         enable_tls=args.enable_tls,
         simulate_failure=args.simulate_failure,
+        experiment_id=args.experiment_id,
     )

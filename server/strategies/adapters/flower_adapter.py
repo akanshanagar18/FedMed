@@ -81,12 +81,26 @@ class FlowerStrategyAdapter(fl.server.strategy.Strategy):
         self.current_round = server_round
         logger.info(f"--- Strategy Adapter Configured Round {server_round} Fit ---")
 
-        ndarrays = parameters_to_ndarrays(parameters)
         client_proxies = list(client_manager.all().values())
-
         cids = [cp.cid for cp in client_proxies]
-        selected_cids = self.strategy.configure_fit(server_round, cids)
-        selected_proxies = [cp for cp in client_proxies if cp.cid in selected_cids]
+
+        selected_proxies = []
+        try:
+            selected_cids = self.strategy.configure_fit(server_round, cids)
+            if isinstance(selected_cids, list) and selected_cids:
+                selected_proxies = [cp for cp in client_proxies if cp.cid in selected_cids]
+        except Exception:
+            selected_proxies = []
+
+        if not selected_proxies:
+            min_fit = getattr(self.strategy, "min_fit_clients", 2)
+            min_available = getattr(self.strategy, "min_available_clients", min_fit)
+            num_available = client_manager.num_available()
+            sample_size = max(min_fit, min(num_available, min_available))
+            if num_available >= min_fit:
+                selected_proxies = client_manager.sample(num_clients=sample_size, min_num_clients=min_fit)
+            else:
+                selected_proxies = client_proxies
 
         fit_ins_list = []
         for cp in selected_proxies:
