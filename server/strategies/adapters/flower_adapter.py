@@ -81,6 +81,13 @@ class FlowerStrategyAdapter(fl.server.strategy.Strategy):
         self.current_round = server_round
         logger.info(f"--- Strategy Adapter Configured Round {server_round} Fit ---")
 
+        min_fit = getattr(self.strategy, "min_fit_clients", 2)
+        if not client_manager.wait_for(num_clients=min_fit, timeout=120):
+            logger.warning(
+                f"Round {server_round}: Timeout waiting for {min_fit} clients to connect."
+            )
+            return []
+
         client_proxies = list(client_manager.all().values())
         cids = [cp.cid for cp in client_proxies]
 
@@ -102,9 +109,15 @@ class FlowerStrategyAdapter(fl.server.strategy.Strategy):
             else:
                 selected_proxies = client_proxies
 
+        fit_config = {"server_round": server_round, "strategy": self.strategy.get_metadata().name}
+        if hasattr(self, "last_fit_metrics") and isinstance(self.last_fit_metrics, dict):
+            for k, v in self.last_fit_metrics.items():
+                if isinstance(v, (int, float, str, bytes, bool)):
+                    fit_config[k] = v
+
         fit_ins_list = []
         for cp in selected_proxies:
-            fit_ins = fl.common.FitIns(parameters, {"server_round": server_round, "strategy": self.strategy.get_metadata().name})
+            fit_ins = fl.common.FitIns(parameters, fit_config)
             fit_ins_list.append((cp, fit_ins))
 
         return fit_ins_list
@@ -116,18 +129,23 @@ class FlowerStrategyAdapter(fl.server.strategy.Strategy):
         failures: List[Union[Tuple[ClientProxy, FitRes], BaseException]],
     ) -> Tuple[Optional[Parameters], Dict[str, Scalar]]:
         """Aggregates local client weights into new global model parameters."""
+        start_time = time.time()
+        self.current_round = server_round
+
         if not results:
-            logger.warning(f"Round {server_round} aggregate_fit received zero client results.")
+            logger.warning(f"Round {server_round}: Zero client fit results received.")
             return None, {}
 
-        start_time = time.time()
         native_results: List[FitResult] = []
-        hospital_ids = []
-
+        hospital_ids: List[str] = []
         for client_proxy, fit_res in results:
-            ndarrays = parameters_to_ndarrays(fit_res.parameters)
             cid = client_proxy.cid
-            hospital_ids.append(cid)
+            if fit_res.metrics and "hospital_id" in fit_res.metrics:
+                hospital_ids.append(str(fit_res.metrics["hospital_id"]))
+            elif cid:
+                hospital_ids.append(cid)
+
+            ndarrays = parameters_to_ndarrays(fit_res.parameters)
             native_results.append(
                 FitResult(
                     parameters=ndarrays,
@@ -138,6 +156,7 @@ class FlowerStrategyAdapter(fl.server.strategy.Strategy):
             )
 
         aggregated_ndarrays, metrics = self.strategy.aggregate_fit(server_round, native_results, failures)
+        self.last_fit_metrics = metrics or {}
         if aggregated_ndarrays is None:
             logger.error(f"Round {server_round} strategy aggregation returned None.")
             return None, {}

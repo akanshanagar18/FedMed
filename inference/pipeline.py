@@ -356,12 +356,20 @@ class ClinicalInferenceEngine:
         wt_count = int(np.sum(mask_wt_vol))
         et_count = int(np.sum(mask_et_vol))
 
+        # Compute mean confidence score across positive tumor voxels (or all probabilities if empty)
+        pos_mask = (preds > 0)
+        if pos_mask.sum() > 0:
+            mean_conf = float(probs[pos_mask].mean().item())
+        else:
+            mean_conf = float(probs.mean().item())
+
         return {
             "status": "SUCCESS",
             "error_code": ClinicalErrorCode.OK.value,
             "device": str(self.device),
             "output_nifti_path": output_file,
             "voxel_volume_mm3": round(voxel_vol_mm3, 4),
+            "mean_confidence": round(mean_conf, 4),
             "segmented_voxels": {
                 "TC_voxels": tc_count,
                 "WT_voxels": wt_count,
@@ -476,6 +484,7 @@ class BraTSInferenceEngine:
                 "patient_id": patient_id,
                 "model_version": model_version,
                 "inference_time_ms": res.get("timing_ms", {}).get("total_inference_time_ms", 0.0),
+                "mean_confidence": res.get("mean_confidence", 0.0),
                 "voxel_volume_mm3": res.get("voxel_volume_mm3", 1.0),
                 "tumor_volumes_mm3": res.get("tumor_volumes_mm3", {}),
                 "segmented_voxels": res.get("segmented_voxels", {}),

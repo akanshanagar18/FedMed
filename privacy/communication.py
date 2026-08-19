@@ -15,10 +15,11 @@ def serialize_encrypted_payload(payload: Dict[str, Any]) -> str:
     """
     Serializes an encrypted update dictionary into a base64 JSON string.
     """
+    chunks = payload.get("encrypted_chunks") or payload.get("aggregated_chunks") or []
     serializable = {
         "encrypted_chunks": [
             [base64.b64encode(chunk).decode("ascii") for chunk in layer_chunks]
-            for layer_chunks in payload["encrypted_chunks"]
+            for layer_chunks in chunks
         ],
         "shapes": payload.get("shapes", []),
         "encryption_time_ms": payload.get("encryption_time_ms", 0.0),
@@ -32,9 +33,10 @@ def deserialize_encrypted_payload(data_str: str) -> Dict[str, Any]:
     Deserializes a base64 JSON string back into encrypted update dictionary.
     """
     raw = json.loads(data_str)
+    chunks_raw = raw.get("encrypted_chunks") or raw.get("aggregated_chunks") or []
     encrypted_chunks = [
         [base64.b64decode(chunk_b64.encode("ascii")) for chunk_b64 in layer_chunks]
-        for layer_chunks in raw["encrypted_chunks"]
+        for layer_chunks in chunks_raw
     ]
     return {
         "encrypted_chunks": encrypted_chunks,
