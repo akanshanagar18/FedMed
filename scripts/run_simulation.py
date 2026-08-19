@@ -202,6 +202,13 @@ def run_simulation(
             pythonpath_entries.append(child_env["PYTHONPATH"])
         child_env["PYTHONPATH"] = os.path.pathsep.join(pythonpath_entries)
 
+        child_env["OMP_NUM_THREADS"] = "1"
+        child_env["MKL_NUM_THREADS"] = "1"
+        child_env["OPENBLAS_NUM_THREADS"] = "1"
+        child_env["VECLIB_MAXIMUM_THREADS"] = "1"
+        child_env["NUMEXPR_NUM_THREADS"] = "1"
+        child_env["PYTHONUNBUFFERED"] = "1"
+
         if not backend_already_running:
             if is_port_in_use(sim_config.backend_port, sim_config.backend_host):
                 sim_config.backend_port = find_free_port(sim_config.backend_port + 1, sim_config.backend_host)
@@ -228,7 +235,6 @@ def run_simulation(
             if not poll_backend_health(health_url, timeout_sec=20.0, interval_sec=0.5, proc=backend_proc):
                 out = backend_proc.stdout.read() if backend_proc.stdout else ""
                 log_subsystem("BACKEND", f"FastAPI server failed readiness health check! Code: {backend_proc.poll()} Output:\n{out}", logging.ERROR)
-                tracker.cleanup_all()
                 sys.exit(1)
             log_subsystem("BACKEND", "FastAPI Backend active & healthy!")
 
@@ -269,12 +275,12 @@ def run_simulation(
         tracker.register("FLOWER", server_proc)
         time.sleep(2.0)
 
-        # 3. Spawn Hospital Clients (Hospital Alpha, Hospital Beta, Hospital Gamma)
+        # 3. Spawn Participating Hospital Clients
+        enc_mode_label = "TEN_SEAL" if he_active else "PLAINTEXT"
+        dp_mode_label = "OPACUS" if dp_active else "NO_DP"
+        transport_label = "TLS" if tls_active else "INSECURE"
         for client_id in sim_config.client_ids:
-            he_status_str = "TEN_SEAL CKKS ENCRYPTED" if he_active else "PLAINTEXT"
-            dp_status_str = "OPACUS DIFFERENTIAL PRIVACY" if dp_active else "NO_DP"
-            tls_status_str = "TLS_MUTUAL" if tls_active else "INSECURE"
-            log_subsystem(client_id.upper(), f"Launching Hospital Client ({sim_config.partition_strategy.upper()} alpha={sim_config.dirichlet_alpha} Mode={he_status_str} DP={dp_status_str} Transport={tls_status_str}) connecting to {sim_config.flower_address}...")
+            log_subsystem(client_id.upper(), f"Launching Hospital Client ({sim_config.partition_strategy.upper()} alpha={sim_config.dirichlet_alpha} Mode={enc_mode_label} DP={dp_mode_label} Transport={transport_label}) connecting to {sim_config.flower_address}...")
             client_cmd = [
                 sys.executable,
                 "-m",
@@ -285,10 +291,12 @@ def run_simulation(
                 client_id,
                 "--api-url",
                 sim_config.api_url,
-                "--partition-strategy",
+                "--partition",
                 sim_config.partition_strategy,
-                "--dirichlet-alpha",
+                "--alpha",
                 str(sim_config.dirichlet_alpha),
+                "--experiment-id",
+                sim_config.experiment_id,
             ]
             if he_active:
                 client_cmd.append("--enable-he")
@@ -337,16 +345,24 @@ def run_simulation(
 
         # 5. Monitor Flower Server Completion
         log_subsystem("ORCHESTRATOR", "All subprocesses spawned successfully. Monitoring training execution...")
-        server_proc.wait()
+        ret_code = server_proc.wait()
+
+        if ret_code != 0:
+            err_details = ""
+            if os.path.exists(server_log_path):
+                with open(server_log_path) as sf:
+                    err_details = sf.read()
+            log_subsystem("FLOWER", f"Flower Server exited abnormally with code {ret_code}!\nLogs:\n{err_details}", logging.ERROR)
+            sys.exit(ret_code)
 
         log_subsystem("ORCHESTRATOR", "SUCCESS: Federated Learning Simulation completed cleanly!")
         time.sleep(1.0)
-        tracker.cleanup_all()
 
     except Exception as e:
         log_subsystem("ORCHESTRATOR", f"Unhandled exception in orchestrator: {e}", logging.ERROR)
-        tracker.cleanup_all()
         sys.exit(1)
+    finally:
+        tracker.cleanup_all()
 
 
 if __name__ == "__main__":
