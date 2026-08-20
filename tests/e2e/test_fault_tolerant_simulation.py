@@ -25,7 +25,7 @@ def test_fault_tolerant_node_failure_simulation():
     env["PYTHONPATH"] = PROJECT_ROOT
 
     proc = subprocess.Popen(
-        [sys.executable, SIMULATION_SCRIPT, "--simulate-failure", "hospital_beta"],
+        [sys.executable, SIMULATION_SCRIPT, "--simulate-failure", "hospital_beta", "--experiment-id", "exp_fault_tolerant_e2e"],
         cwd=PROJECT_ROOT,
         env=env,
         stdout=subprocess.PIPE,

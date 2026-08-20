@@ -24,7 +24,7 @@ def test_dirichlet_non_iid_simulation_execution():
     env["PYTHONPATH"] = PROJECT_ROOT
 
     proc = subprocess.Popen(
-        [sys.executable, SIMULATION_SCRIPT, "--partition", "dirichlet", "--alpha", "0.5"],
+        [sys.executable, SIMULATION_SCRIPT, "--partition", "dirichlet", "--alpha", "0.5", "--experiment-id", "exp_dirichlet_e2e"],
         cwd=PROJECT_ROOT,
         env=env,
         stdout=subprocess.PIPE,

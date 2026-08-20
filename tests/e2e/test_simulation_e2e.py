@@ -26,11 +26,24 @@ def test_full_simulation_pipeline_execution():
     """
     assert os.path.exists(SIMULATION_SCRIPT), f"Simulation script not found at {SIMULATION_SCRIPT}"
 
+    exp_id = "exp_simulation_e2e"
+
+    # Clean existing metrics for this experiment if any
+    if os.path.exists(DB_PATH):
+        try:
+            conn = sqlite3.connect(DB_PATH)
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM training_metrics WHERE experiment_id = ?", (exp_id,))
+            conn.commit()
+            conn.close()
+        except Exception:
+            pass
+
     env = os.environ.copy()
     env["PYTHONPATH"] = PROJECT_ROOT
 
     proc = subprocess.Popen(
-        [sys.executable, SIMULATION_SCRIPT],
+        [sys.executable, SIMULATION_SCRIPT, "--experiment-id", exp_id],
         cwd=PROJECT_ROOT,
         env=env,
         stdout=subprocess.PIPE,
@@ -38,28 +51,25 @@ def test_full_simulation_pipeline_execution():
         text=True,
     )
 
-
     try:
         # Wait up to 300 seconds for full 3-round simulation to finish
         stdout, stderr = proc.communicate(timeout=300)
         exit_code = proc.returncode
 
-
         assert exit_code == 0, f"Simulation failed with exit code {exit_code}.\nStderr: {stderr}\nStdout: {stdout}"
         assert "SUCCESS: Federated Learning Simulation completed" in stdout
-
 
         # Verify SQLite database persistence
         assert os.path.exists(DB_PATH), f"SQLite database file missing at {DB_PATH}"
 
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
-        cursor.execute("SELECT round_number, training_loss, dice_score FROM training_metrics WHERE experiment_id='default' ORDER BY round_number")
+        cursor.execute("SELECT round_number, training_loss, dice_score FROM training_metrics WHERE experiment_id = ? ORDER BY round_number", (exp_id,))
         rows = cursor.fetchall()
         conn.close()
 
         # Must have at least 3 FL rounds persisted
-        assert len(rows) >= 3, f"Expected at least 3 metric rows in fedmed.db, found {len(rows)}"
+        assert len(rows) >= 3, f"Expected at least 3 metric rows in fedmed.db for '{exp_id}', found {len(rows)}: {rows}"
         for round_num, loss, dice in rows[:3]:
             assert isinstance(round_num, int)
             assert isinstance(loss, float)

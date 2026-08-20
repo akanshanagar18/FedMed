@@ -25,7 +25,7 @@ def test_differential_privacy_fl_simulation_execution():
     env["PYTHONPATH"] = PROJECT_ROOT
 
     proc = subprocess.Popen(
-        [sys.executable, SIMULATION_SCRIPT, "--config", CONFIG_PATH, "--enable-dp", "--enable-he"],
+        [sys.executable, SIMULATION_SCRIPT, "--config", CONFIG_PATH, "--enable-dp", "--enable-he", "--experiment-id", "exp_dp_he_e2e"],
         cwd=PROJECT_ROOT,
         env=env,
         stdout=subprocess.PIPE,
