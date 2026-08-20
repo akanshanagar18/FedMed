@@ -48,6 +48,7 @@ class FlowerStrategyAdapter(fl.server.strategy.Strategy):
         self.api_url = api_url.rstrip("/")
         self.experiment_id = experiment_id
         self.current_round = 0
+        self.successful_rounds = 0
         self.best_dice_score = 0.0
         self.best_round = 0
 
@@ -214,6 +215,8 @@ class FlowerStrategyAdapter(fl.server.strategy.Strategy):
         # Post metrics to Dashboard API and persist to fedmed.db
         self._report_metrics(server_round, avg_loss, avg_dice, hospital_ids)
 
+        self.successful_rounds += 1
+
         return aggregated_parameters, metrics
 
     def aggregate_evaluate(
@@ -274,7 +277,7 @@ class FlowerStrategyAdapter(fl.server.strategy.Strategy):
         except Exception as e:
             logger.warning(f"Could not report metrics via API ({e}). Falling back to direct DB persistence.")
 
-        # 2. Persist directly to SQLite DB
+        # 2. Persist directly to SQLite DB (mandatory)
         try:
             from app.database.session import SessionLocal, init_db
             from app.models.base import TrainingMetricModel
@@ -293,4 +296,5 @@ class FlowerStrategyAdapter(fl.server.strategy.Strategy):
             finally:
                 db.close()
         except Exception as dbe:
-            logger.error(f"Direct DB persistence failed: {dbe}")
+            logger.error(f"Mandatory direct DB persistence failed: {dbe}")
+            raise RuntimeError(f"Mandatory direct SQLite persistence failed for round {round_number}: {dbe}") from dbe

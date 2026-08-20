@@ -167,6 +167,12 @@ def start_server(
         certificates=certificates_tuple,
     )
 
+    if adapter.successful_rounds < num_rounds:
+        logger.error(
+            f"CRITICAL: FL Server completed only {adapter.successful_rounds}/{num_rounds} required aggregation rounds!"
+        )
+        sys.exit(1)
+
     _register_experiment_complete(api_url, experiment_id, adapter.best_dice_score, adapter.best_round)
 
 

@@ -273,7 +273,27 @@ def run_simulation(
 
         server_proc = subprocess.Popen(server_cmd, cwd=PROJECT_ROOT, env=child_env, stdout=server_log_file, stderr=subprocess.STDOUT)
         tracker.register("FLOWER", server_proc)
-        time.sleep(2.0)
+
+        log_subsystem("FLOWER", f"Waiting for Flower server to bind gRPC port at {sim_config.flower_address}...")
+        flower_ready = False
+        start_wait = time.time()
+        while time.time() - start_wait < 30.0:
+            if server_proc.poll() is not None:
+                break
+            if is_port_in_use(sim_config.flower_port, sim_config.flower_host):
+                flower_ready = True
+                break
+            time.sleep(0.2)
+
+        if not flower_ready:
+            err_details = ""
+            if os.path.exists(server_log_path):
+                with open(server_log_path) as sf:
+                    err_details = sf.read()
+            log_subsystem("FLOWER", f"Flower Server failed to bind gRPC port within 30s! Code: {server_proc.poll()}\nLogs:\n{err_details}", logging.ERROR)
+            sys.exit(1)
+
+        log_subsystem("FLOWER", "Flower Server active & listening on gRPC port!")
 
         # 3. Spawn Participating Hospital Clients
         enc_mode_label = "TEN_SEAL" if he_active else "PLAINTEXT"
@@ -352,7 +372,14 @@ def run_simulation(
             if os.path.exists(server_log_path):
                 with open(server_log_path) as sf:
                     err_details = sf.read()
-            log_subsystem("FLOWER", f"Flower Server exited abnormally with code {ret_code}!\nLogs:\n{err_details}", logging.ERROR)
+            client_logs = []
+            for client_id in sim_config.client_ids:
+                c_log_path = os.path.join(PROJECT_ROOT, "logs", f"simulation_{client_id}.log")
+                if os.path.exists(c_log_path):
+                    with open(c_log_path) as cf:
+                        client_logs.append(f"=== {client_id.upper()} LOGS ===\n" + cf.read())
+            full_err = err_details + "\n" + "\n".join(client_logs)
+            log_subsystem("FLOWER", f"Flower Server exited abnormally with code {ret_code}!\nLogs:\n{full_err}", logging.ERROR)
             sys.exit(ret_code)
 
         log_subsystem("ORCHESTRATOR", "SUCCESS: Federated Learning Simulation completed cleanly!")
