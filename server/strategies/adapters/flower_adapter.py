@@ -106,8 +106,8 @@ class FlowerStrategyAdapter(fl.server.strategy.Strategy):
             sample_size = max(min_fit, min(num_available, min_available))
             if num_available >= min_fit:
                 selected_proxies = client_manager.sample(num_clients=sample_size, min_num_clients=min_fit)
-            else:
-                selected_proxies = client_proxies
+            if not selected_proxies:
+                selected_proxies = client_proxies[:sample_size] if len(client_proxies) >= min_fit else client_proxies
 
         fit_config = {"server_round": server_round, "strategy": self.strategy.get_metadata().name}
         if hasattr(self, "last_fit_metrics") and isinstance(self.last_fit_metrics, dict):
