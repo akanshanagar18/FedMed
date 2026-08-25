@@ -106,9 +106,9 @@ class FedAvg(BaseStrategy):
 
             # Lazy initialize Public Evaluation CKKS Context (no secret key)
             if self.he_context is None:
-                poly_deg = getattr(self, "poly_modulus_degree", 8192)
+                poly_deg = getattr(self, "poly_modulus_degree", 4096)
                 if hasattr(self, "config") and self.config and hasattr(self.config, "privacy"):
-                    poly_deg = getattr(self.config.privacy, "poly_modulus_degree", 8192)
+                    poly_deg = getattr(self.config.privacy, "poly_modulus_degree", 4096)
                 private_ctx = create_ckks_context(poly_modulus_degree=poly_deg)
                 self.he_context = get_public_context(private_ctx)
                 assert self.he_context.is_private() is False, "Server context must be strictly public!"

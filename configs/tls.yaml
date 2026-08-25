@@ -40,7 +40,7 @@ privacy:
   max_grad_norm: 1.0
   he_enabled: true
   scheme: "CKKS"
-  poly_modulus_degree: 8192
+  poly_modulus_degree: 4096
 
 tls:
   enabled: true

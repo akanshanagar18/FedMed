@@ -112,7 +112,7 @@ class PrivacyConfig(BaseModel):
     max_grad_norm: float = Field(1.0, gt=0)
     he_enabled: bool = False
     scheme: str = "CKKS"
-    poly_modulus_degree: int = 8192
+    poly_modulus_degree: int = 4096
 
 
 class TlsConfig(BaseModel):

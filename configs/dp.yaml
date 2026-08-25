@@ -48,7 +48,7 @@ privacy:
   dp_enabled: true
   he_enabled: true
   max_grad_norm: 1.0
-  poly_modulus_degree: 8192
+  poly_modulus_degree: 4096
   scheme: CKKS
   target_delta: 1.0e-05
   target_epsilon: 3.0
