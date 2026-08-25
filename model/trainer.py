@@ -109,4 +109,5 @@ def train_one_epoch(
     avg_loss = total_loss / max(num_batches, 1)
     avg_dice = total_dice / max(num_batches, 1)
 
+    optimizer.zero_grad(set_to_none=True)
     return {"training_loss": avg_loss, "dice_score": avg_dice}

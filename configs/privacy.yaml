@@ -29,7 +29,7 @@ data:
     - "flair"
   partition_strategy: "dirichlet"
   dirichlet_alpha: 0.5
-  image_size: [128, 128, 128]
+  image_size: [32, 32, 32]
   in_channels: 4
   out_channels: 3
 

@@ -99,7 +99,7 @@ class DataConfig(BaseModel):
     modalities: List[str] = Field(default_factory=lambda: ["t1", "t1ce", "t2", "flair"])
     partition_strategy: str = "IID"
     dirichlet_alpha: float = Field(0.5, gt=0)
-    image_size: List[int] = Field(default_factory=lambda: [128, 128, 128])
+    image_size: List[int] = Field(default_factory=lambda: [32, 32, 32])
     in_channels: int = 4
     out_channels: int = 3
 

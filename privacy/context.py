@@ -16,13 +16,26 @@ logger = logging.getLogger(__name__)
 def create_ckks_context(
     poly_modulus_degree: int = 8192,
     coeff_mod_bit_sizes: Optional[list] = None,
-    global_scale: float = 2**40,
+    global_scale: Optional[float] = None,
 ) -> ts.Context:
     """
     Creates and configures a production TenSEAL CKKS homomorphic encryption context.
     """
     if coeff_mod_bit_sizes is None:
-        coeff_mod_bit_sizes = [60, 40, 40, 60]
+        if poly_modulus_degree == 4096:
+            coeff_mod_bit_sizes = [40, 20, 40]
+        elif poly_modulus_degree == 2048:
+            coeff_mod_bit_sizes = [30, 20, 30]
+        else:
+            coeff_mod_bit_sizes = [60, 40, 40, 60]
+
+    if global_scale is None:
+        if poly_modulus_degree == 4096:
+            global_scale = 2**20
+        elif poly_modulus_degree == 2048:
+            global_scale = 2**16
+        else:
+            global_scale = 2**40
 
     context = ts.context(
         ts.SCHEME_TYPE.CKKS,

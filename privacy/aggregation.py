@@ -56,16 +56,23 @@ def aggregate_encrypted_updates(
                 # Deserialize chunk into CKKSVector using public context
                 ckks_vec = ts.ckks_vector_from(public_context, serialized_chunk)
                 weighted_vec = ckks_vec * weight
+                del ckks_vec
 
                 if accumulated_ckks_vec is None:
                     accumulated_ckks_vec = weighted_vec
                 else:
                     accumulated_ckks_vec += weighted_vec
+                    del weighted_vec
 
             # Serialize accumulated aggregated ciphertext vector
             agg_serialized = accumulated_ckks_vec.serialize()
+            del accumulated_ckks_vec
             aggregated_layer_chunks.append(agg_serialized)
             total_ciphertext_bytes += len(agg_serialized)
+
+        # Release client layer chunks progressively to minimize peak heap footprint
+        for client_idx in range(len(encrypted_results)):
+            encrypted_results[client_idx][0][layer_idx] = None
 
         aggregated_layers_chunks.append(aggregated_layer_chunks)
 

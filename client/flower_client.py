@@ -12,6 +12,7 @@ Usage:
 
 import argparse
 import logging
+import os
 import sys
 import time
 from collections import OrderedDict
@@ -185,13 +186,31 @@ class FedMedClient(fl.client.NumPyClient):
         Train locally for one epoch, then return updated weights (encrypted if HE enabled).
         """
         if self.he_enabled and self.he_context is not None and "encrypted_global_payload" in config:
+            import fcntl
+            import gc
             from privacy.communication import deserialize_encrypted_payload
             from privacy.decrypt import decrypt_model_parameters
 
-            logger.info(f"[{self.hospital_id}] Received encrypted global model ciphertext. Decrypting client-side using private secret key...")
-            payload = deserialize_encrypted_payload(str(config["encrypted_global_payload"]))
-            decrypted_global_weights = decrypt_model_parameters(self.he_context, payload["encrypted_chunks"], payload["shapes"])
-            self.set_parameters(decrypted_global_weights)
+            lock_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".cache", "he_decryption.lock")
+            os.makedirs(os.path.dirname(lock_path), exist_ok=True)
+            lock_fd = open(lock_path, "w")
+            try:
+                fcntl.flock(lock_fd, fcntl.LOCK_EX)
+                logger.info(f"[{self.hospital_id}] Received encrypted global model ciphertext. Decrypting client-side using private secret key...")
+                payload_str = str(config.pop("encrypted_global_payload"))
+                payload = deserialize_encrypted_payload(payload_str)
+                del payload_str
+                decrypted_global_weights = decrypt_model_parameters(self.he_context, payload["encrypted_chunks"], payload["shapes"])
+                del payload
+                self.set_parameters(decrypted_global_weights)
+                del decrypted_global_weights
+                gc.collect()
+            finally:
+                try:
+                    fcntl.flock(lock_fd, fcntl.LOCK_UN)
+                    lock_fd.close()
+                except Exception:
+                    pass
         else:
             if any(np.count_nonzero(p) > 0 for p in parameters):
                 self.set_parameters(parameters)
@@ -253,16 +272,33 @@ class FedMedClient(fl.client.NumPyClient):
 
         # Encrypt model parameters with CKKS if Homomorphic Encryption is active
         if self.he_enabled and self.he_context is not None:
-            logger.info(f"[{self.hospital_id}] Encrypting model weight tensors with TenSEAL CKKS...")
-            enc_result = encrypt_model_parameters(self.he_context, updated_params)
-            serialized_he_payload = serialize_encrypted_payload(enc_result)
+            import fcntl
+            import gc
+            logger.info(f"[{self.hospital_id}] Acquiring host encryption lock for TenSEAL CKKS...")
+            lock_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".cache", "he_encryption.lock")
+            os.makedirs(os.path.dirname(lock_path), exist_ok=True)
+            lock_fd = open(lock_path, "w")
+            try:
+                fcntl.flock(lock_fd, fcntl.LOCK_EX)
+                logger.info(f"[{self.hospital_id}] Encrypting model weight tensors with TenSEAL CKKS...")
+                enc_result = encrypt_model_parameters(self.he_context, updated_params)
+                serialized_he_payload = serialize_encrypted_payload(enc_result)
 
-            fit_metrics["encrypted_payload"] = serialized_he_payload
-            fit_metrics["encryption_time_ms"] = float(enc_result["encryption_time_ms"])
-            fit_metrics["ciphertext_size_bytes"] = int(enc_result["ciphertext_size_bytes"])
+                fit_metrics["encrypted_payload"] = serialized_he_payload
+                fit_metrics["encryption_time_ms"] = float(enc_result["encryption_time_ms"])
+                fit_metrics["ciphertext_size_bytes"] = int(enc_result["ciphertext_size_bytes"])
+                del enc_result
 
-            zero_params = [np.zeros_like(p) for p in updated_params]
-            params_to_return = zero_params
+                zero_params = [np.zeros_like(p) for p in updated_params]
+                params_to_return = zero_params
+                del updated_params
+                gc.collect()
+            finally:
+                try:
+                    fcntl.flock(lock_fd, fcntl.LOCK_UN)
+                    lock_fd.close()
+                except Exception:
+                    pass
         else:
             params_to_return = updated_params
 

@@ -33,14 +33,16 @@ def deserialize_encrypted_payload(data_str: str) -> Dict[str, Any]:
     Deserializes a base64 JSON string back into encrypted update dictionary.
     """
     raw = json.loads(data_str)
-    chunks_raw = raw.get("encrypted_chunks") or raw.get("aggregated_chunks") or []
+    chunks_raw = raw.pop("encrypted_chunks", None) or raw.pop("aggregated_chunks", None) or []
     encrypted_chunks = [
         [base64.b64decode(chunk_b64.encode("ascii")) for chunk_b64 in layer_chunks]
         for layer_chunks in chunks_raw
     ]
+    del chunks_raw
+    shapes = [tuple(s) for s in raw.get("shapes", [])]
     return {
         "encrypted_chunks": encrypted_chunks,
-        "shapes": [tuple(s) for s in raw.get("shapes", [])],
+        "shapes": shapes,
         "encryption_time_ms": raw.get("encryption_time_ms", 0.0),
         "ciphertext_size_bytes": raw.get("ciphertext_size_bytes", 0),
     }

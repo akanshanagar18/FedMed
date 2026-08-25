@@ -158,7 +158,8 @@ class FlowerStrategyAdapter(fl.server.strategy.Strategy):
             )
 
         aggregated_ndarrays, metrics = self.strategy.aggregate_fit(server_round, native_results, failures)
-        self.last_fit_metrics = metrics or {}
+        del native_results
+        self.last_fit_metrics = {k: v for k, v in (metrics or {}).items() if k != "encrypted_global_payload"}
         if aggregated_ndarrays is None:
             logger.error(f"Round {server_round} strategy aggregation returned None.")
             return None, {}

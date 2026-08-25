@@ -83,6 +83,7 @@ class FedAvg(BaseStrategy):
         )
 
         if has_encryption:
+            import gc
             logger.info(f"[FedAvg] Homomorphic Encryption payload detected across {len(results)} client updates. Performing ciphertext aggregation...")
             encrypted_results = []
             shapes = None
@@ -90,23 +91,30 @@ class FedAvg(BaseStrategy):
             total_ciphertext_bytes = 0
 
             for res in results:
-                payload_str = res.metrics["encrypted_payload"]
-                payload_dict = deserialize_encrypted_payload(payload_str)
-                encrypted_results.append((payload_dict["encrypted_chunks"], res.num_examples))
+                payload_str = res.metrics.pop("encrypted_payload", None) if isinstance(res.metrics, dict) else None
+                if payload_str:
+                    payload_dict = deserialize_encrypted_payload(payload_str)
+                    del payload_str
+                    encrypted_results.append((payload_dict["encrypted_chunks"], res.num_examples))
 
-                if shapes is None:
-                    shapes = payload_dict["shapes"]
+                    if shapes is None:
+                        shapes = payload_dict["shapes"]
 
-                total_enc_time_ms += payload_dict.get("encryption_time_ms", 0.0)
-                total_ciphertext_bytes += payload_dict.get("ciphertext_size_bytes", 0)
+                    total_enc_time_ms += payload_dict.get("encryption_time_ms", 0.0)
+                    total_ciphertext_bytes += payload_dict.get("ciphertext_size_bytes", 0)
+                    del payload_dict
 
             # Lazy initialize Public Evaluation CKKS Context (no secret key)
             if self.he_context is None:
-                private_ctx = create_ckks_context(poly_modulus_degree=8192)
+                poly_deg = getattr(self, "poly_modulus_degree", 8192)
+                if hasattr(self, "config") and self.config and hasattr(self.config, "privacy"):
+                    poly_deg = getattr(self.config.privacy, "poly_modulus_degree", 8192)
+                private_ctx = create_ckks_context(poly_modulus_degree=poly_deg)
                 self.he_context = get_public_context(private_ctx)
                 assert self.he_context.is_private() is False, "Server context must be strictly public!"
 
             agg_he_res = aggregate_encrypted_updates(self.he_context, encrypted_results, shapes)
+            del encrypted_results
             serialized_agg_payload = serialize_encrypted_payload(agg_he_res)
 
             # Return dummy zero arrays for parameters so zero plaintext weights cross wire
@@ -127,6 +135,8 @@ class FedAvg(BaseStrategy):
                 "aggregation_time_ms": float(agg_he_res["aggregation_time_ms"]),
                 "ciphertext_size_bytes": int(agg_he_res["ciphertext_size_bytes"]),
             }
+            del agg_he_res, serialized_agg_payload
+            gc.collect()
             return aggregated_params, metrics
 
 
