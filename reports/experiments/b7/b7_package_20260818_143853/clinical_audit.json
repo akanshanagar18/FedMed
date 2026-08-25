@@ -1,0 +1,13 @@
+{
+  "clinical_data_contract": "docs/CLINICAL_DATA_CONTRACT.md",
+  "input_validation_status": "PASS",
+  "output_validation_status": "PASS",
+  "label_semantics": {
+    "TC": "label 1 + 4",
+    "WT": "label 1 + 2 + 4",
+    "ET": "label 4",
+    "ET_ground_truth_present_in_development": false,
+    "ET_metric_interpretation": "NOT_MEANINGFUL_ON_DEVELOPMENT_COHORT"
+  },
+  "regulatory_claims": "NONE (RESEARCH / DEVELOPMENT PIPELINE ONLY)"
+}

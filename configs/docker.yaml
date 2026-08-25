@@ -1,0 +1,7 @@
+# Multi-Container Docker Network Host Configuration
+
+server:
+  host: "0.0.0.0"
+  port: 8000
+  fl_server_address: "fl-server:8080"
+  api_url: "http://backend:8000"

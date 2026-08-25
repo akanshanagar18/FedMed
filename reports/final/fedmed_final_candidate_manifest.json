@@ -1,0 +1,97 @@
+{
+  "manifest_schema_version": "1.0.0",
+  "status": "FROZEN_FINAL_CANDIDATE",
+  "experiment_id": "EXPERIMENT_D2.1_DP_SGD_MOMENTUM_LR1E3",
+  "candidate_name": "FedMed Differential Privacy Final Clinical Model Candidate",
+  "timestamp_frozen": "2026-08-18T13:36:20.000000+00:00",
+  "git_commit_hash": "e266612862ea03f92a7c8da6de2ab64580154dce",
+  "checkpoint": {
+    "canonical_path": "checkpoints/fedavg_dp_d2_1/best.pt",
+    "frozen_archive_path": "checkpoints/final/fedmed_dp_final_model.pt",
+    "checkpoint_sha256": "f6cd18dc5e05595ca88ad1675190aabb98595ee9f6d6dfed36c25b596f652f3a",
+    "selection_criterion": "Maximum Validation Macro Dice across 20 federated rounds (Strictly Validation-Only)",
+    "best_round": 20,
+    "state_dict_keys_count": 63,
+    "trainable_parameter_count": 4810074
+  },
+  "model_architecture": {
+    "name": "MONAI 3D U-Net",
+    "spatial_dims": 3,
+    "in_channels": 4,
+    "out_channels": 3,
+    "channels": [
+      16,
+      32,
+      64,
+      128,
+      256
+    ],
+    "strides": [
+      2,
+      2,
+      2,
+      2
+    ],
+    "num_res_units": 2,
+    "dropout": 0.0,
+    "resolution": [
+      128,
+      128,
+      128
+    ],
+    "total_parameters": 4810074
+  },
+  "training_configuration": {
+    "config_path": "configs/experiments/real_brats_dp_d2_1.yaml",
+    "config_sha256": "c1229d6cb041d595b4b6d11c3c7ab40c928459a2ad5a0bd2bdd501751fbd292e",
+    "optimizer": "SGD",
+    "learning_rate": 0.001,
+    "momentum": 0.9,
+    "weight_decay": 1e-05,
+    "loss_function": "DiceCELoss(sigmoid=True, lambda_dice=1.0, lambda_ce=0.2)",
+    "local_epochs": 1,
+    "batch_size": 1,
+    "federated_strategy": "FedAvg",
+    "total_rounds": 20,
+    "random_seed": 42
+  },
+  "privacy_specification": {
+    "mechanism": "DP-SGD (Poisson Subsampled Gaussian Mechanism)",
+    "privacy_level": "sample_level",
+    "clipping_bound_C": 0.06,
+    "noise_multiplier_sigma": 0.87,
+    "physical_coord_noise_std": 0.0522,
+    "subsampling_rate_q": 0.00423728813559322,
+    "accountant_steps_T": 4720,
+    "epsilon": 2.8934,
+    "delta": 1e-05,
+    "optimal_alpha": 7,
+    "accountant": "Exact Analytical R\u00e9nyi Differential Privacy (Poisson RDP)"
+  },
+  "dataset_cohorts": {
+    "dataset_name": "BraTS-GLI 2024 (Adult Glioma Post-Treatment)",
+    "total_subjects": 1350,
+    "train_cohort_size": 944,
+    "validation_cohort_size": 202,
+    "locked_test_cohort_size": 204,
+    "hospital_silos": {
+      "hospital_alpha": 236,
+      "hospital_beta": 236,
+      "hospital_gamma": 236,
+      "hospital_delta": 236
+    },
+    "training_test_accesses": 0,
+    "test_firewall_status": "UNBREACHED_STRICT_ZERO_ACCESS"
+  },
+  "frozen_validation_metrics": {
+    "val_loss": 0.9604,
+    "macro_dice": 0.08,
+    "tc_dice": 0.2177,
+    "et_dice": 0.0147,
+    "wt_dice": 0.0076,
+    "macro_iou": 0.0497,
+    "tc_iou": 0.1377,
+    "et_iou": 0.0076,
+    "wt_iou": 0.0038
+  }
+}

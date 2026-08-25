@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fedmed-hospital-nodes
+  namespace: fedmed-system
+  labels:
+    app: fedmed-hospital
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: fedmed-hospital
+  template:
+    metadata:
+      labels:
+        app: fedmed-hospital
+    spec:
+      containers:
+      - name: hospital-node
+        image: fedmed/hospital-node:v2.0.0
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: SERVER_ADDRESS
+          value: "fedmed-flower-server:8080"
+        - name: API_URL
+          value: "http://fedmed-backend-service:8000"
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "512Mi"
+          limits:
+            cpu: "1000m"
+            memory: "2Gi"

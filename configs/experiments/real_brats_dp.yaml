@@ -1,0 +1,88 @@
+# Configuration: configs/experiments/real_brats_dp.yaml
+# FEDMED OS — PHASE 10.5 / EXPERIMENT D: REAL-DATA FEDAVG + DIFFERENTIAL PRIVACY (DP-SGD)
+# Canonical configuration for 4-Hospital BraTS-GLI 2024 Differential Privacy Benchmark
+
+data:
+  dataset_name: "BraTS-GLI"
+  dataset_version: "2024"
+  task: "adult_glioma_post_treatment"
+  raw_data_dir: "data/raw/BraTS2024"
+  split_file: "reports/real_brats2024/dataset_split.json"
+  partitions_file: "reports/real_brats2024/hospital_partitions.json"
+  modalities: ["t1", "t1ce", "t2", "flair"]
+  labels:
+    0: "Background"
+    1: "NETC"
+    2: "SNFH"
+    3: "ET"
+    4: "RC"
+  target_classes:
+    TC: [1, 3]
+    WT: [1, 2, 3]
+    ET: [3]
+
+spatial_resolutions:
+  development: [32, 32, 32]
+  real_experiment: [128, 128, 128]
+
+model:
+  architecture: "MONAI 3D U-Net"
+  spatial_dims: 3
+  in_channels: 4
+  out_channels: 3
+  channels: [16, 32, 64, 128, 256]
+  strides: [2, 2, 2, 2]
+  num_res_units: 2
+  dropout: 0.0
+  total_parameters: 4810074
+
+training:
+  spatial_shape: [128, 128, 128]
+  loss: "DiceCELoss"
+  loss_function: "DiceCELoss"
+  loss_params:
+    sigmoid: true
+    lambda_dice: 1.0
+    lambda_ce: 0.2
+  optimizer: "Adam"
+  learning_rate: 0.0001
+  weight_decay: 0.00001
+  batch_size: 1
+  local_epochs: 1
+  num_workers: 0
+  device: "mps"
+
+federated:
+  strategy: "FedAvg"
+  rounds: 20
+  num_rounds: 20
+  min_clients: 4
+  clients_per_round: 4
+  client_execution: "sequential"
+  seed: 42
+  hospitals:
+    - "hospital_alpha"
+    - "hospital_beta"
+    - "hospital_gamma"
+    - "hospital_delta"
+
+privacy:
+  mechanism: "DP-SGD"
+  level: "sample_level"
+  max_grad_norm: 1.0
+  noise_multiplier: 0.87
+  target_delta: 0.00001
+  sample_rate: 0.004237288  # 1 / 236 subjects per silo
+  sampling_mechanism: "Poisson / Bernoulli Subsampling (q=1/236)"
+  batch_semantics: "poisson_expected_batch_size_1"
+  accountant: "Exact Analytical Rényi Differential Privacy (Poisson RDP)"
+  calculated_epsilon_20_rounds: 2.8934
+  optimal_alpha: 7
+
+firewall:
+  locked_test_cohort_size: 204
+  allowed_training_test_accesses: 0
+
+checkpoint:
+  best_checkpoint_path: "checkpoints/fedavg_dp_real/best.pt"
+  latest_checkpoint_path: "checkpoints/fedavg_dp_real/latest.pt"

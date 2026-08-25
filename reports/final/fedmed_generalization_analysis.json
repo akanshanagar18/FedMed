@@ -1,0 +1,74 @@
+{
+  "status": "GENERALIZATION_ANALYSIS_COMPLETE",
+  "experiment_id": "EXPERIMENT_D2.1_DP_SGD_MOMENTUM_LR1E3",
+  "timestamp": "2026-08-18T14:11:07.700507+00:00",
+  "cohort_sizes": {
+    "validation_cohort": 202,
+    "test_cohort": 204
+  },
+  "metric_comparisons": {
+    "val_to_test_loss": {
+      "validation_value": 0.9604,
+      "test_value": 0.9628,
+      "absolute_gap": 0.0024,
+      "relative_gap_percent": 0.25,
+      "classification": "stable"
+    },
+    "macro_dice": {
+      "validation_value": 0.08,
+      "test_value": 0.0741,
+      "absolute_gap": -0.0059,
+      "relative_gap_percent": -7.38,
+      "classification": "stable"
+    },
+    "tc_dice": {
+      "validation_value": 0.2177,
+      "test_value": 0.2054,
+      "absolute_gap": -0.0123,
+      "relative_gap_percent": -5.65,
+      "classification": "stable"
+    },
+    "et_dice": {
+      "validation_value": 0.0147,
+      "test_value": 0.0111,
+      "absolute_gap": -0.0036,
+      "relative_gap_percent": -24.49,
+      "classification": "moderate degradation"
+    },
+    "wt_dice": {
+      "validation_value": 0.0076,
+      "test_value": 0.0059,
+      "absolute_gap": -0.0017,
+      "relative_gap_percent": -22.37,
+      "classification": "moderate degradation"
+    },
+    "macro_iou": {
+      "validation_value": 0.0497,
+      "test_value": 0.0451,
+      "absolute_gap": -0.0046,
+      "relative_gap_percent": -9.26,
+      "classification": "stable"
+    },
+    "tc_iou": {
+      "validation_value": 0.1377,
+      "test_value": 0.1268,
+      "absolute_gap": -0.0109,
+      "relative_gap_percent": -7.92,
+      "classification": "stable"
+    },
+    "et_iou": {
+      "validation_value": 0.0076,
+      "test_value": 0.0057,
+      "absolute_gap": -0.0019,
+      "relative_gap_percent": -25.0,
+      "classification": "moderate degradation"
+    },
+    "wt_iou": {
+      "validation_value": 0.0038,
+      "test_value": 0.003,
+      "absolute_gap": -0.0008,
+      "relative_gap_percent": -21.05,
+      "classification": "moderate degradation"
+    }
+  }
+}

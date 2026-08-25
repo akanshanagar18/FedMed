@@ -1,0 +1,149 @@
+{
+  "timestamp": "2026-08-15T11:41:26.797440+00:00",
+  "total_scanned_files": 171,
+  "occurrences_found": 64,
+  "hardcoded_metrics_in_active_experiments": false,
+  "static_lookup_tables_in_active_paths": false,
+  "findings_sample": [
+    {
+      "file": "data/splitter.py",
+      "line": 109,
+      "content": "dataset_mode: str = \"DEVELOPMENT_SYNTHETIC\",",
+      "category": "DATASET_MODE_FLAG",
+      "active_experiment_risk": "NONE (NO HARDCODED METRICS IN EXPERIMENT PATHS)"
+    },
+    {
+      "file": "data/splitter.py",
+      "line": 212,
+      "content": "mode = data_manifest.get(\"dataset_mode\", \"DEVELOPMENT_SYNTHETIC\")",
+      "category": "DATASET_MODE_FLAG",
+      "active_experiment_risk": "NONE (NO HARDCODED METRICS IN EXPERIMENT PATHS)"
+    },
+    {
+      "file": "data/real_brats_pipeline.py",
+      "line": 6,
+      "content": "Provides rigorous multi-parametric MRI validation and classification policy without heuristic or synthetic claims.",
+      "category": "COMMENT_OR_TEST",
+      "active_experiment_risk": "NONE (NO HARDCODED METRICS IN EXPERIMENT PATHS)"
+    },
+    {
+      "file": "data/real_brats_pipeline.py",
+      "line": 185,
+      "content": "dataset_mode = \"DEVELOPMENT_SYNTHETIC\"",
+      "category": "DATASET_MODE_FLAG",
+      "active_experiment_risk": "NONE (NO HARDCODED METRICS IN EXPERIMENT PATHS)"
+    },
+    {
+      "file": "data/real_brats_pipeline.py",
+      "line": 186,
+      "content": "status_msg = \"DEVELOPMENT SYNTHETIC COHORT ONLY (REAL BRATS ABSENT)\"",
+      "category": "COMMENT_OR_TEST",
+      "active_experiment_risk": "NONE (NO HARDCODED METRICS IN EXPERIMENT PATHS)"
+    },
+    {
+      "file": "data/datasets/brats.py",
+      "line": 7,
+      "content": "Includes fallback synthetic NIfTI file generation when dataset files are absent.",
+      "category": "COMMENT_OR_TEST",
+      "active_experiment_risk": "NONE (NO HARDCODED METRICS IN EXPERIMENT PATHS)"
+    },
+    {
+      "file": "data/datasets/brats.py",
+      "line": 26,
+      "content": "def generate_synthetic_brats_nifti(",
+      "category": "COMMENT_OR_TEST",
+      "active_experiment_risk": "NONE (NO HARDCODED METRICS IN EXPERIMENT PATHS)"
+    },
+    {
+      "file": "data/datasets/brats.py",
+      "line": 32,
+      "content": "Generates synthetic NIfTI files matching BraTS structure for local execution and unit tests.",
+      "category": "COMMENT_OR_TEST",
+      "active_experiment_risk": "NONE (NO HARDCODED METRICS IN EXPERIMENT PATHS)"
+    },
+    {
+      "file": "data/datasets/brats.py",
+      "line": 76,
+      "content": "allow_synthetic_fallback: bool = True,",
+      "category": "COMMENT_OR_TEST",
+      "active_experiment_risk": "NONE (NO HARDCODED METRICS IN EXPERIMENT PATHS)"
+    },
+    {
+      "file": "data/datasets/brats.py",
+      "line": 90,
+      "content": "if not report.is_valid and allow_synthetic_fallback:",
+      "category": "COMMENT_OR_TEST",
+      "active_experiment_risk": "NONE (NO HARDCODED METRICS IN EXPERIMENT PATHS)"
+    },
+    {
+      "file": "data/datasets/brats.py",
+      "line": 91,
+      "content": "logger.info(f\"Dataset directory '{self.data_dir}' invalid or empty. Generating synthetic BraTS NIfTI files for demonstra",
+      "category": "COMMENT_OR_TEST",
+      "active_experiment_risk": "NONE (NO HARDCODED METRICS IN EXPERIMENT PATHS)"
+    },
+    {
+      "file": "data/datasets/brats.py",
+      "line": 92,
+      "content": "generate_synthetic_brats_nifti(self.data_dir, num_subjects=4)",
+      "category": "COMMENT_OR_TEST",
+      "active_experiment_risk": "NONE (NO HARDCODED METRICS IN EXPERIMENT PATHS)"
+    },
+    {
+      "file": "model/__init__.py",
+      "line": 8,
+      "content": "TODO:",
+      "category": "ANNOTATION",
+      "active_experiment_risk": "NONE (NO HARDCODED METRICS IN EXPERIMENT PATHS)"
+    },
+    {
+      "file": "client/hospital_runtime.py",
+      "line": 48,
+      "content": "self.dataset = BraTSDataset(allow_synthetic_fallback=True)",
+      "category": "COMMENT_OR_TEST",
+      "active_experiment_risk": "NONE (NO HARDCODED METRICS IN EXPERIMENT PATHS)"
+    },
+    {
+      "file": "client/__init__.py",
+      "line": 8,
+      "content": "TODO:",
+      "category": "ANNOTATION",
+      "active_experiment_risk": "NONE (NO HARDCODED METRICS IN EXPERIMENT PATHS)"
+    },
+    {
+      "file": "client/flower_client.py",
+      "line": 98,
+      "content": "allow_synthetic_fallback=True,",
+      "category": "COMMENT_OR_TEST",
+      "active_experiment_risk": "NONE (NO HARDCODED METRICS IN EXPERIMENT PATHS)"
+    },
+    {
+      "file": "server/__init__.py",
+      "line": 8,
+      "content": "TODO:",
+      "category": "ANNOTATION",
+      "active_experiment_risk": "NONE (NO HARDCODED METRICS IN EXPERIMENT PATHS)"
+    },
+    {
+      "file": "server/strategies/fedavg.py",
+      "line": 112,
+      "content": "# Return dummy zero arrays for parameters so zero plaintext weights cross wire",
+      "category": "COMMENT_OR_TEST",
+      "active_experiment_risk": "NONE (NO HARDCODED METRICS IN EXPERIMENT PATHS)"
+    },
+    {
+      "file": "scripts/run_b8_master_audit.py",
+      "line": 6,
+      "content": "Performs exhaustive audits across repository inventory, mock scanning, canonical configuration,",
+      "category": "COMMENT_OR_TEST",
+      "active_experiment_risk": "NONE (NO HARDCODED METRICS IN EXPERIMENT PATHS)"
+    },
+    {
+      "file": "scripts/run_b8_master_audit.py",
+      "line": 98,
+      "content": "def audit_mock_and_hardcodes() -> Dict[str, Any]:",
+      "category": "COMMENT_OR_TEST",
+      "active_experiment_risk": "NONE (NO HARDCODED METRICS IN EXPERIMENT PATHS)"
+    }
+  ]
+}

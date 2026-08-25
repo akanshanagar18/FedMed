@@ -1,0 +1,65 @@
+{
+  "algorithm": "Centralized",
+  "initial_parameter_hash": "5ba650f3408c97c76d3146fd2a31044cc9d4e926add4964ae8b079e6988e1d93",
+  "final_parameter_hash": "62116cd4aa701d525ef40fcac7bb71db0f99bc8877b6e42b60718c3dedf48630",
+  "execution_time_seconds": 0.21310019493103027,
+  "history": [
+    {
+      "epoch": 1,
+      "training_loss": 1.8760182857513428,
+      "validation_dice": {
+        "dice_TC": 0.454293,
+        "dice_WT": 0.626002,
+        "dice_ET": 0.0,
+        "mean_dice": 0.360098
+      },
+      "validation_iou": {
+        "iou_TC": 0.293906,
+        "iou_WT": 0.455606,
+        "iou_ET": 0.0,
+        "mean_iou": 0.249837
+      }
+    },
+    {
+      "epoch": 2,
+      "training_loss": 1.8640637397766113,
+      "validation_dice": {
+        "dice_TC": 0.4547,
+        "dice_WT": 0.628696,
+        "dice_ET": 0.0,
+        "mean_dice": 0.361132
+      },
+      "validation_iou": {
+        "iou_TC": 0.294247,
+        "iou_WT": 0.458466,
+        "iou_ET": 0.0,
+        "mean_iou": 0.250904
+      }
+    }
+  ],
+  "final_validation_dice": {
+    "dice_TC": 0.4547,
+    "dice_WT": 0.628696,
+    "dice_ET": 0.0,
+    "mean_dice": 0.361132
+  },
+  "final_validation_iou": {
+    "iou_TC": 0.294247,
+    "iou_WT": 0.458466,
+    "iou_ET": 0.0,
+    "mean_iou": 0.250904
+  },
+  "final_test_dice": {
+    "dice_TC": 0.452307,
+    "dice_WT": 0.625689,
+    "dice_ET": 0.0,
+    "mean_dice": 0.359332
+  },
+  "final_test_iou": {
+    "iou_TC": 0.292246,
+    "iou_WT": 0.455274,
+    "iou_ET": 0.0,
+    "mean_iou": 0.249173
+  },
+  "checkpoint_path": "/Users/siddhant_patil/Projects/FedMed/checkpoints/centralized/centralized_best.pt"
+}

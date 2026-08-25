@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: fedmed-network-policy
+  namespace: fedmed
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: fedmed-backend
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: fedmed-flower-server
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/component: hospital-client
+  egress:
+    - to:
+        - podSelector: {}

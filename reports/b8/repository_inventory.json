@@ -1,0 +1,40 @@
+{
+  "timestamp": "2026-08-15T11:41:26.772649+00:00",
+  "active_modules": [
+    "data/real_brats_pipeline.py",
+    "data/datasets/brats.py",
+    "data/datasets/transforms.py",
+    "data/split/deterministic_split.py",
+    "model/unet3d.py",
+    "client/hospital_client.py",
+    "server/aggregation.py",
+    "privacy/dp.py",
+    "privacy/he.py",
+    "inference/pipeline.py",
+    "inference/validator.py",
+    "evaluation/evaluator.py",
+    "configs/production/inference.yaml",
+    "configs/experiments/real_brats_fedavg.yaml",
+    "scripts/run_real_local_training.py",
+    "scripts/run_federated_experiment.py",
+    "scripts/run_real_benchmark.py",
+    "scripts/run_scaling_benchmark.py",
+    "scripts/run_inference.py",
+    "scripts/package_production_model.py"
+  ],
+  "legacy_or_deprecated_modules": [
+    "evaluation/benchmark_runner.py (Phase 8.0 demo harness - replaced by run_real_benchmark.py)",
+    "scripts/generate_evidence.py (Phase 8.0 demo data exporter - inactive in real paths)"
+  ],
+  "test_suites": [
+    "tests/unit/ (32 unit test modules)",
+    "tests/integration/ (23 integration test modules)"
+  ],
+  "artifacts": [
+    "artifacts/fedmed_model/model.pt",
+    "artifacts/fedmed_model/model_manifest.json",
+    "artifacts/fedmed_model/architecture.json",
+    "artifacts/fedmed_model/preprocessing.yaml",
+    "artifacts/fedmed_model/README.md"
+  ]
+}

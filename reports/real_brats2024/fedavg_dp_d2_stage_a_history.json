@@ -1,0 +1,54 @@
+[
+  {
+    "round": 1,
+    "mean_client_loss": 0.247661,
+    "client_losses": {
+      "hospital_alpha": 0.0,
+      "hospital_beta": 0.0,
+      "hospital_gamma": 0.990643,
+      "hospital_delta": 0.0
+    },
+    "client_timings_sec": {
+      "hospital_alpha": 0.12,
+      "hospital_beta": 0.04,
+      "hospital_gamma": 3.14,
+      "hospital_delta": 0.04
+    },
+    "global_parameter_delta": 0.019757,
+    "client_divergence": 0.056006,
+    "privacy_telemetry": {
+      "max_grad_norm_C": 0.06,
+      "noise_multiplier_sigma": 0.87,
+      "noise_standard_deviation": 0.0522,
+      "mean_batch_size": 0.75,
+      "median_batch_size": 0.75,
+      "std_batch_size": 0.0,
+      "min_batch_size": 0,
+      "max_batch_size": 3,
+      "empty_batch_count": 3,
+      "singleton_batch_count": 0,
+      "multi_sample_batch_count": 1,
+      "clipping_fraction": 0.0833,
+      "mean_clipping_fraction": 0.0833,
+      "mean_unclipped_gradient_norm": 0.0177,
+      "mean_clipped_gradient_norm": 0.0126,
+      "cumulative_epsilon": 1.4633,
+      "accountant_epsilon": 1.4633,
+      "accountant_optimal_alpha": 9,
+      "accountant_step_count": 1,
+      "target_delta": 1e-05,
+      "sampling_mechanism": "Poisson / Bernoulli Subsampling (q=1/236)",
+      "accountant": "Exact Analytical R\u00e9nyi Differential Privacy (Poisson RDP)"
+    },
+    "val_loss": 0.9905,
+    "mean_dice": 0.0175,
+    "tc_dice": 0.0394,
+    "wt_dice": 0.0056,
+    "et_dice": 0.0073,
+    "tc_iou": 0.0204,
+    "wt_iou": 0.0028,
+    "et_iou": 0.0037,
+    "val_time_sec": 94.11,
+    "round_total_sec": 97.6
+  }
+]

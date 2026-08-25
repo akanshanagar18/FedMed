@@ -1,0 +1,65 @@
+{
+  "manifest_version": "2.0.0",
+  "phase": "PHASE_9.2_REAL_TRAINING_CONFIGURATION",
+  "timestamp": "2026-08-15T14:27:00.000000+00:00",
+  "experiment_name": "real_brats_gli_2024_federated",
+  "canonical_config_path": "configs/experiments/canonical_real_brats_gli_2024.yaml",
+  "spatial_resolutions": {
+    "real_experiment": [128, 128, 128],
+    "development_ci": [32, 32, 32]
+  },
+  "loss_configuration": {
+    "loss_name": "DiceCELoss",
+    "framework": "MONAI",
+    "sigmoid": true,
+    "lambda_dice": 1.0,
+    "lambda_ce": 0.2,
+    "rationale": "Mitigates extreme 98.98% background class dominance while maintaining non-zero smooth gradient flow"
+  },
+  "execution_mode": {
+    "client_execution": "sequential",
+    "hardware": "Single_Node_Apple_Silicon_MPS",
+    "mps_safety": "Prevents multi-client GPU allocation contention on unified memory"
+  },
+  "dataset_provenance": {
+    "dataset_name": "BraTS-GLI",
+    "dataset_version": "2024",
+    "dataset_task": "adult_glioma_post_treatment",
+    "total_subjects": 1350,
+    "train_subjects": 944,
+    "validation_subjects": 202,
+    "test_subjects": 204,
+    "split_manifest": "reports/real_brats2024/dataset_split.json",
+    "split_hash": "d0358ca42d4bf510624bbe7e86c3e4bc1e25a6174521b1280c0001eb2c66005c",
+    "hospital_partitions_manifest": "reports/real_brats2024/hospital_partitions.json",
+    "hospital_silos": {
+      "hospital_alpha": 236,
+      "hospital_beta": 236,
+      "hospital_gamma": 236,
+      "hospital_delta": 236
+    }
+  },
+  "label_semantics": {
+    "0": "Background",
+    "1": "NETC",
+    "2": "SNFH",
+    "3": "ET",
+    "4": "RC",
+    "composite_channels": {
+      "Channel_0_TC": "label == 1 | label == 3",
+      "Channel_1_WT": "label == 1 | label == 2 | label == 3",
+      "Channel_2_ET": "label == 3",
+      "Provenance_RC": "label == 4 (Preserved in metadata, excluded from model predictions)"
+    }
+  },
+  "model_specification": {
+    "class": "monai.networks.nets.UNet",
+    "spatial_dims": 3,
+    "in_channels": 4,
+    "out_channels": 3,
+    "channels": [16, 32, 64, 128, 256],
+    "strides": [2, 2, 2, 2],
+    "num_res_units": 2,
+    "total_parameters": 4810074
+  }
+}

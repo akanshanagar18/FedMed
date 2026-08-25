@@ -1,0 +1,56 @@
+# FedMed v2.0 — Privacy-Preserving Federated Learning Configuration (Phase 9.2)
+experiment_name: "Real_BraTS_Privacy_Evaluation"
+seed: 42
+
+spatial_resolutions:
+  real_experiment: [128, 128, 128]
+  development_ci: [32, 32, 32]
+
+dataset:
+  name: "BraTS-GLI"
+  version: "2024"
+  data_dir: "data/raw/BraTS2024"
+  split_file: "reports/real_brats2024/dataset_split.json"
+  manifest_file: "reports/real_brats2024/dataset_manifest.json"
+
+model:
+  name: "UNet3D"
+  spatial_dims: 3
+  in_channels: 4
+  out_channels: 3
+  channels: [16, 32, 64, 128, 256]
+  strides: [2, 2, 2, 2]
+  num_res_units: 2
+  dropout: 0.0
+
+training:
+  spatial_shape: [128, 128, 128]
+  optimizer: "Adam"
+  learning_rate: 1.0e-4
+  weight_decay: 1.0e-5
+  loss_fn: "DiceCELoss"
+  loss_params:
+    sigmoid: true
+    lambda_dice: 1.0
+    lambda_ce: 0.2
+  batch_size: 1
+  rounds: 20
+  local_epochs: 1
+  client_execution: "sequential"
+
+differential_privacy:
+  enabled: true
+  mechanism: "Sampled Gaussian Mechanism"
+  accountant: "RDP (Renyi Differential Privacy) Accountant"
+  max_grad_norm: 1.0
+  noise_multiplier: 0.8
+  target_delta: 1.0e-5
+  sample_rate: 0.004237  # 1 / 236 per client batch
+
+homomorphic_encryption:
+  enabled: true
+  scheme: "CKKS"
+  poly_modulus_degree: 8192
+  coeff_mod_bit_sizes: [60, 40, 40, 60]
+  global_scale_exp: 40
+  chunk_size: 4096

@@ -1,0 +1,85 @@
+{
+  "experiment_name": "FedAvg + DP",
+  "dp_enabled": true,
+  "he_enabled": false,
+  "initial_parameter_hash": "5ba650f3408c97c76d3146fd2a31044cc9d4e926add4964ae8b079e6988e1d93",
+  "final_parameter_hash": "f48b7c36125a5881dfb369621e02ecff7bea84f13e32b0335cdd96fbb378bed9",
+  "execution_time_seconds": 0.5670468807220459,
+  "history": [
+    {
+      "round": 1,
+      "training_loss": 1.8779512643814087,
+      "client_losses": {
+        "hospital_alpha": 1.8770796060562134,
+        "hospital_beta": 1.878822922706604
+      },
+      "validation_dice": {
+        "dice_TC": 0.454831,
+        "dice_WT": 0.624811,
+        "dice_ET": 0.0,
+        "mean_dice": 0.35988
+      },
+      "validation_iou": {
+        "iou_TC": 0.294357,
+        "iou_WT": 0.454345,
+        "iou_ET": 0.0,
+        "mean_iou": 0.249567
+      }
+    },
+    {
+      "round": 2,
+      "training_loss": 1.876889407634735,
+      "client_losses": {
+        "hospital_alpha": 1.8774805068969727,
+        "hospital_beta": 1.8762983083724976
+      },
+      "validation_dice": {
+        "dice_TC": 0.454828,
+        "dice_WT": 0.624679,
+        "dice_ET": 0.0,
+        "mean_dice": 0.359836
+      },
+      "validation_iou": {
+        "iou_TC": 0.294354,
+        "iou_WT": 0.454206,
+        "iou_ET": 0.0,
+        "mean_iou": 0.24952
+      }
+    }
+  ],
+  "final_validation_dice": {
+    "dice_TC": 0.454828,
+    "dice_WT": 0.624679,
+    "dice_ET": 0.0,
+    "mean_dice": 0.359836
+  },
+  "final_validation_iou": {
+    "iou_TC": 0.294354,
+    "iou_WT": 0.454206,
+    "iou_ET": 0.0,
+    "mean_iou": 0.24952
+  },
+  "final_test_dice": {
+    "dice_TC": 0.452234,
+    "dice_WT": 0.61998,
+    "dice_ET": 0.0,
+    "mean_dice": 0.357405
+  },
+  "final_test_iou": {
+    "iou_TC": 0.292185,
+    "iou_WT": 0.449255,
+    "iou_ET": 0.0,
+    "mean_iou": 0.247147
+  },
+  "privacy_budget": {
+    "epsilon": 11.59705227707093,
+    "delta": 1e-05,
+    "noise_multiplier": 0.5,
+    "max_grad_norm": 1.0,
+    "steps": 4,
+    "accountant": "RDP (Renyi Differential Privacy) Accountant"
+  },
+  "he_timings": null,
+  "he_errors": null,
+  "checkpoint_path": "/Users/siddhant_patil/Projects/FedMed/checkpoints/privacy/fedavg___dp/best_model.pt"
+}

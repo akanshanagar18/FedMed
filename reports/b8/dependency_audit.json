@@ -1,0 +1,16 @@
+{
+  "timestamp": "2026-08-15T11:41:27.141158+00:00",
+  "python_version": "3.9.6",
+  "dependencies": {
+    "torch": "2.8.0",
+    "nibabel": "5.3.3",
+    "numpy": "2.0.2",
+    "yaml": "6.0.3",
+    "monai": "1.5.2",
+    "flwr": "1.23.0",
+    "tenseal": "0.3.16",
+    "mlflow": "OPTIONAL_ABSENT"
+  },
+  "mlflow_policy": "OPTIONAL (SKIPPED BY TEST DECORATOR)",
+  "all_required_installed": true
+}

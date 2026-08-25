@@ -1,0 +1,31 @@
+{
+  "split_hash": "715cadbe78d2a9669dd331d0681baa060d3a175d9afbb50cc21941609d0238df",
+  "hospital_count": 4,
+  "train_subjects_partitioned": 2,
+  "partitions": {
+    "hospital_alpha": {
+      "status": "ACTIVE",
+      "subject_count": 1,
+      "subjects": [
+        "BraTS2021_00002"
+      ]
+    },
+    "hospital_beta": {
+      "status": "ACTIVE",
+      "subject_count": 1,
+      "subjects": [
+        "BraTS2021_00004"
+      ]
+    },
+    "hospital_gamma": {
+      "status": "EMPTY_NO_TRAINING_DATA",
+      "subject_count": 0,
+      "subjects": []
+    },
+    "hospital_delta": {
+      "status": "EMPTY_NO_TRAINING_DATA",
+      "subject_count": 0,
+      "subjects": []
+    }
+  }
+}

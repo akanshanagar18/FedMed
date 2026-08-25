@@ -1,0 +1,86 @@
+{
+  "algorithm": "FedProx",
+  "proximal_mu": 0.01,
+  "initial_parameter_hash": "5ba650f3408c97c76d3146fd2a31044cc9d4e926add4964ae8b079e6988e1d93",
+  "final_parameter_hash": "7e11aeb07712742403aba7050a5a8e843448734cdd62c500e60f4c33d2365d8a",
+  "execution_time_seconds": 0.6752479076385498,
+  "history": [
+    {
+      "round": 1,
+      "training_loss": 1.876628577709198,
+      "proximal_penalty": 0.0,
+      "total_loss": 1.876628577709198,
+      "client_losses": {
+        "hospital_alpha": 1.8768419027328491,
+        "hospital_beta": 1.8764152526855469
+      },
+      "client_proximal_penalties": {
+        "hospital_alpha": 0.0,
+        "hospital_beta": 0.0
+      },
+      "validation_dice": {
+        "dice_TC": 0.453282,
+        "dice_WT": 0.625561,
+        "dice_ET": 0.0,
+        "mean_dice": 0.359614
+      },
+      "validation_iou": {
+        "iou_TC": 0.293061,
+        "iou_WT": 0.455139,
+        "iou_ET": 0.0,
+        "mean_iou": 0.2494
+      }
+    },
+    {
+      "round": 2,
+      "training_loss": 1.8751962780952454,
+      "proximal_penalty": 0.0,
+      "total_loss": 1.8751962780952454,
+      "client_losses": {
+        "hospital_alpha": 1.8732380867004395,
+        "hospital_beta": 1.8771544694900513
+      },
+      "client_proximal_penalties": {
+        "hospital_alpha": 0.0,
+        "hospital_beta": 0.0
+      },
+      "validation_dice": {
+        "dice_TC": 0.452954,
+        "dice_WT": 0.6255,
+        "dice_ET": 0.0,
+        "mean_dice": 0.359485
+      },
+      "validation_iou": {
+        "iou_TC": 0.292787,
+        "iou_WT": 0.455074,
+        "iou_ET": 0.0,
+        "mean_iou": 0.249287
+      }
+    }
+  ],
+  "final_validation_dice": {
+    "dice_TC": 0.452954,
+    "dice_WT": 0.6255,
+    "dice_ET": 0.0,
+    "mean_dice": 0.359485
+  },
+  "final_validation_iou": {
+    "iou_TC": 0.292787,
+    "iou_WT": 0.455074,
+    "iou_ET": 0.0,
+    "mean_iou": 0.249287
+  },
+  "final_test_dice": {
+    "dice_TC": 0.451615,
+    "dice_WT": 0.624258,
+    "dice_ET": 0.0,
+    "mean_dice": 0.358624
+  },
+  "final_test_iou": {
+    "iou_TC": 0.291668,
+    "iou_WT": 0.453761,
+    "iou_ET": 0.0,
+    "mean_iou": 0.248476
+  },
+  "checkpoint_path": "/Users/siddhant_patil/Projects/FedMed/checkpoints/fedprox/fedprox_best.pt"
+}

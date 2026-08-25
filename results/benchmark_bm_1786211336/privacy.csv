@@ -1,0 +1,3 @@
+Experiment ID,DP Enabled,Target Epsilon (ε),Target Delta (δ),HE Enabled,Scheme
+bm_1786211336_exp_001_FedAvg_42,False,N/A,N/A,False,N/A
+bm_1786211336_exp_002_FedProx_42,False,N/A,N/A,False,N/A

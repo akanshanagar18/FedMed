@@ -1,0 +1,29 @@
+{
+  "timestamp": "2026-08-15T11:41:26.798999+00:00",
+  "threat_model": "HONEST-BUT-CURIOUS SERVER COORDINATOR",
+  "supported_protections": {
+    "honest_but_curious_server": "SUPPORTED (TenSEAL CKKS Homomorphic Encryption prevents plaintext parameter inspection)",
+    "client_side_mri_isolation": "SUPPORTED (Raw MRI images never leave local silo storage)",
+    "membership_inference_defense": "SUPPORTED (DP Gaussian mechanism with analytical RDP accounting eps=14.76, delta=1e-5)"
+  },
+  "unsupported_or_out_of_scope_protections": {
+    "malicious_server_key_manipulation": "NOT CLAIMED (Assumes non-colluding honest key setup)",
+    "byzantine_poisoning_attacks": "NOT CLAIMED (Standard sample-weighted FedAvg without robust geometric median)",
+    "gradient_inversion_under_plaintext_fl": "MITIGATED BY CKKS CIPHERTEXT AGGREGATION"
+  },
+  "recalculated_dp_accounting": {
+    "epsilon": 14.7565,
+    "delta": 1e-05,
+    "steps": 6,
+    "sample_rate": 0.5,
+    "noise_multiplier": 0.5,
+    "clipping_norm": 1.0
+  },
+  "he_cryptosystem": {
+    "scheme": "TenSEAL CKKS",
+    "poly_modulus_degree": 8192,
+    "security_level_bits": 128,
+    "reconstruction_error": 5.96e-08,
+    "terminology": "Approximate reconstruction with measured numerical error"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "timestamp": "2026-08-15T11:41:26.798893+00:00",
+  "firewall_enforcement": "ACTIVE",
+  "training_test_accesses": 0,
+  "hyperparameter_selection_test_accesses": 0,
+  "checkpoint_selection_test_accesses": 0,
+  "final_test_evaluations": 1,
+  "test_subject": "BraTS2021_00001",
+  "evaluation_phase": "STRICTLY POST-TRAINING"
+}

@@ -1,0 +1,74 @@
+# =============================================================================
+# FedMed OS — Canonical Experiment Configuration (Phase 8.5B / Phase 9.2)
+# Single Source of Truth for Model, Optimizer, Loss, and Federated Parameters
+# =============================================================================
+
+experiment:
+  name: "real_brats_fedavg"
+  version: "2.0.0"
+  description: "Canonical Federated BraTS 3D Brain Tumor Segmentation using FedAvg"
+  dataset_target: "BraTS-GLI-2024"
+
+spatial_resolutions:
+  real_experiment: [128, 128, 128]
+  development_ci: [32, 32, 32]
+
+model:
+  name: "UNet3D"
+  framework: "MONAI"
+  spatial_dims: 3
+  in_channels: 4
+  out_channels: 3
+  channels: [16, 32, 64, 128, 256]
+  strides: [2, 2, 2, 2]
+  num_res_units: 2
+  dropout: 0.0
+  total_parameters: 4810074
+
+training:
+  spatial_shape: [128, 128, 128]
+  loss: "DiceCELoss"
+  loss_params:
+    sigmoid: true
+    lambda_dice: 1.0
+    lambda_ce: 0.2
+  optimizer: "Adam"
+  learning_rate: 0.0001
+  weight_decay: 0.00001
+  batch_size: 1
+  local_epochs: 1
+  num_workers: 0
+
+federated:
+  strategy: "FedAvg"
+  client_execution: "sequential"
+  num_rounds: 3
+  min_clients: 2
+  min_available_clients: 2
+  hospitals:
+    - "hospital_alpha"
+    - "hospital_beta"
+    - "hospital_gamma"
+    - "hospital_delta"
+  seed: 42
+
+data:
+  dataset_name: "BraTS-GLI"
+  data_dir: "data/raw/BraTS2024"
+  num_workers: 0
+  modalities:
+    - "t1"
+    - "t1ce"
+    - "t2"
+    - "flair"
+  mask_modality: "seg"
+  target_classes:
+    - "TC"  # Tumor Core (labels 1 + 3)
+    - "WT"  # Whole Tumor (labels 1 + 2 + 3)
+    - "ET"  # Enhancing Tumor (label 3)
+  split:
+    train_ratio: 0.70
+    val_ratio: 0.15
+    test_ratio: 0.15
+    seed: 42
+    manifest_path: "reports/real_brats2024/dataset_split.json"

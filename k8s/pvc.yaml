@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: fedmed-database-pvc
+  namespace: fedmed
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: fedmed-checkpoints-pvc
+  namespace: fedmed
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: fedmed-mlruns-pvc
+  namespace: fedmed
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: fedmed-results-pvc
+  namespace: fedmed
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: fedmed-logs-pvc
+  namespace: fedmed
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi

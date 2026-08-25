@@ -1,0 +1,10 @@
+{
+  "soak_duration_hours": 24.0,
+  "samples_collected": 1440,
+  "memory_rss_mb_stable": 142.5,
+  "memory_leak_detected": false,
+  "sqlite_lock_count": 0,
+  "zombie_processes": 0,
+  "open_file_descriptors": 24,
+  "system_status": "STABLE"
+}

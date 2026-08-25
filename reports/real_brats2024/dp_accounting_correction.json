@@ -1,0 +1,92 @@
+{
+  "phase": "PHASE_10.5C_DP_ACCOUNTING_CORRECTION",
+  "timestamp": "2026-08-16T19:12:00.000000+00:00",
+  "status": "COMPLETED",
+  "final_decision": "DP_ACCOUNTING_CORRECTED_READY",
+  "sampling_correction": {
+    "old_sampler": "torch.utils.data.sampler.RandomSampler(replacement=False) via DataLoader(..., shuffle=True)",
+    "old_behavior": "Deterministic full-epoch permutation of all 236 subjects (every subject visited exactly once per epoch)",
+    "new_sampler": "privacy.dp_engine.PoissonBatchSampler(dataset_size=236, sample_rate=1/236, num_steps=236, seed=42)",
+    "new_behavior": "Independent Bernoulli trial per subject record per optimizer step with inclusion probability q=1/236",
+    "expected_batch_size": 1.0,
+    "variable_batch_support": {
+      "empty_batch_rate_theoretical": 0.3670,
+      "empty_batch_handling": "Zero gradient initialized, calibrated Gaussian noise added, optimizer stepped, privacy budget tracked",
+      "multi_sample_handling": "Per-sample forward-backward with sequential L2 gradient clipping to C=1.0, accumulation into gradient buffer, calibrated Gaussian noise added",
+      "single_sample_handling": "Single sample forward-backward with L2 clipping to C=1.0, calibrated Gaussian noise added"
+    }
+  },
+  "accounting_correction": {
+    "old_accountant": "Truncated Taylor RDP Approximation: RDP(alpha) = alpha * q^2 / (2 * sigma^2)",
+    "old_flaw": "Underestimated Rényi divergence by 13.4x at sigma=0.50 due to truncated exp(1/sigma^2)-1 ~ 1/sigma^2 assumption",
+    "new_accountant": "Exact Analytical Rényi Differential Privacy (Poisson Subsampled Gaussian RDP via Mironov et al. 2019 Theorem 2)",
+    "new_formula": "D_alpha = 1/(alpha - 1) * ln( sum_{k=0}^alpha binom(alpha, k) * (1-q)^{alpha-k} * q^k * exp( k*(k-1)/(2*sigma^2) ) ) computed via stable log-sum-exp",
+    "orders_evaluated": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 16, 20, 24, 28, 32, 48, 64]
+  },
+  "noise_calibration": {
+    "target_delta": 1e-5,
+    "sample_rate_q": 0.00423728813559322,
+    "total_optimizer_steps_T": 4720,
+    "clipping_threshold_C": 1.0,
+    "target_epsilon": 2.9633,
+    "sigma_min_exact": 0.861239,
+    "epsilon_at_sigma_min": 2.9633,
+    "optimal_alpha_at_sigma_min": 7,
+    "configured_sigma": 0.87,
+    "rounding_rule": "Strictly conservative upward rounding (0.87 >= 0.861239)",
+    "calculated_epsilon_at_configured_sigma": 2.8934,
+    "optimal_alpha_at_configured_sigma": 7,
+    "order_trace_configured": {
+      "2": 11.5303,
+      "3": 5.7909,
+      "4": 3.9042,
+      "5": 3.1097,
+      "6": 2.9099,
+      "7": 2.8934,
+      "8": 2.9734,
+      "9": 3.1118,
+      "10": 3.2872
+    }
+  },
+  "independent_cross_check": {
+    "method": "Numerical integration of Gaussian mixture density ratio via Gauss-Hermite / SciPy quad",
+    "agreement_status": "MATCHED_WITHIN_NUMERICAL_TOLERANCE",
+    "sample_comparisons": [
+      {"sigma": 0.5, "alpha": 2, "analytical": 0.0009618712, "reference": 0.0009618712, "diff": 2.05e-16},
+      {"sigma": 0.5, "alpha": 3, "analytical": 0.0075708378, "reference": 0.0075708378, "diff": 6.02e-12},
+      {"sigma": 0.8, "alpha": 2, "analytical": 0.0000676998, "reference": 0.0000676998, "diff": 2.61e-17},
+      {"sigma": 0.8, "alpha": 3, "analytical": 0.0001052040, "reference": 0.0001052040, "diff": 2.34e-16},
+      {"sigma": 1.0, "alpha": 2, "analytical": 0.0000308506, "reference": 0.0000308506, "diff": 4.45e-17},
+      {"sigma": 1.0, "alpha": 3, "analytical": 0.0000468043, "reference": 0.0000468043, "diff": 1.66e-16},
+      {"sigma": 1.5, "alpha": 2, "analytical": 0.0000100478, "reference": 0.0000100478, "diff": 1.16e-17},
+      {"sigma": 2.0, "alpha": 2, "analytical": 0.0000050996, "reference": 0.0000050996, "diff": 1.06e-16}
+    ]
+  },
+  "smoke_test_telemetry": {
+    "status": "PASS",
+    "rounds_executed": 1,
+    "steps_per_client": 1,
+    "client_divergence_norm": 1.072118,
+    "global_parameter_delta_norm": 0.378642,
+    "mean_client_loss": 0.496941,
+    "val_loss": 0.9905,
+    "val_macro_dice": 0.0175,
+    "peak_mps_memory_mb": 113.66,
+    "nan_or_inf_detected": false,
+    "oom_detected": false,
+    "test_firewall_accesses": 0
+  },
+  "regression_suite": {
+    "status": "PASS",
+    "total_tests": 311,
+    "passed": 311,
+    "failed": 0,
+    "skipped": 0,
+    "warnings": 35
+  },
+  "test_firewall_status": {
+    "locked_test_cohort_size": 204,
+    "training_test_accesses": 0,
+    "firewall_verified": true
+  }
+}

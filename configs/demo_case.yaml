@@ -1,0 +1,28 @@
+# Configuration: configs/demo_case.yaml
+# FEDMED OS — PHASE 11: SAFE CLINICAL DEMO CASE SPECIFICATION
+# Selected strictly from Training Cohort (Zero Test Set Overlap)
+
+demo_case:
+  subject_id: "BraTS-GLI-00005-100"
+  cohort: "training"
+  hospital_silo: "hospital_alpha"
+  dataset_version: "BraTS-GLI 2024"
+  subject_dir: "data/raw/BraTS2024/training_data1_v2/BraTS-GLI-00005-100"
+  modalities:
+    t1: "data/raw/BraTS2024/training_data1_v2/BraTS-GLI-00005-100/BraTS-GLI-00005-100-t1n.nii.gz"
+    t1ce: "data/raw/BraTS2024/training_data1_v2/BraTS-GLI-00005-100/BraTS-GLI-00005-100-t1c.nii.gz"
+    t2: "data/raw/BraTS2024/training_data1_v2/BraTS-GLI-00005-100/BraTS-GLI-00005-100-t2w.nii.gz"
+    flair: "data/raw/BraTS2024/training_data1_v2/BraTS-GLI-00005-100/BraTS-GLI-00005-100-t2f.nii.gz"
+  ground_truth_segmentation: "data/raw/BraTS2024/training_data1_v2/BraTS-GLI-00005-100/BraTS-GLI-00005-100-seg.nii.gz"
+  preprocessing:
+    spatial_resolution: [128, 128, 128]
+    voxel_spacing_mm: [1.0, 1.0, 1.0]
+    normalization: "nonzero_channel_wise"
+  model:
+    canonical_checkpoint: "checkpoints/final/fedmed_dp_final_model.pt"
+    expected_sha256: "f6cd18dc5e05595ca88ad1675190aabb98595ee9f6d6dfed36c25b596f652f3a"
+    architecture: "MONAI 3D U-Net"
+    privacy_budget:
+      epsilon: 2.8934
+      delta: 0.00001
+      mechanism: "Poisson DP-SGD"

@@ -1,0 +1,47 @@
+# FedMed v2.0 Benchmark Suite Configuration
+# Inherits from default.yaml and overrides hyperparameter matrix sweep options.
+
+federated:
+  num_rounds: 3
+  min_clients: 2
+
+benchmark:
+  strategies:
+    - "FedAvg"
+    - "FedProx"
+    - "SCAFFOLD"
+    - "FedAdam"
+    - "FedYogi"
+    - "FedAdagrad"
+    - "FedNova"
+    - "FedDyn"
+    - "FedBN"
+    - "FedAsync"
+    - "FedPer"
+    - "LG-FedAvg"
+    - "FedRep"
+    - "Per-FedAvg"
+  partitions:
+    - "IID"
+    - "NonIID(alpha=1.0)"
+    - "NonIID(alpha=0.5)"
+    - "NonIID(alpha=0.2)"
+  privacy_modes:
+    - "none"
+    - "dp"
+    - "he"
+    - "dp_he"
+  client_counts:
+    - 2
+    - 3
+    - 5
+  seeds:
+    - 42
+    - 123
+    - 999
+  governance:
+    drift_detection: true
+    sla_auditing: true
+    hpo_enabled: true
+    model_registry_gates: true
+

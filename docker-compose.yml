@@ -1,0 +1,174 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: docker/backend.Dockerfile
+    container_name: fedmed-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=${DATABASE_URL:-sqlite:////app/data_db/fedmed.db}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - FEDMED_GOVERNANCE_ENABLED=true
+      - FEDMED_DRIFT_DETECTION=true
+      - FEDMED_HPO_ENABLED=true
+      - FEDMED_SLA_AUDITING=true
+
+    volumes:
+      - database_data:/app/data_db
+      - checkpoint_data:/app/checkpoints
+      - logs_data:/app/logs
+    networks:
+      - fedmed-network
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health')\""]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  flower-server:
+    build:
+      context: .
+      dockerfile: docker/flower_server.Dockerfile
+    container_name: fedmed-flower-server
+    ports:
+      - "8080:8080"
+    environment:
+      - API_URL=http://backend:8000
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    command: ["python", "-m", "server.flower_server", "--address", "0.0.0.0:8080", "--api-url", "http://backend:8000"]
+    volumes:
+      - certificate_data:/app/certs
+      - checkpoint_data:/app/checkpoints
+      - logs_data:/app/logs
+    networks:
+      - fedmed-network
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import socket; s = socket.socket(); s.connect(('127.0.0.1', 8080))\""]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  hospital-alpha:
+    build:
+      context: .
+      dockerfile: docker/hospital_client.Dockerfile
+    container_name: fedmed-hospital-alpha
+    environment:
+      - SERVER_ADDRESS=flower-server:8080
+      - HOSPITAL_ID=hospital_alpha
+      - API_URL=http://backend:8000
+      - PARTITION_STRATEGY=dirichlet
+      - DIRICHLET_ALPHA=0.5
+    command: ["python", "-m", "client.flower_client", "--server-address", "flower-server:8080", "--hospital-id", "hospital_alpha", "--api-url", "http://backend:8000"]
+    volumes:
+      - certificate_data:/app/certs
+      - checkpoint_data:/app/checkpoints
+    networks:
+      - fedmed-network
+    depends_on:
+      flower-server:
+        condition: service_healthy
+
+  hospital-beta:
+    build:
+      context: .
+      dockerfile: docker/hospital_client.Dockerfile
+    container_name: fedmed-hospital-beta
+    environment:
+      - SERVER_ADDRESS=flower-server:8080
+      - HOSPITAL_ID=hospital_beta
+      - API_URL=http://backend:8000
+      - PARTITION_STRATEGY=dirichlet
+      - DIRICHLET_ALPHA=0.5
+    command: ["python", "-m", "client.flower_client", "--server-address", "flower-server:8080", "--hospital-id", "hospital_beta", "--api-url", "http://backend:8000"]
+    volumes:
+      - certificate_data:/app/certs
+      - checkpoint_data:/app/checkpoints
+    networks:
+      - fedmed-network
+    depends_on:
+      flower-server:
+        condition: service_healthy
+
+  hospital-gamma:
+    build:
+      context: .
+      dockerfile: docker/hospital_client.Dockerfile
+    container_name: fedmed-hospital-gamma
+    environment:
+      - SERVER_ADDRESS=flower-server:8080
+      - HOSPITAL_ID=hospital_gamma
+      - API_URL=http://backend:8000
+      - PARTITION_STRATEGY=dirichlet
+      - DIRICHLET_ALPHA=0.5
+    command: ["python", "-m", "client.flower_client", "--server-address", "flower-server:8080", "--hospital-id", "hospital_gamma", "--api-url", "http://backend:8000"]
+    volumes:
+      - certificate_data:/app/certs
+      - checkpoint_data:/app/checkpoints
+    networks:
+      - fedmed-network
+    depends_on:
+      flower-server:
+        condition: service_healthy
+
+  dashboard:
+    build:
+      context: .
+      dockerfile: docker/dashboard.Dockerfile
+    container_name: fedmed-dashboard
+    ports:
+      - "3000:80"
+    networks:
+      - fedmed-network
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget --quiet --tries=1 --spider http://localhost:80/ || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  prometheus:
+    image: prom/prometheus:v2.45.0
+    container_name: fedmed-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - fedmed-network
+
+  grafana:
+    image: grafana/grafana:10.0.0
+    container_name: fedmed-grafana
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    networks:
+      - fedmed-network
+
+
+networks:
+  fedmed-network:
+    driver: bridge
+    name: fedmed-network
+
+volumes:
+  database_data:
+    name: fedmed_database_data
+  checkpoint_data:
+    name: fedmed_checkpoint_data
+  certificate_data:
+    name: fedmed_certificate_data
+  benchmark_results:
+    name: fedmed_benchmark_results
+  logs_data:
+    name: fedmed_logs_data

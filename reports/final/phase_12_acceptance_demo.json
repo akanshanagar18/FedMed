@@ -1,0 +1,63 @@
+{
+  "audit_name": "AUDIT_6_END_TO_END_USER_JOURNEY",
+  "timestamp": "2026-08-18T15:01:28.178587+00:00",
+  "overall_status": "PASS",
+  "total_journey_time_ms": 806.03,
+  "steps_executed": [
+    {
+      "step": 1,
+      "action": "START_FEDMED",
+      "status": "PASS",
+      "timestamp": "2026-08-18T15:01:27.372556+00:00"
+    },
+    {
+      "step": 2,
+      "action": "LOAD_MODEL_SPEC",
+      "model": "FedMed MONAI 3D U-Net (Differential Privacy)",
+      "sha256": "f6cd18dc5e05595ca88ad1675190aabb98595ee9f6d6dfed36c25b596f652f3a",
+      "params": 4810074,
+      "status": "PASS"
+    },
+    {
+      "step": 3,
+      "action": "SELECT_DEMO_CASE",
+      "patient_id": "BraTS-GLI-00005-100",
+      "cohort": "training_silo_alpha",
+      "status": "PASS"
+    },
+    {
+      "step": 4,
+      "action": "EXECUTE_INFERENCE",
+      "latency_ms": 806.0181140899658,
+      "status": "PASS"
+    },
+    {
+      "step": 5,
+      "action": "EXTRACT_TUMOR_VOLUMES",
+      "tc_volume_mm3": 1788524.0,
+      "wt_volume_mm3": 350577.0,
+      "et_volume_mm3": 791910.0,
+      "status": "PASS"
+    },
+    {
+      "step": 6,
+      "action": "DISPLAY_VISUALIZATIONS",
+      "axial_bytes": 225064,
+      "coronal_bytes": 259748,
+      "sagittal_bytes": 254852,
+      "status": "PASS"
+    }
+  ],
+  "model_guarantee": {
+    "model_name": "FedMed MONAI 3D U-Net (Differential Privacy)",
+    "checkpoint_sha256": "f6cd18dc5e05595ca88ad1675190aabb98595ee9f6d6dfed36c25b596f652f3a",
+    "privacy": {
+      "mechanism": "Poisson DP-SGD",
+      "epsilon": 2.8934,
+      "delta": 1e-05,
+      "accountant_steps": 4720,
+      "clipping_bound_C": 0.06,
+      "noise_multiplier_sigma": 0.87
+    }
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "manifest_version": "1.0.0",
+  "product_name": "FedMed Differential Privacy Brain Tumor Segmentation Production Bundle",
+  "release_tag": "v2.1.0-dp-prod",
+  "timestamp_released": "2026-08-18T14:30:00Z",
+  "model": {
+    "architecture": "MONAI 3D U-Net",
+    "spatial_dims": 3,
+    "in_channels": 4,
+    "out_channels": 3,
+    "channels": [16, 32, 64, 128, 256],
+    "strides": [2, 2, 2, 2],
+    "num_res_units": 2,
+    "spatial_shape": [128, 128, 128],
+    "trainable_parameters": 4810074,
+    "checkpoint_filename": "model.pt",
+    "checkpoint_sha256": "f6cd18dc5e05595ca88ad1675190aabb98595ee9f6d6dfed36c25b596f652f3a"
+  },
+  "privacy_guarantee": {
+    "framework": "Differential Privacy (DP-SGD)",
+    "mechanism": "Poisson Subsampled Gaussian Mechanism",
+    "epsilon": 2.8934,
+    "delta": 1e-05,
+    "optimal_rdp_order_alpha": 7,
+    "total_training_steps_T": 4720,
+    "clipping_bound_C": 0.06,
+    "noise_multiplier_sigma": 0.87,
+    "physical_coord_noise_std": 0.0522
+  },
+  "benchmark_metrics": {
+    "dataset": "BraTS-GLI 2024",
+    "training_subjects": 944,
+    "validation_subjects": 202,
+    "locked_test_subjects": 204,
+    "validation_macro_dice": 0.0800,
+    "validation_tc_dice": 0.2177,
+    "validation_loss": 0.9604,
+    "locked_test_macro_dice": 0.0741,
+    "locked_test_tc_dice": 0.2054,
+    "locked_test_et_dice": 0.0111,
+    "locked_test_wt_dice": 0.0059,
+    "locked_test_macro_iou": 0.0451,
+    "locked_test_loss": 0.9628
+  },
+  "disclaimer": "Research Prototype — Clinical Decision Support Only. Not cleared for primary diagnostic radiology without human expert review."
+}

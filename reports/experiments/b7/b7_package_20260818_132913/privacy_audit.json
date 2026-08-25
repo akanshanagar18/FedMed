@@ -1,0 +1,6 @@
+{
+  "data_flow_audit_doc": "docs/PRIVACY_DATA_FLOW_AUDIT.md",
+  "raw_mri_isolation": "Client-side only",
+  "server_visibility": "Public evaluation context / ciphertext only",
+  "phi_safety": "All patient identifiers sanitized to study IDs / hashes"
+}

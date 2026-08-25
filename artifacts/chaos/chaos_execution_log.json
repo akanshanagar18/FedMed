@@ -1,0 +1,214 @@
+{
+  "timestamp": 1786383791.428285,
+  "scenarios_executed": [
+    {
+      "injection_id": "chaos_node_drop_1786383791",
+      "scenario": "HOSPITAL_NODE_DISCONNECT",
+      "target": "hospital_alpha",
+      "timestamp": 1786383791.427129,
+      "status": "INJECTED"
+    },
+    {
+      "recovery_id": "chaos_rec_1786383791",
+      "target": "hospital_alpha",
+      "timestamp": 1786383791.427157,
+      "status": "RECOVERED",
+      "message": "Successfully triggered self-healing recovery for node 'hospital_alpha'"
+    },
+    {
+      "injection_id": "chaos_lat_1786383791",
+      "scenario": "NETWORK_LATENCY",
+      "latency_ms": 250.0,
+      "timestamp": 1786383791.427171,
+      "status": "INJECTED"
+    },
+    {
+      "injection_id": "chaos_restart_1786383791",
+      "scenario": "BACKEND_RESTART",
+      "timestamp": 1786383791.428222,
+      "status": "RECOVERED",
+      "health": {
+        "status": "HEALTHY",
+        "uptime_seconds": 0.0,
+        "cpu_percent": 2.5,
+        "memory_mb": 540096.0,
+        "active_experiments": 0,
+        "connected_hospitals": 3,
+        "websocket_clients": 13,
+        "subsystems": {
+          "backend": {
+            "status": "HEALTHY",
+            "latency_ms": 0.8,
+            "last_heartbeat": 1786383791.42828
+          },
+          "flower": {
+            "status": "HEALTHY",
+            "latency_ms": 2.1,
+            "last_heartbeat": 1786383791.42828
+          },
+          "sqlite": {
+            "status": "HEALTHY",
+            "latency_ms": 0.5,
+            "last_heartbeat": 1786383791.42828
+          },
+          "websocket": {
+            "status": "HEALTHY",
+            "latency_ms": 0.3,
+            "last_heartbeat": 1786383791.42828
+          },
+          "scheduler": {
+            "status": "HEALTHY",
+            "latency_ms": 1.0,
+            "last_heartbeat": 1786383791.42828
+          },
+          "runtime_orchestrator": {
+            "status": "HEALTHY",
+            "latency_ms": 0.2,
+            "last_heartbeat": 1786383791.42828
+          },
+          "inference_engine": {
+            "status": "HEALTHY",
+            "latency_ms": 70.5,
+            "last_heartbeat": 1786383791.42828
+          },
+          "model_registry": {
+            "status": "HEALTHY",
+            "latency_ms": 0.9,
+            "last_heartbeat": 1786383791.42828
+          },
+          "workflow_engine": {
+            "status": "HEALTHY",
+            "latency_ms": 0.7,
+            "last_heartbeat": 1786383791.42828
+          },
+          "hospital_alpha": {
+            "status": "DISCONNECTED",
+            "latency_ms": 14.5,
+            "last_heartbeat": 1786383791.42828
+          },
+          "hospital_beta": {
+            "status": "CONNECTED",
+            "latency_ms": 14.5,
+            "last_heartbeat": 1786383791.428281
+          },
+          "hospital_gamma": {
+            "status": "CONNECTED",
+            "latency_ms": 14.5,
+            "last_heartbeat": 1786383791.428281
+          },
+          "hospital_delta": {
+            "status": "CONNECTED",
+            "latency_ms": 14.5,
+            "last_heartbeat": 1786383791.428281
+          }
+        }
+      }
+    }
+  ],
+  "history": [
+    {
+      "injection_id": "chaos_node_drop_1786383791",
+      "scenario": "HOSPITAL_NODE_DISCONNECT",
+      "target": "hospital_alpha",
+      "timestamp": 1786383791.427129,
+      "status": "INJECTED"
+    },
+    {
+      "recovery_id": "chaos_rec_1786383791",
+      "target": "hospital_alpha",
+      "timestamp": 1786383791.427157,
+      "status": "RECOVERED",
+      "message": "Successfully triggered self-healing recovery for node 'hospital_alpha'"
+    },
+    {
+      "injection_id": "chaos_lat_1786383791",
+      "scenario": "NETWORK_LATENCY",
+      "latency_ms": 250.0,
+      "timestamp": 1786383791.427171,
+      "status": "INJECTED"
+    },
+    {
+      "injection_id": "chaos_restart_1786383791",
+      "scenario": "BACKEND_RESTART",
+      "timestamp": 1786383791.428222,
+      "status": "RECOVERED",
+      "health": {
+        "status": "HEALTHY",
+        "uptime_seconds": 0.0,
+        "cpu_percent": 2.5,
+        "memory_mb": 540096.0,
+        "active_experiments": 0,
+        "connected_hospitals": 3,
+        "websocket_clients": 13,
+        "subsystems": {
+          "backend": {
+            "status": "HEALTHY",
+            "latency_ms": 0.8,
+            "last_heartbeat": 1786383791.42828
+          },
+          "flower": {
+            "status": "HEALTHY",
+            "latency_ms": 2.1,
+            "last_heartbeat": 1786383791.42828
+          },
+          "sqlite": {
+            "status": "HEALTHY",
+            "latency_ms": 0.5,
+            "last_heartbeat": 1786383791.42828
+          },
+          "websocket": {
+            "status": "HEALTHY",
+            "latency_ms": 0.3,
+            "last_heartbeat": 1786383791.42828
+          },
+          "scheduler": {
+            "status": "HEALTHY",
+            "latency_ms": 1.0,
+            "last_heartbeat": 1786383791.42828
+          },
+          "runtime_orchestrator": {
+            "status": "HEALTHY",
+            "latency_ms": 0.2,
+            "last_heartbeat": 1786383791.42828
+          },
+          "inference_engine": {
+            "status": "HEALTHY",
+            "latency_ms": 70.5,
+            "last_heartbeat": 1786383791.42828
+          },
+          "model_registry": {
+            "status": "HEALTHY",
+            "latency_ms": 0.9,
+            "last_heartbeat": 1786383791.42828
+          },
+          "workflow_engine": {
+            "status": "HEALTHY",
+            "latency_ms": 0.7,
+            "last_heartbeat": 1786383791.42828
+          },
+          "hospital_alpha": {
+            "status": "DISCONNECTED",
+            "latency_ms": 14.5,
+            "last_heartbeat": 1786383791.42828
+          },
+          "hospital_beta": {
+            "status": "CONNECTED",
+            "latency_ms": 14.5,
+            "last_heartbeat": 1786383791.428281
+          },
+          "hospital_gamma": {
+            "status": "CONNECTED",
+            "latency_ms": 14.5,
+            "last_heartbeat": 1786383791.428281
+          },
+          "hospital_delta": {
+            "status": "CONNECTED",
+            "latency_ms": 14.5,
+            "last_heartbeat": 1786383791.428281
+          }
+        }
+      }
+    }
+  ],
+  "overall_resilience_status": "PASSED"
+}

@@ -1,0 +1,7 @@
+network:
+  profile: "Mobile_5G"
+  latency_ms: 10.0
+  bandwidth_mbps: 200.0
+  packet_loss_pct: 0.1
+  jitter_ms: 1.5
+  drop_probability: 0.005

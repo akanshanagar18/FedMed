@@ -1,0 +1,33 @@
+{
+  "timestamp": "2026-08-15T11:41:26.798793+00:00",
+  "historical_split_hash": "4ce10ac52c093ec0971f306b6d4145e383ad92eeb231c551c6f841b64864384f",
+  "current_canonical_split_hash": "715cadbe78d2a9669dd331d0681baa060d3a175d9afbb50cc21941609d0238df",
+  "hash_change_reason": "Phase 8.5B.1 computed hash via string formatting f'{seed}|{train}|{val}|{test}', whereas Phase 8.5B.6 data/real_brats_pipeline.py computed hash over canonical JSON serialization json.dumps(split_dict, sort_keys=True). The subject assignments (Train: 00003, 00004; Val: 00002; Test: 00001) are 100% IDENTICAL across all phases.",
+  "subject_assignments": {
+    "train": [
+      "BraTS2021_00003",
+      "BraTS2021_00004"
+    ],
+    "val": [
+      "BraTS2021_00002"
+    ],
+    "test": [
+      "BraTS2021_00001"
+    ]
+  },
+  "disjoint_verification": {
+    "train_val_overlap": 0,
+    "train_test_overlap": 0,
+    "val_test_overlap": 0
+  },
+  "hospital_partitions": {
+    "hospital_alpha": [
+      "BraTS2021_00003"
+    ],
+    "hospital_beta": [
+      "BraTS2021_00004"
+    ],
+    "hospital_gamma": [],
+    "hospital_delta": []
+  }
+}

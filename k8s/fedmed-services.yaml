@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: fedmed-backend-service
+  namespace: fedmed-system
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8000
+    targetPort: 8000
+    name: http-api
+  selector:
+    app: fedmed-backend
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fedmed-flower-server
+  namespace: fedmed-system
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8080
+    targetPort: 8080
+    name: grpc-fl
+  selector:
+    app: fedmed-backend

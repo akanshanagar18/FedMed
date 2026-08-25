@@ -1,0 +1,104 @@
+{
+  "audit_phase": "PHASE_10.5D_DP_MECHANISM_FINAL_GATE",
+  "timestamp": "2026-08-16T19:24:00.000000+00:00",
+  "status": "COMPLETED",
+  "final_decision": "DP_MECHANISM_READY_FOR_EXPERIMENT_D",
+  "sampler_semantics": {
+    "sampler_type": "privacy.dp_engine.PoissonBatchSampler",
+    "dataset_size_N": 236,
+    "subsampling_rate_q": 0.00423728813559322,
+    "expected_batch_size": 1.0,
+    "selection_mechanism": "Independent Bernoulli trial per patient record per step with parameter q=1/236",
+    "empirical_statistics_10k_steps": {
+      "mean_batch_size": 1.0138,
+      "empty_batch_rate_pct": 35.92,
+      "singleton_batch_rate_pct": 37.26,
+      "multi_sample_batch_rate_pct": 26.82,
+      "max_batch_size": 7,
+      "mean_item_selection_prob": 0.004296
+    }
+  },
+  "gradient_aggregation_and_sensitivity": {
+    "aggregation_equation": "g_tilde_t = sum_{i in S_t} [ g_i * min(1, C / ||g_i||_2) ] + xi_t, where xi_t ~ N(0, (sigma * C)^2 * I)",
+    "clipping_threshold_C": 1.0,
+    "per_sample_clipping_enforced": true,
+    "normalization_type": "UNNORMALIZED_SUM (Option A)",
+    "division_by_batch_size": false,
+    "theoretical_sensitivity_Delta_2_f": 1.0,
+    "accountant_sensitivity_assumption": 1.0,
+    "sensitivity_match_status": "EXACT_MATCH"
+  },
+  "noise_verification": {
+    "noise_distribution": "N(0, (sigma * C)^2 * I)",
+    "configured_sigma": 0.87,
+    "configured_C": 1.0,
+    "theoretical_noise_std": 0.87,
+    "empirical_noise_test_4_81m_params": {
+      "empirical_mean": -0.000522,
+      "empirical_std": 0.870027,
+      "status": "PASS"
+    }
+  },
+  "empty_batch_behavior": {
+    "probability_theoretical": 0.3670,
+    "accumulated_gradient_value": "ZERO_VECTOR (0.0)",
+    "noise_injection": "Calibrated spherical Gaussian noise xi ~ N(0, (0.87)^2 * I) is added to zero gradient",
+    "optimizer_step_called": true,
+    "adam_moment_state_update": "First moment m_t = beta1*m_{t-1} + (1-beta1)*xi, second moment v_t = beta2*v_{t-1} + (1-beta2)*xi^2",
+    "weight_decay_applied": true,
+    "parameter_delta_norm": 0.002635,
+    "accountant_step_incremented": true,
+    "mathematical_validity": "INTENTIONAL_AND_REQUIRED (Omitting step or noise on empty batches leaks whether S_t was empty, violating DP)"
+  },
+  "variable_batch_handling": {
+    "multi_sample_micro_batching": "Sequential sample-by-sample forward and backward passes; isolated gradients clipped individually to C=1.0 and summed into accumulator",
+    "noise_injection_count": "EXACTLY_ONCE_PER_OPTIMIZER_STEP",
+    "accidental_post_sum_clipping": false,
+    "accidental_averaging": false,
+    "sample_double_counting": false,
+    "sample_omission": false
+  },
+  "privacy_accounting_synchronization": {
+    "rounds": 20,
+    "steps_per_client_per_round": 236,
+    "total_optimizer_steps_T": 4720,
+    "empty_batches_counted": true,
+    "singleton_batches_counted": true,
+    "multi_sample_batches_counted": true,
+    "accountant_reset_between_rounds": false,
+    "target_delta": 1e-05,
+    "calculated_epsilon": 2.8934,
+    "optimal_alpha": 7,
+    "exact_step_rdp_D_7": 2.06488424e-04,
+    "exact_total_rdp_T_D_7": 0.974625
+  },
+  "privacy_scope": {
+    "level": "SAMPLE_LEVEL_DP",
+    "protected_entity": "Individual patient subject 3D MRI scan and segmentation mask within a hospital silo",
+    "adjacency_definition": "One patient subject record added, removed, or replaced in silo dataset",
+    "silo_disjointness_verified": true,
+    "composition_across_silos": "PARALLEL_COMPOSITION (Disjoint partitions, each silo bounded by epsilon=2.8934)"
+  },
+  "telemetry_and_checkpoint_safety": {
+    "per_round_telemetry_fields": [
+      "mean_batch_size", "median_batch_size", "std_batch_size", "min_batch_size", "max_batch_size",
+      "empty_batch_count", "singleton_batch_count", "multi_sample_batch_count", "clipping_fraction",
+      "mean_unclipped_gradient_norm", "mean_clipped_gradient_norm", "noise_standard_deviation",
+      "accountant_epsilon", "accountant_optimal_alpha", "accountant_step_count"
+    ],
+    "checkpoint_stored_fields": [
+      "round", "model_state_dict", "best_mean_dice", "best_round", "best_val_metrics",
+      "privacy_telemetry", "config_hash", "split_hash", "partition_hash", "seed", "timestamp"
+    ],
+    "raw_data_in_checkpoint": false,
+    "subject_ids_in_checkpoint": false,
+    "raw_gradients_in_checkpoint": false
+  },
+  "regression_test_status": {
+    "total_tests": 311,
+    "passed": 311,
+    "failed": 0,
+    "skipped": 0,
+    "warnings": 35
+  }
+}

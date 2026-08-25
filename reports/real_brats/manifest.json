@@ -1,0 +1,7 @@
+{
+  "dataset_mode": "DEVELOPMENT_SYNTHETIC",
+  "is_real_brats": false,
+  "status_message": "DEVELOPMENT SYNTHETIC COHORT ONLY (REAL BRATS ABSENT)",
+  "valid_subjects": 4,
+  "split_hash": "715cadbe78d2a9669dd331d0681baa060d3a175d9afbb50cc21941609d0238df"
+}

@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fedmed-backend
+  namespace: fedmed
+  labels:
+    app.kubernetes.io/name: fedmed-backend
+    app.kubernetes.io/component: backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: fedmed-backend
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: fedmed-backend
+        app.kubernetes.io/component: backend
+    spec:
+      containers:
+        - name: backend
+          image: fedmed/backend:2.0.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+              name: http
+          envFrom:
+            - configMapRef:
+                name: fedmed-config
+            - secretRef:
+                name: fedmed-secrets
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "1Gi"
+            limits:
+              cpu: "2000m"
+              memory: "4Gi"
+          readinessProbe:
+            httpGet:
+              path: /api/v1/system/health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /metrics
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          volumeMounts:
+            - name: database-storage
+              mountPath: /app/data_db
+            - name: checkpoints-storage
+              mountPath: /app/checkpoints
+            - name: logs-storage
+              mountPath: /app/logs
+      volumes:
+        - name: database-storage
+          persistentVolumeClaim:
+            claimName: fedmed-database-pvc
+        - name: checkpoints-storage
+          persistentVolumeClaim:
+            claimName: fedmed-checkpoints-pvc
+        - name: logs-storage
+          persistentVolumeClaim:
+            claimName: fedmed-logs-pvc

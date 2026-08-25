@@ -1,0 +1,24 @@
+{
+  "timestamp": "2026-08-15T13:57:03.640884+00:00",
+  "dataset_name": "BraTS-GLI",
+  "dataset_version": "2024",
+  "dataset_task": "adult_glioma_post_treatment",
+  "subject_count": 1350,
+  "valid_count": 1350,
+  "invalid_count": 0,
+  "missing_modality_count": 0,
+  "corrupted_nifti_count": 0,
+  "shape_mismatch_count": 0,
+  "affine_mismatch_count": 0,
+  "spacing_mismatch_count": 0,
+  "invalid_label_count": 0,
+  "label_frequency_summary": {
+    "0": 9649363112,
+    "2": 66476419,
+    "4": 18825010,
+    "3": 11442955,
+    "1": 2285704
+  },
+  "modality_naming_scheme": "BraTS-GLI-2024 (t1n, t1c, t2w, t2f, seg)",
+  "ingestion_status": "PASS"
+}

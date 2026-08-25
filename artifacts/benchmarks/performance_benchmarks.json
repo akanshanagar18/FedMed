@@ -1,0 +1,30 @@
+{
+  "timestamp": 1786383791.426597,
+  "date": "2026-08-10 17:43:11 UTC",
+  "metrics": {
+    "startup_latency_ms": 145.2,
+    "rest_health_endpoint_latency_ms": 3.24,
+    "websocket_broadcast_latency_ms": 0.35,
+    "database_query_latency_ms": 0.82,
+    "fl_round_duration_sec": 10.5,
+    "fedavg_aggregation_latency_ms": 12.4,
+    "sliding_window_inference_latency_ms": 74.83
+  },
+  "system_resources": {
+    "cpu_percent": 15.0,
+    "cpu_count": 10,
+    "ram_total_gb": 16.0,
+    "ram_used_gb": 4.2,
+    "ram_percent": 26.2,
+    "disk_total_gb": 926.3,
+    "disk_used_gb": 133.94,
+    "disk_percent": 14.46,
+    "gpu": {
+      "gpu_available": false,
+      "gpu_count": 0,
+      "gpu_name": "CPU Mode",
+      "gpu_utilization_pct": 0.0,
+      "vram_used_mb": 0.0
+    }
+  }
+}

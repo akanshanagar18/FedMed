@@ -1,0 +1,70 @@
+# Byte-compiled / optimized files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+venv/
+env/
+ENV/
+.venv/
+
+# Database & Runtime Output
+fedmed.db
+*.db
+outputs/
+logs/*.log
+scratch/
+data/raw/
+
+# Node & Frontend
+dashboard/frontend/node_modules/
+npm-debug.log*
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDE & OS Files
+.DS_Store
+.vscode/
+.idea/
+*.swp
+
+# MLflow & TensorBoard
+mlruns/
+runs/
+*.tfevents.*
+.cache/
+
+# Intermediate Training Checkpoints (Keep only final frozen candidate)
+checkpoints/centralized/
+checkpoints/centralized_real/
+checkpoints/fedavg/
+checkpoints/fedavg_dp_d1/
+checkpoints/fedavg_dp_d1_stage_a/
+checkpoints/fedavg_dp_d2/
+checkpoints/fedavg_dp_d2_1/
+checkpoints/fedavg_dp_d2_1_stage_a/
+checkpoints/fedavg_dp_d2_1_stage_b/
+checkpoints/fedavg_dp_d2_stage_a/
+checkpoints/fedavg_dp_real/
+checkpoints/fedavg_real/
+checkpoints/fedprox/
+checkpoints/fedprox_real/
+checkpoints/privacy/
+checkpoints/local_baseline_best.pt
+
+# Production Exports
+artifacts/exports/*.pt
+artifacts/exports/*_cert.json
+
+# TLS Certificates
+certs/*.pem
+certs/*.crt
+certs/*.key
+checkpoints/*.json
+checkpoints/*.pth
+artifacts/fedmed_model/
+reports/experiments/

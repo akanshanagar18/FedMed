@@ -1,0 +1,66 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "id": 1,
+      "title": "Global Model Convergence (Dice & Loss)",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "fedmed_dice_score", "legendFormat": "Dice Score Score" },
+        { "expr": "fedmed_training_loss", "legendFormat": "Training Loss" }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "id": 2,
+      "title": "System CPU & RAM Utilization (%)",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "fedmed_system_cpu_percent", "legendFormat": "CPU Util (%)" },
+        { "expr": "fedmed_system_ram_percent", "legendFormat": "RAM Util (%)" }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "id": 3,
+      "title": "Privacy Budget & Encryption Latency",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "fedmed_privacy_epsilon", "legendFormat": "DP Epsilon (ε)" },
+        { "expr": "fedmed_he_encryption_time_ms", "legendFormat": "HE Latency (ms)" }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "id": 4,
+      "title": "Network Payload Communication (Bytes)",
+      "type": "bargauge",
+      "targets": [
+        { "expr": "fedmed_communication_bytes", "legendFormat": "Payload Size (B)" }
+      ]
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["fedmed", "federated-learning", "monai", "flower", "sre"],
+  "time": { "from": "now-30m", "to": "now" },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "FedMed v2.0 Production Operations & Observability Dashboard",
+  "uid": "fedmed-ops-v2",
+  "version": 1
+}

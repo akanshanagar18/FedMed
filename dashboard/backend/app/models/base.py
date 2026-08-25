@@ -1,0 +1,320 @@
+"""
+Module: dashboard.backend.app.models.base
+
+Purpose:
+SQLAlchemy Declarative Base and ORM table models for the FedMed monitoring database.
+"""
+
+from sqlalchemy import Column, String, Integer, Float, DateTime, Text, Boolean, ForeignKey
+from sqlalchemy.orm import declarative_base
+from datetime import datetime
+
+Base = declarative_base()
+
+
+class TrainingMetricModel(Base):
+    """Persisted training metric row."""
+    __tablename__ = "training_metrics"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    experiment_id = Column(String, nullable=False, index=True)
+    round_number = Column(Integer, nullable=False)
+    epoch = Column(Integer, nullable=True)
+    training_loss = Column(Float, nullable=True)
+    validation_loss = Column(Float, nullable=True)
+    dice_score = Column(Float, nullable=True)
+    iou = Column(Float, nullable=True)
+    hospital_id = Column(String, nullable=True)
+    timestamp = Column(DateTime, default=datetime.utcnow)
+
+
+class HospitalNodeModel(Base):
+    """Persisted hospital node registration."""
+    __tablename__ = "hospital_nodes"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    hospital_id = Column(String, unique=True, nullable=False, index=True)
+    name = Column(String, nullable=False)
+    connection_status = Column(String, default="disconnected")
+    client_latency_ms = Column(Integer, nullable=True)
+    last_seen = Column(DateTime, default=datetime.utcnow)
+
+
+class ExperimentModel(Base):
+    """Persisted experiment metadata for FedMed v2.0."""
+    __tablename__ = "experiments"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    experiment_id = Column(String, unique=True, nullable=False, index=True)
+    name = Column(String, nullable=False)
+    description = Column(Text, default="")
+    status = Column(String, default="created")
+    
+    # Federated & Hyperparameter Attributes
+    strategy_name = Column(String, default="FedAvg")
+    num_clients = Column(Integer, default=2)
+    learning_rate = Column(Float, default=1e-4)
+    batch_size = Column(Integer, default=2)
+    local_epochs = Column(Integer, default=1)
+    num_rounds = Column(Integer, default=3)
+    seed = Column(Integer, default=42)
+    
+    # Flags & Dataset
+    dp_enabled = Column(Boolean, default=False)
+    he_enabled = Column(Boolean, default=False)
+    dataset_name = Column(String, default="BraTS2021")
+    partition_strategy = Column(String, default="IID")
+    notes = Column(Text, nullable=True)
+    
+    # Checkpoints
+    checkpoint_path = Column(String, nullable=True)
+    best_dice_score = Column(Float, nullable=True)
+    best_round = Column(Integer, nullable=True)
+    
+    # Timestamps
+    start_time = Column(DateTime, default=datetime.utcnow)
+    end_time = Column(DateTime, nullable=True)
+
+
+class BenchmarkModel(Base):
+    """Persisted metadata for multi-experiment benchmark suites."""
+    __tablename__ = "benchmarks"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    benchmark_id = Column(String, unique=True, nullable=False, index=True)
+    name = Column(String, nullable=False)
+    description = Column(Text, default="")
+    status = Column(String, default="created")
+    total_experiments = Column(Integer, default=0)
+    completed_experiments = Column(Integer, default=0)
+    best_experiment_id = Column(String, nullable=True)
+    best_dice_score = Column(Float, nullable=True)
+    avg_dice_score = Column(Float, nullable=True)
+    matrix_config_json = Column(Text, default="{}")
+    start_time = Column(DateTime, default=datetime.utcnow)
+    end_time = Column(DateTime, nullable=True)
+
+
+class BenchmarkExperimentModel(Base):
+    """Mapping table linking experiments to a benchmark suite."""
+    __tablename__ = "benchmark_experiments"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    benchmark_id = Column(String, nullable=False, index=True)
+    experiment_id = Column(String, nullable=False, index=True)
+    sequence_order = Column(Integer, default=0)
+    status = Column(String, default="pending")
+
+
+class GovernanceRecordModel(Base):
+    """Persisted governance events and model stage transition logs."""
+    __tablename__ = "governance_records"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    model_id = Column(String, nullable=False, index=True)
+    previous_stage = Column(String, default="Candidate")
+    new_stage = Column(String, default="Staging")
+    promoted_by = Column(String, default="automated_governance")
+    hmac_signature = Column(String, nullable=True)
+    timestamp = Column(DateTime, default=datetime.utcnow)
+
+
+class DriftMetricModel(Base):
+    """Persisted feature and concept drift measurements per node."""
+    __tablename__ = "drift_metrics"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    node_id = Column(String, nullable=False, index=True)
+    mmd_score = Column(Float, nullable=False)
+    ks_statistic = Column(Float, nullable=False)
+    ks_p_value = Column(Float, nullable=False)
+    wasserstein_distance = Column(Float, nullable=False)
+    psi_score = Column(Float, nullable=False)
+    risk_level = Column(String, default="LOW")
+    timestamp = Column(DateTime, default=datetime.utcnow)
+
+
+class HPOTrialModel(Base):
+    """Persisted Federated Hyperparameter Optimization trial results."""
+    __tablename__ = "hpo_trials"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    study_id = Column(String, nullable=False, index=True)
+    trial_id = Column(String, nullable=False)
+    strategy = Column(String, default="fedavg")
+    learning_rate = Column(Float, nullable=False)
+    proximal_mu = Column(Float, nullable=False)
+    ewc_lambda = Column(Float, nullable=False)
+    dp_noise_multiplier = Column(Float, nullable=False)
+    val_dice = Column(Float, nullable=False)
+    timestamp = Column(DateTime, default=datetime.utcnow)
+
+
+class SLACertificateModel(Base):
+    """Persisted HIPAA/GDPR institutional SLA compliance certificate attestations."""
+    __tablename__ = "sla_certificates"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    run_id = Column(String, nullable=False, index=True)
+    certificate_hash = Column(String, unique=True, nullable=False)
+    status = Column(String, default="PASSED_COMPLIANT")
+    overall_compliant = Column(Boolean, default=True)
+    epsilon_consumed = Column(Float, nullable=False)
+    participation_rate = Column(Float, nullable=False)
+    avg_latency_ms = Column(Float, nullable=False)
+    encryption_scheme = Column(String, default="TenSEAL_CKKS")
+    timestamp = Column(DateTime, default=datetime.utcnow)
+
+
+class AutonomousDecisionModel(Base):
+    """Persisted log of autonomous orchestrator decisions."""
+    __tablename__ = "autonomous_decisions"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    decision_id = Column(String, unique=True, nullable=False, index=True)
+    decision = Column(String, nullable=False)
+    current_round = Column(Integer, nullable=False)
+    rationale = Column(Text, nullable=False)
+    severity = Column(String, default="INFO")
+    timestamp = Column(DateTime, default=datetime.utcnow)
+
+
+class RecommendationModel(Base):
+    """Persisted operational recommendations."""
+    __tablename__ = "operational_recommendations"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    rec_id = Column(String, unique=True, nullable=False, index=True)
+    action = Column(String, nullable=False)
+    reason = Column(Text, nullable=False)
+    confidence = Column(Float, nullable=False)
+    expected_impact = Column(String, nullable=False)
+    auto_executable = Column(Boolean, default=False)
+    timestamp = Column(DateTime, default=datetime.utcnow)
+
+
+class DeploymentModel(Base):
+    """Persisted model deployment rollouts."""
+    __tablename__ = "deployments"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    deployment_id = Column(String, unique=True, nullable=False, index=True)
+    model_id = Column(String, nullable=False)
+    version = Column(String, nullable=False)
+    strategy = Column(String, default="CANARY")
+    status = Column(String, default="IN_PROGRESS")
+    traffic_percentage = Column(Float, default=10.0)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class KnowledgeGraphNodeModel(Base):
+    """Persisted Knowledge Graph nodes."""
+    __tablename__ = "kg_nodes"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    node_id = Column(String, unique=True, nullable=False, index=True)
+    node_type = Column(String, nullable=False)
+    label = Column(String, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class KnowledgeGraphEdgeModel(Base):
+    """Persisted Knowledge Graph edges."""
+    __tablename__ = "kg_edges"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    source_id = Column(String, nullable=False, index=True)
+    target_id = Column(String, nullable=False, index=True)
+    relationship = Column(String, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class WorkflowInstanceModel(Base):
+    """Persisted Workflow Engine instance states."""
+    __tablename__ = "workflow_instances"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    instance_id = Column(String, unique=True, nullable=False, index=True)
+    workflow_name = Column(String, nullable=False)
+    status = Column(String, default="CREATED")
+    current_step_index = Column(Integer, default=0)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow)
+
+
+class PolicyRecordModel(Base):
+    """Persisted policy configuration updates."""
+    __tablename__ = "policy_records"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    section = Column(String, nullable=False)
+    policy_key = Column(String, nullable=False)
+    policy_value = Column(String, nullable=False)
+    updated_at = Column(DateTime, default=datetime.utcnow)
+
+
+class ScheduledJobModel(Base):
+    """Persisted background scheduler job configurations."""
+    __tablename__ = "scheduled_jobs"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    job_id = Column(String, unique=True, nullable=False, index=True)
+    job_type = Column(String, nullable=False)
+    schedule_type = Column(String, default="PERIODIC")
+    interval_seconds = Column(Integer, default=300)
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class DigitalTwinPredictionModel(Base):
+    """Persisted Digital Twin predictive simulation runs."""
+    __tablename__ = "digital_twin_predictions"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    prediction_id = Column(String, unique=True, nullable=False, index=True)
+    scenario_description = Column(String, nullable=False)
+    expected_dice = Column(Float, nullable=False)
+    recommended_action = Column(String, nullable=False)
+    timestamp = Column(DateTime, default=datetime.utcnow)
+
+
+class ExperimentLifecycleRecordModel(Base):
+    """Persisted experiment lifecycle records."""
+    __tablename__ = "experiment_lifecycle_records"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    experiment_id = Column(String, unique=True, nullable=False, index=True)
+    name = Column(String, nullable=False)
+    owner = Column(String, default="research_team")
+    stage = Column(String, default="DATASET_PREPARATION")
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class UserModel(Base):
+    """Persisted enterprise platform users and roles."""
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    username = Column(String, unique=True, nullable=False, index=True)
+    email = Column(String, unique=True, nullable=False)
+    hashed_password = Column(String, nullable=False)
+    role = Column(String, default="Viewer")
+    hospital_id = Column(String, nullable=True)
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class AuditLogModel(Base):
+    """Persisted security audit logs."""
+    __tablename__ = "audit_logs"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(String, nullable=False, index=True)
+    action = Column(String, nullable=False)
+    resource = Column(String, nullable=False)
+    status = Column(String, default="SUCCESS")
+    timestamp = Column(DateTime, default=datetime.utcnow)
+
+
+
+

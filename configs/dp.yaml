@@ -1,0 +1,59 @@
+benchmark:
+  benchmark_id: bm_dp_suite
+  enabled: true
+  metrics:
+  - dice_score
+  - training_loss
+  - epsilon
+  - delta
+checkpoint:
+  best_model_name: best_model.pth
+  save_dir: checkpoints
+  save_frequency: 1
+data:
+  cache_dir: .cache/monai
+  cache_type: persistent
+  data_dir: data/BraTS2021
+  dataset_name: BraTS2021
+  dirichlet_alpha: 0.5
+  image_size:
+  - 32
+  - 32
+  - 32
+  in_channels: 4
+  modalities:
+  - t1
+  - t1ce
+  - t2
+  - flair
+  num_workers: 0
+  out_channels: 3
+  partition_strategy: dirichlet
+  val_split: 0.2
+federated:
+  batch_size: 2
+  learning_rate: 0.0001
+  local_epochs: 1
+  min_clients: 2
+  num_rounds: 3
+  seed: 42
+  strategy: FedAvg
+  weight_decay: 1.0e-05
+logging:
+  export_mlflow: false
+  export_tensorboard: false
+  log_interval: 10
+  log_level: INFO
+privacy:
+  dp_enabled: true
+  he_enabled: true
+  max_grad_norm: 1.0
+  poly_modulus_degree: 4096
+  scheme: CKKS
+  target_delta: 1.0e-05
+  target_epsilon: 3.0
+server:
+  fl_server_address: 127.0.0.1:8080
+  host: 127.0.0.1
+  max_workers: 4
+  port: 8000

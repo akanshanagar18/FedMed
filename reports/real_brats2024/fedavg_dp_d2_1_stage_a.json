@@ -1,0 +1,142 @@
+{
+  "experiment_name": "EXPERIMENT_D2.1_DP_SGD_MOMENTUM_LR1E3",
+  "parent_baseline": "EXPERIMENT_D2_DP_SGD_MOMENTUM",
+  "causal_change": "learning_rate 1e-4 -> 1e-3 (SGD with Momentum=0.9, C=0.06, sigma=0.87)",
+  "timestamp_start": "2026-08-17T13:33:26.763527+00:00",
+  "timestamp_end": "2026-08-17T13:35:04.463482+00:00",
+  "status": "PARTIAL_1_ROUNDS",
+  "dataset": {
+    "name": "BraTS-GLI",
+    "version": "2024",
+    "task": "adult_glioma_post_treatment",
+    "split_hash": "d0358ca42d4bf510624bbe7e86c3e4bc1e25a6174521b1280c0001eb2c66005c",
+    "partition_hash": "4d5905c88558883cadf9463517d3c9f856a353e4f3a570c40515f16b763fc4f8",
+    "total_subjects": 1350,
+    "train_subjects": 944,
+    "validation_subjects": 202,
+    "test_subjects": 204,
+    "hospital_silos": {
+      "hospital_alpha": 236,
+      "hospital_beta": 236,
+      "hospital_gamma": 236,
+      "hospital_delta": 236
+    },
+    "training_test_accesses": 0,
+    "test_firewall_verified": true
+  },
+  "model": {
+    "architecture": "MONAI 3D U-Net",
+    "spatial_dims": 3,
+    "in_channels": 4,
+    "out_channels": 3,
+    "channels": [
+      16,
+      32,
+      64,
+      128,
+      256
+    ],
+    "strides": [
+      2,
+      2,
+      2,
+      2
+    ],
+    "num_res_units": 2,
+    "total_parameters": 4810074
+  },
+  "privacy": {
+    "mechanism": "DP-SGD",
+    "level": "sample_level",
+    "max_grad_norm_C": 0.06,
+    "noise_multiplier_sigma": 0.87,
+    "physical_noise_std": 0.0522,
+    "target_delta": 1e-05,
+    "calculated_epsilon_20_rounds": 1.751,
+    "optimal_alpha": 8,
+    "total_steps": 236,
+    "sampling_mechanism": "Poisson / Bernoulli Subsampling (q=1/236)",
+    "accountant": "Exact Analytical R\u00e9nyi Differential Privacy (Poisson RDP)"
+  },
+  "performance_summary": {
+    "primary_model_selection_metric": "macro_dice",
+    "best_round": 1,
+    "best_validation_metrics": {
+      "val_loss": 0.9905,
+      "mean_dice": 0.0175,
+      "macro_dice": 0.0175,
+      "wt_dice": 0.0056,
+      "tc_dice": 0.0394,
+      "et_dice": 0.0073,
+      "wt_iou": 0.0028,
+      "tc_iou": 0.0204,
+      "et_iou": 0.0037,
+      "macro_iou": 0.009
+    },
+    "final_train_loss": 0.742298,
+    "final_val_loss": 0.9905,
+    "total_runtime_seconds": 97.68,
+    "average_round_seconds": 97.51,
+    "peak_mps_memory_mb": 156.54,
+    "oom_detected": false
+  },
+  "checkpoint": {
+    "best_checkpoint_path": "/Users/siddhant_patil/Projects/FedMed/checkpoints/fedavg_dp_d2_1_stage_a/best.pt",
+    "best_checkpoint_sha256": "8522b38f34672f3d718eea2b5e5adee66ec1455626fcc46cb26b56e80d251d7c",
+    "latest_checkpoint_path": "/Users/siddhant_patil/Projects/FedMed/checkpoints/fedavg_dp_d2_1_stage_a/latest.pt"
+  },
+  "round_history": [
+    {
+      "round": 1,
+      "mean_client_loss": 0.742298,
+      "client_losses": {
+        "hospital_alpha": 0.999575,
+        "hospital_beta": 0.978132,
+        "hospital_gamma": 0.0,
+        "hospital_delta": 0.991484
+      },
+      "client_timings_sec": {
+        "hospital_alpha": 1.35,
+        "hospital_beta": 0.93,
+        "hospital_gamma": 0.04,
+        "hospital_delta": 1.86
+      },
+      "global_parameter_delta": 0.197571,
+      "client_divergence": 0.560063,
+      "privacy_telemetry": {
+        "max_grad_norm_C": 0.06,
+        "noise_multiplier_sigma": 0.87,
+        "noise_standard_deviation": 0.0522,
+        "mean_batch_size": 1.0,
+        "median_batch_size": 1.0,
+        "std_batch_size": 0.0,
+        "min_batch_size": 0,
+        "max_batch_size": 2,
+        "empty_batch_count": 1,
+        "singleton_batch_count": 2,
+        "multi_sample_batch_count": 1,
+        "clipping_fraction": 0.375,
+        "mean_clipping_fraction": 0.375,
+        "mean_unclipped_gradient_norm": 0.0424,
+        "mean_clipped_gradient_norm": 0.029,
+        "cumulative_epsilon": 1.4633,
+        "accountant_epsilon": 1.4633,
+        "accountant_optimal_alpha": 9,
+        "accountant_step_count": 1,
+        "target_delta": 1e-05,
+        "sampling_mechanism": "Poisson / Bernoulli Subsampling (q=1/236)",
+        "accountant": "Exact Analytical R\u00e9nyi Differential Privacy (Poisson RDP)"
+      },
+      "val_loss": 0.9905,
+      "mean_dice": 0.0175,
+      "tc_dice": 0.0394,
+      "wt_dice": 0.0056,
+      "et_dice": 0.0073,
+      "tc_iou": 0.0204,
+      "wt_iou": 0.0028,
+      "et_iou": 0.0037,
+      "val_time_sec": 93.18,
+      "round_total_sec": 97.51
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "run_id": "b6_scaling_20260818_143658",
+  "phase": "Phase 8.5B.6",
+  "dataset_mode": "DEVELOPMENT_SYNTHETIC",
+  "seed": 42,
+  "model_parameters": 4810074,
+  "world_size": 1,
+  "hardware": "Apple Silicon MPS (GPU)"
+}

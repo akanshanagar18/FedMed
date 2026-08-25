@@ -1,0 +1,81 @@
+{
+  "algorithm": "Centralized",
+  "initial_parameter_hash": "5ba650f3408c97c76d3146fd2a31044cc9d4e926add4964ae8b079e6988e1d93",
+  "final_parameter_hash": "eaa96dd5ef8eb79235f302a50beb8e19308e7b795f60c27b670913e417356ec7",
+  "execution_time_seconds": 0.36017513275146484,
+  "history": [
+    {
+      "epoch": 1,
+      "training_loss": 1.8756341934204102,
+      "validation_dice": {
+        "dice_TC": 0.454111,
+        "dice_WT": 0.625874,
+        "dice_ET": 0.0,
+        "mean_dice": 0.359995
+      },
+      "validation_iou": {
+        "iou_TC": 0.293754,
+        "iou_WT": 0.455471,
+        "iou_ET": 0.0,
+        "mean_iou": 0.249742
+      }
+    },
+    {
+      "epoch": 2,
+      "training_loss": 1.8666200637817383,
+      "validation_dice": {
+        "dice_TC": 0.453735,
+        "dice_WT": 0.627598,
+        "dice_ET": 0.0,
+        "mean_dice": 0.360444
+      },
+      "validation_iou": {
+        "iou_TC": 0.293439,
+        "iou_WT": 0.457299,
+        "iou_ET": 0.0,
+        "mean_iou": 0.250246
+      }
+    },
+    {
+      "epoch": 3,
+      "training_loss": 1.8594083189964294,
+      "validation_dice": {
+        "dice_TC": 0.452535,
+        "dice_WT": 0.631889,
+        "dice_ET": 0.0,
+        "mean_dice": 0.361475
+      },
+      "validation_iou": {
+        "iou_TC": 0.292436,
+        "iou_WT": 0.46187,
+        "iou_ET": 0.0,
+        "mean_iou": 0.251435
+      }
+    }
+  ],
+  "final_validation_dice": {
+    "dice_TC": 0.452535,
+    "dice_WT": 0.631889,
+    "dice_ET": 0.0,
+    "mean_dice": 0.361475
+  },
+  "final_validation_iou": {
+    "iou_TC": 0.292436,
+    "iou_WT": 0.46187,
+    "iou_ET": 0.0,
+    "mean_iou": 0.251435
+  },
+  "final_test_dice": {
+    "dice_TC": 0.453258,
+    "dice_WT": 0.62792,
+    "dice_ET": 0.0,
+    "mean_dice": 0.360393
+  },
+  "final_test_iou": {
+    "iou_TC": 0.293041,
+    "iou_WT": 0.457641,
+    "iou_ET": 0.0,
+    "mean_iou": 0.250227
+  },
+  "checkpoint_path": "/Users/siddhant_patil/Projects/FedMed/checkpoints/centralized/centralized_best.pt"
+}

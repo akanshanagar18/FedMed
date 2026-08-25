@@ -1,0 +1,37 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "id": 1,
+      "title": "FedMed Dice Segmentation Performance",
+      "type": "timeseries",
+      "targets": [
+        { "datasource": "Prometheus", "expr": "fedmed_hpo_best_score", "legendFormat": "Dice Score" }
+      ]
+    },
+    {
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "id": 2,
+      "title": "Feature & Concept Drift (MMD)",
+      "type": "timeseries",
+      "targets": [
+        { "datasource": "Prometheus", "expr": "fedmed_drift_mmd", "legendFormat": "MMD Drift Metric" }
+      ]
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["fedmed", "federated-learning"],
+  "time": { "from": "now-1h", "to": "now" },
+  "title": "FedMed v2.0 Enterprise FL Overview",
+  "uid": "fedmed_overview",
+  "version": 1
+}

@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-backend
+  namespace: {{ .Values.namespace }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.backend.port }}
+      targetPort: {{ .Values.backend.port }}
+      name: http
+  selector:
+    app.kubernetes.io/name: {{ .Release.Name }}-backend
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-flower
+  namespace: {{ .Values.namespace }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.flowerServer.port }}
+      targetPort: {{ .Values.flowerServer.port }}
+      name: grpc
+  selector:
+    app.kubernetes.io/name: {{ .Release.Name }}-flower
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-dashboard
+  namespace: {{ .Values.namespace }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.dashboard.port }}
+      targetPort: {{ .Values.dashboard.port }}
+      name: http
+  selector:
+    app.kubernetes.io/name: {{ .Release.Name }}-dashboard

@@ -1,0 +1,9 @@
+federated:
+  strategy: "FedRep"
+  learning_rate: 0.0001
+  representation_layers: 4
+  head_epochs: 2
+  rep_epochs: 1
+  num_rounds: 3
+  min_fit_clients: 2
+  min_available_clients: 2

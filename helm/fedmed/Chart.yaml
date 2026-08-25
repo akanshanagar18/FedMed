@@ -1,0 +1,9 @@
+apiVersion: v2
+name: fedmed
+description: Helm v3 Chart for FedMed v2.0 Production Federated Learning Platform
+type: application
+version: 2.0.0
+appVersion: "2.0.0"
+maintainers:
+  - name: FedMed Team
+    email: devops@fedmed.io

@@ -1,0 +1,36 @@
+{
+  "hardware_classification": "SINGLE_NODE_SINGLE_GPU",
+  "world_size_capability": 1,
+  "software_versions": {
+    "python": "3.9.6",
+    "pytorch": "2.8.0",
+    "monai": "1.5.2",
+    "flower": "1.23.0",
+    "tenseal": "0.3.16"
+  },
+  "host": {
+    "os": "Darwin",
+    "os_release": "25.6.0",
+    "architecture": "arm64",
+    "hostname": "Siddhants-MacBook-Air.local",
+    "cpu_count_physical": 10,
+    "cpu_count_logical": 10,
+    "ram_total_gb": 16.0
+  },
+  "accelerators": {
+    "cuda_available": false,
+    "cuda_device_count": 0,
+    "mps_available": true,
+    "gpu_count": 1,
+    "gpu_type": "Apple Silicon MPS (Metal Performance Shaders)"
+  },
+  "distributed_backends": {
+    "gloo": true,
+    "nccl": false,
+    "mpi": false
+  },
+  "network": {
+    "local_ip": "127.0.0.1",
+    "hostname": "Siddhants-MacBook-Air.local"
+  }
+}

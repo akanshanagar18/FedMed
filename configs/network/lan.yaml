@@ -1,0 +1,7 @@
+network:
+  profile: "LAN"
+  latency_ms: 0.5
+  bandwidth_mbps: 1000.0
+  packet_loss_pct: 0.0
+  jitter_ms: 0.1
+  drop_probability: 0.0

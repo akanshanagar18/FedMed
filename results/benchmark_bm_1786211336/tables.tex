@@ -1,0 +1,30 @@
+% FedMed v2.0 Benchmark Suite Publication Tables
+% Generated automatically by FedMed ExportEngine
+% Suite: FedMed Strategy Benchmark (Benchmark ID: bm_1786211336)
+
+\begin{table*}[t]
+\centering
+\caption{\textbf{Federated Strategy Performance & Statistical Significance on 3D Medical MRI Segmentation (BraTS2021).}}
+\label{tab:fedmed_benchmark_results}
+\begin{tabular}{lcccccc}
+\hline
+\textbf{Rank} & \textbf{Strategy} & \textbf{Mean Dice $\pm$ Std} & \textbf{95\% Conf. Interval} & \textbf{Mean Loss} & \textbf{Runtime (s)} & \textbf{Convergence Round} \\
+\hline
+#1 & \textbf{FedAvg} & 0.4482 $\pm$ 0.0000 & [0.4482, 0.4482] & 0.8043 & 60.04 & Round 9.0 \\
+#2 & \textbf{FedProx} & 0.4482 $\pm$ 0.0000 & [0.4482, 0.4482] & 0.8043 & 3.61 & Round 9.0 \\
+\hline
+\end{tabular}
+\end{table*}
+
+\begin{table}[h]
+\centering
+\caption{\textbf{Pairwise Hypothesis Testing \& Effect Size Comparison.}}
+\label{tab:statistical_tests}
+\begin{tabular}{lcccc}
+\hline
+\textbf{Comparison} & \textbf{t-statistic} & \textbf{p-value} & \textbf{Cohen's d} & \textbf{Significance (p < 0.05)} \\
+\hline
+FedAvg vs FedProx & 0.0000 & 1.0000 & 0.0000 & No \\
+\hline
+\end{tabular}
+\end{table}

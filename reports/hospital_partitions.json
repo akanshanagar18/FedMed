@@ -1,0 +1,36 @@
+{
+  "partition_strategy": "IID",
+  "dirichlet_alpha": null,
+  "num_hospitals": 3,
+  "total_training_patients": 4,
+  "disjoint_verified": true,
+  "leakage_free": true,
+  "warnings": [],
+  "partitions": {
+    "hospital_alpha": {
+      "hospital_id": "hospital_alpha",
+      "patient_ids": [
+        "BraTS2021_00002",
+        "BraTS2021_00004"
+      ],
+      "sample_count": 2,
+      "status": "ACTIVE"
+    },
+    "hospital_beta": {
+      "hospital_id": "hospital_beta",
+      "patient_ids": [
+        "BraTS2021_00001"
+      ],
+      "sample_count": 1,
+      "status": "ACTIVE"
+    },
+    "hospital_gamma": {
+      "hospital_id": "hospital_gamma",
+      "patient_ids": [
+        "BraTS2021_00003"
+      ],
+      "sample_count": 1,
+      "status": "ACTIVE"
+    }
+  }
+}

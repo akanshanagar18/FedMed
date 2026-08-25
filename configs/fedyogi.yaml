@@ -1,0 +1,10 @@
+federated:
+  strategy: "FedYogi"
+  learning_rate: 0.0001
+  eta: 0.01
+  beta_1: 0.9
+  beta_2: 0.999
+  tau: 0.001
+  num_rounds: 3
+  min_fit_clients: 2
+  min_available_clients: 2

@@ -1,0 +1,842 @@
+[
+  {
+    "round": 1,
+    "mean_client_total_loss": 0.981401,
+    "mean_client_base_loss": 0.979819,
+    "mean_client_prox_penalty": 0.001583,
+    "client_losses": {
+      "hospital_alpha": 0.982573,
+      "hospital_beta": 0.980826,
+      "hospital_gamma": 0.980471,
+      "hospital_delta": 0.981735
+    },
+    "client_base_losses": {
+      "hospital_alpha": 0.981132,
+      "hospital_beta": 0.979106,
+      "hospital_gamma": 0.978775,
+      "hospital_delta": 0.980262
+    },
+    "client_prox_penalties": {
+      "hospital_alpha": 0.001442,
+      "hospital_beta": 0.00172,
+      "hospital_gamma": 0.001696,
+      "hospital_delta": 0.001473
+    },
+    "client_timings_sec": {
+      "hospital_alpha": 204.1,
+      "hospital_beta": 204.9,
+      "hospital_gamma": 215.46,
+      "hospital_delta": 222.44
+    },
+    "global_parameter_delta": 2.454981,
+    "client_divergence": 1.608202,
+    "val_loss": 0.975294,
+    "mean_dice": 0.0512,
+    "tc_dice": 0.0077,
+    "wt_dice": 0.1288,
+    "et_dice": 0.0171,
+    "tc_iou": 0.0039,
+    "wt_iou": 0.0733,
+    "et_iou": 0.0089,
+    "val_time_sec": 101.85,
+    "round_total_sec": 948.88
+  },
+  {
+    "round": 2,
+    "mean_client_total_loss": 0.973819,
+    "mean_client_base_loss": 0.972956,
+    "mean_client_prox_penalty": 0.000864,
+    "client_losses": {
+      "hospital_alpha": 0.974959,
+      "hospital_beta": 0.973372,
+      "hospital_gamma": 0.972954,
+      "hospital_delta": 0.973992
+    },
+    "client_base_losses": {
+      "hospital_alpha": 0.974147,
+      "hospital_beta": 0.972497,
+      "hospital_gamma": 0.971991,
+      "hospital_delta": 0.973187
+    },
+    "client_prox_penalties": {
+      "hospital_alpha": 0.000812,
+      "hospital_beta": 0.000874,
+      "hospital_gamma": 0.000963,
+      "hospital_delta": 0.000805
+    },
+    "client_timings_sec": {
+      "hospital_alpha": 233.31,
+      "hospital_beta": 233.04,
+      "hospital_gamma": 230.74,
+      "hospital_delta": 230.17
+    },
+    "global_parameter_delta": 1.853086,
+    "client_divergence": 1.318602,
+    "val_loss": 0.969476,
+    "mean_dice": 0.0687,
+    "tc_dice": 0.0089,
+    "wt_dice": 0.1717,
+    "et_dice": 0.0254,
+    "tc_iou": 0.0045,
+    "wt_iou": 0.1027,
+    "et_iou": 0.0135,
+    "val_time_sec": 101.52,
+    "round_total_sec": 1028.9
+  },
+  {
+    "round": 3,
+    "mean_client_total_loss": 0.968941,
+    "mean_client_base_loss": 0.968257,
+    "mean_client_prox_penalty": 0.000684,
+    "client_losses": {
+      "hospital_alpha": 0.970513,
+      "hospital_beta": 0.968297,
+      "hospital_gamma": 0.968126,
+      "hospital_delta": 0.968829
+    },
+    "client_base_losses": {
+      "hospital_alpha": 0.969935,
+      "hospital_beta": 0.967571,
+      "hospital_gamma": 0.967373,
+      "hospital_delta": 0.968148
+    },
+    "client_prox_penalties": {
+      "hospital_alpha": 0.000578,
+      "hospital_beta": 0.000726,
+      "hospital_gamma": 0.000752,
+      "hospital_delta": 0.000681
+    },
+    "client_timings_sec": {
+      "hospital_alpha": 231.44,
+      "hospital_beta": 235.25,
+      "hospital_gamma": 236.26,
+      "hospital_delta": 232.62
+    },
+    "global_parameter_delta": 1.67574,
+    "client_divergence": 1.345285,
+    "val_loss": 0.964496,
+    "mean_dice": 0.0844,
+    "tc_dice": 0.0091,
+    "wt_dice": 0.2123,
+    "et_dice": 0.0317,
+    "tc_iou": 0.0046,
+    "wt_iou": 0.1319,
+    "et_iou": 0.0172,
+    "val_time_sec": 104.04,
+    "round_total_sec": 1039.75
+  },
+  {
+    "round": 4,
+    "mean_client_total_loss": 0.963729,
+    "mean_client_base_loss": 0.963016,
+    "mean_client_prox_penalty": 0.000713,
+    "client_losses": {
+      "hospital_alpha": 0.965405,
+      "hospital_beta": 0.963198,
+      "hospital_gamma": 0.962748,
+      "hospital_delta": 0.963565
+    },
+    "client_base_losses": {
+      "hospital_alpha": 0.964704,
+      "hospital_beta": 0.962544,
+      "hospital_gamma": 0.961892,
+      "hospital_delta": 0.962923
+    },
+    "client_prox_penalties": {
+      "hospital_alpha": 0.000701,
+      "hospital_beta": 0.000654,
+      "hospital_gamma": 0.000855,
+      "hospital_delta": 0.000642
+    },
+    "client_timings_sec": {
+      "hospital_alpha": 236.71,
+      "hospital_beta": 233.9,
+      "hospital_gamma": 233.76,
+      "hospital_delta": 233.31
+    },
+    "global_parameter_delta": 1.834556,
+    "client_divergence": 1.580646,
+    "val_loss": 0.957313,
+    "mean_dice": 0.1079,
+    "tc_dice": 0.0091,
+    "wt_dice": 0.2845,
+    "et_dice": 0.0302,
+    "tc_iou": 0.0046,
+    "wt_iou": 0.1886,
+    "et_iou": 0.0163,
+    "val_time_sec": 100.3,
+    "round_total_sec": 1038.12
+  },
+  {
+    "round": 5,
+    "mean_client_total_loss": 0.954521,
+    "mean_client_base_loss": 0.95362,
+    "mean_client_prox_penalty": 0.000901,
+    "client_losses": {
+      "hospital_alpha": 0.956401,
+      "hospital_beta": 0.954082,
+      "hospital_gamma": 0.953175,
+      "hospital_delta": 0.954427
+    },
+    "client_base_losses": {
+      "hospital_alpha": 0.955464,
+      "hospital_beta": 0.95329,
+      "hospital_gamma": 0.952276,
+      "hospital_delta": 0.953451
+    },
+    "client_prox_penalties": {
+      "hospital_alpha": 0.000937,
+      "hospital_beta": 0.000792,
+      "hospital_gamma": 0.0009,
+      "hospital_delta": 0.000976
+    },
+    "client_timings_sec": {
+      "hospital_alpha": 228.48,
+      "hospital_beta": 232.93,
+      "hospital_gamma": 232.36,
+      "hospital_delta": 233.89
+    },
+    "global_parameter_delta": 2.186529,
+    "client_divergence": 2.261363,
+    "val_loss": 0.94453,
+    "mean_dice": 0.1301,
+    "tc_dice": 0.0093,
+    "wt_dice": 0.3471,
+    "et_dice": 0.0338,
+    "tc_iou": 0.0048,
+    "wt_iou": 0.2415,
+    "et_iou": 0.0183,
+    "val_time_sec": 101.99,
+    "round_total_sec": 1029.79
+  },
+  {
+    "round": 6,
+    "mean_client_total_loss": 0.940322,
+    "mean_client_base_loss": 0.939321,
+    "mean_client_prox_penalty": 0.001001,
+    "client_losses": {
+      "hospital_alpha": 0.942468,
+      "hospital_beta": 0.93974,
+      "hospital_gamma": 0.939067,
+      "hospital_delta": 0.940013
+    },
+    "client_base_losses": {
+      "hospital_alpha": 0.941532,
+      "hospital_beta": 0.938652,
+      "hospital_gamma": 0.938075,
+      "hospital_delta": 0.939025
+    },
+    "client_prox_penalties": {
+      "hospital_alpha": 0.000936,
+      "hospital_beta": 0.001087,
+      "hospital_gamma": 0.000992,
+      "hospital_delta": 0.000988
+    },
+    "client_timings_sec": {
+      "hospital_alpha": 232.23,
+      "hospital_beta": 231.92,
+      "hospital_gamma": 231.88,
+      "hospital_delta": 233.35
+    },
+    "global_parameter_delta": 2.195052,
+    "client_divergence": 1.875872,
+    "val_loss": 0.926692,
+    "mean_dice": 0.1667,
+    "tc_dice": 0.012,
+    "wt_dice": 0.438,
+    "et_dice": 0.0502,
+    "tc_iou": 0.0062,
+    "wt_iou": 0.3205,
+    "et_iou": 0.028,
+    "val_time_sec": 102.42,
+    "round_total_sec": 1031.96
+  },
+  {
+    "round": 7,
+    "mean_client_total_loss": 0.921833,
+    "mean_client_base_loss": 0.920731,
+    "mean_client_prox_penalty": 0.001103,
+    "client_losses": {
+      "hospital_alpha": 0.923651,
+      "hospital_beta": 0.921361,
+      "hospital_gamma": 0.920576,
+      "hospital_delta": 0.921745
+    },
+    "client_base_losses": {
+      "hospital_alpha": 0.922621,
+      "hospital_beta": 0.920256,
+      "hospital_gamma": 0.919586,
+      "hospital_delta": 0.920459
+    },
+    "client_prox_penalties": {
+      "hospital_alpha": 0.00103,
+      "hospital_beta": 0.001105,
+      "hospital_gamma": 0.00099,
+      "hospital_delta": 0.001286
+    },
+    "client_timings_sec": {
+      "hospital_alpha": 233.75,
+      "hospital_beta": 232.26,
+      "hospital_gamma": 232.7,
+      "hospital_delta": 234.94
+    },
+    "global_parameter_delta": 2.197597,
+    "client_divergence": 2.40673,
+    "val_loss": 0.904301,
+    "mean_dice": 0.198,
+    "tc_dice": 0.0158,
+    "wt_dice": 0.5032,
+    "et_dice": 0.075,
+    "tc_iou": 0.0082,
+    "wt_iou": 0.3788,
+    "et_iou": 0.0436,
+    "val_time_sec": 103.17,
+    "round_total_sec": 1036.96
+  },
+  {
+    "round": 8,
+    "mean_client_total_loss": 0.898832,
+    "mean_client_base_loss": 0.897647,
+    "mean_client_prox_penalty": 0.001184,
+    "client_losses": {
+      "hospital_alpha": 0.901287,
+      "hospital_beta": 0.898218,
+      "hospital_gamma": 0.89806,
+      "hospital_delta": 0.897762
+    },
+    "client_base_losses": {
+      "hospital_alpha": 0.900083,
+      "hospital_beta": 0.897032,
+      "hospital_gamma": 0.896854,
+      "hospital_delta": 0.89662
+    },
+    "client_prox_penalties": {
+      "hospital_alpha": 0.001204,
+      "hospital_beta": 0.001185,
+      "hospital_gamma": 0.001206,
+      "hospital_delta": 0.001143
+    },
+    "client_timings_sec": {
+      "hospital_alpha": 233.59,
+      "hospital_beta": 233.24,
+      "hospital_gamma": 231.68,
+      "hospital_delta": 231.72
+    },
+    "global_parameter_delta": 2.294888,
+    "client_divergence": 2.322534,
+    "val_loss": 0.877893,
+    "mean_dice": 0.2406,
+    "tc_dice": 0.048,
+    "wt_dice": 0.574,
+    "et_dice": 0.0999,
+    "tc_iou": 0.0267,
+    "wt_iou": 0.4426,
+    "et_iou": 0.0596,
+    "val_time_sec": 101.87,
+    "round_total_sec": 1032.25
+  },
+  {
+    "round": 9,
+    "mean_client_total_loss": 0.871697,
+    "mean_client_base_loss": 0.870386,
+    "mean_client_prox_penalty": 0.001311,
+    "client_losses": {
+      "hospital_alpha": 0.873504,
+      "hospital_beta": 0.871785,
+      "hospital_gamma": 0.871926,
+      "hospital_delta": 0.869571
+    },
+    "client_base_losses": {
+      "hospital_alpha": 0.872251,
+      "hospital_beta": 0.87057,
+      "hospital_gamma": 0.87056,
+      "hospital_delta": 0.868161
+    },
+    "client_prox_penalties": {
+      "hospital_alpha": 0.001253,
+      "hospital_beta": 0.001215,
+      "hospital_gamma": 0.001367,
+      "hospital_delta": 0.00141
+    },
+    "client_timings_sec": {
+      "hospital_alpha": 233.21,
+      "hospital_beta": 233.11,
+      "hospital_gamma": 233.41,
+      "hospital_delta": 234.38
+    },
+    "global_parameter_delta": 2.248672,
+    "client_divergence": 2.488302,
+    "val_loss": 0.848574,
+    "mean_dice": 0.2812,
+    "tc_dice": 0.1139,
+    "wt_dice": 0.6194,
+    "et_dice": 0.1103,
+    "tc_iou": 0.0702,
+    "wt_iou": 0.4857,
+    "et_iou": 0.0662,
+    "val_time_sec": 102.25,
+    "round_total_sec": 1036.51
+  },
+  {
+    "round": 10,
+    "mean_client_total_loss": 0.843052,
+    "mean_client_base_loss": 0.841572,
+    "mean_client_prox_penalty": 0.00148,
+    "client_losses": {
+      "hospital_alpha": 0.845289,
+      "hospital_beta": 0.844084,
+      "hospital_gamma": 0.84276,
+      "hospital_delta": 0.840077
+    },
+    "client_base_losses": {
+      "hospital_alpha": 0.844013,
+      "hospital_beta": 0.842355,
+      "hospital_gamma": 0.841391,
+      "hospital_delta": 0.83853
+    },
+    "client_prox_penalties": {
+      "hospital_alpha": 0.001275,
+      "hospital_beta": 0.001729,
+      "hospital_gamma": 0.001369,
+      "hospital_delta": 0.001547
+    },
+    "client_timings_sec": {
+      "hospital_alpha": 227.27,
+      "hospital_beta": 222.24,
+      "hospital_gamma": 213.37,
+      "hospital_delta": 209.19
+    },
+    "global_parameter_delta": 2.362274,
+    "client_divergence": 2.823288,
+    "val_loss": 0.818218,
+    "mean_dice": 0.3109,
+    "tc_dice": 0.1335,
+    "wt_dice": 0.6758,
+    "et_dice": 0.1233,
+    "tc_iou": 0.0837,
+    "wt_iou": 0.5421,
+    "et_iou": 0.0749,
+    "val_time_sec": 97.83,
+    "round_total_sec": 970.01
+  },
+  {
+    "round": 11,
+    "mean_client_total_loss": 0.816268,
+    "mean_client_base_loss": 0.814514,
+    "mean_client_prox_penalty": 0.001754,
+    "client_losses": {
+      "hospital_alpha": 0.820161,
+      "hospital_beta": 0.818803,
+      "hospital_gamma": 0.815146,
+      "hospital_delta": 0.810962
+    },
+    "client_base_losses": {
+      "hospital_alpha": 0.818378,
+      "hospital_beta": 0.816927,
+      "hospital_gamma": 0.813499,
+      "hospital_delta": 0.809254
+    },
+    "client_prox_penalties": {
+      "hospital_alpha": 0.001783,
+      "hospital_beta": 0.001877,
+      "hospital_gamma": 0.001647,
+      "hospital_delta": 0.001708
+    },
+    "client_timings_sec": {
+      "hospital_alpha": 312.75,
+      "hospital_beta": 278.82,
+      "hospital_gamma": 204.57,
+      "hospital_delta": 205.69
+    },
+    "global_parameter_delta": 2.443455,
+    "client_divergence": 3.126687,
+    "val_loss": 0.792156,
+    "mean_dice": 0.3289,
+    "tc_dice": 0.1475,
+    "wt_dice": 0.7039,
+    "et_dice": 0.1352,
+    "tc_iou": 0.0936,
+    "wt_iou": 0.571,
+    "et_iou": 0.0829,
+    "val_time_sec": 95.56,
+    "round_total_sec": 1097.54
+  },
+  {
+    "round": 12,
+    "mean_client_total_loss": 0.79085,
+    "mean_client_base_loss": 0.788782,
+    "mean_client_prox_penalty": 0.002067,
+    "client_losses": {
+      "hospital_alpha": 0.794506,
+      "hospital_beta": 0.790757,
+      "hospital_gamma": 0.792031,
+      "hospital_delta": 0.786105
+    },
+    "client_base_losses": {
+      "hospital_alpha": 0.792437,
+      "hospital_beta": 0.788811,
+      "hospital_gamma": 0.789991,
+      "hospital_delta": 0.78389
+    },
+    "client_prox_penalties": {
+      "hospital_alpha": 0.002069,
+      "hospital_beta": 0.001946,
+      "hospital_gamma": 0.00204,
+      "hospital_delta": 0.002215
+    },
+    "client_timings_sec": {
+      "hospital_alpha": 209.61,
+      "hospital_beta": 216.8,
+      "hospital_gamma": 223.15,
+      "hospital_delta": 222.19
+    },
+    "global_parameter_delta": 2.211968,
+    "client_divergence": 3.064126,
+    "val_loss": 0.7638,
+    "mean_dice": 0.3411,
+    "tc_dice": 0.1516,
+    "wt_dice": 0.7329,
+    "et_dice": 0.1387,
+    "tc_iou": 0.0963,
+    "wt_iou": 0.6009,
+    "et_iou": 0.0853,
+    "val_time_sec": 100.53,
+    "round_total_sec": 972.4
+  },
+  {
+    "round": 13,
+    "mean_client_total_loss": 0.769101,
+    "mean_client_base_loss": 0.766973,
+    "mean_client_prox_penalty": 0.002128,
+    "client_losses": {
+      "hospital_alpha": 0.771436,
+      "hospital_beta": 0.770734,
+      "hospital_gamma": 0.772882,
+      "hospital_delta": 0.761352
+    },
+    "client_base_losses": {
+      "hospital_alpha": 0.769348,
+      "hospital_beta": 0.76842,
+      "hospital_gamma": 0.770765,
+      "hospital_delta": 0.759358
+    },
+    "client_prox_penalties": {
+      "hospital_alpha": 0.002088,
+      "hospital_beta": 0.002314,
+      "hospital_gamma": 0.002117,
+      "hospital_delta": 0.001994
+    },
+    "client_timings_sec": {
+      "hospital_alpha": 232.14,
+      "hospital_beta": 230.49,
+      "hospital_gamma": 229.7,
+      "hospital_delta": 242.97
+    },
+    "global_parameter_delta": 2.157178,
+    "client_divergence": 3.608357,
+    "val_loss": 0.74,
+    "mean_dice": 0.3503,
+    "tc_dice": 0.1518,
+    "wt_dice": 0.7607,
+    "et_dice": 0.1383,
+    "tc_iou": 0.0962,
+    "wt_iou": 0.6302,
+    "et_iou": 0.0848,
+    "val_time_sec": 105.64,
+    "round_total_sec": 1041.09
+  },
+  {
+    "round": 14,
+    "mean_client_total_loss": 0.749488,
+    "mean_client_base_loss": 0.747049,
+    "mean_client_prox_penalty": 0.002438,
+    "client_losses": {
+      "hospital_alpha": 0.755149,
+      "hospital_beta": 0.748745,
+      "hospital_gamma": 0.750213,
+      "hospital_delta": 0.743844
+    },
+    "client_base_losses": {
+      "hospital_alpha": 0.752695,
+      "hospital_beta": 0.746525,
+      "hospital_gamma": 0.747851,
+      "hospital_delta": 0.741126
+    },
+    "client_prox_penalties": {
+      "hospital_alpha": 0.002454,
+      "hospital_beta": 0.00222,
+      "hospital_gamma": 0.002362,
+      "hospital_delta": 0.002717
+    },
+    "client_timings_sec": {
+      "hospital_alpha": 241.08,
+      "hospital_beta": 233.9,
+      "hospital_gamma": 236.27,
+      "hospital_delta": 229.32
+    },
+    "global_parameter_delta": 2.13559,
+    "client_divergence": 3.384468,
+    "val_loss": 0.722705,
+    "mean_dice": 0.3549,
+    "tc_dice": 0.1584,
+    "wt_dice": 0.7621,
+    "et_dice": 0.1441,
+    "tc_iou": 0.101,
+    "wt_iou": 0.632,
+    "et_iou": 0.0889,
+    "val_time_sec": 100.46,
+    "round_total_sec": 1041.16
+  },
+  {
+    "round": 15,
+    "mean_client_total_loss": 0.736083,
+    "mean_client_base_loss": 0.733653,
+    "mean_client_prox_penalty": 0.002431,
+    "client_losses": {
+      "hospital_alpha": 0.742249,
+      "hospital_beta": 0.736843,
+      "hospital_gamma": 0.738089,
+      "hospital_delta": 0.727153
+    },
+    "client_base_losses": {
+      "hospital_alpha": 0.739953,
+      "hospital_beta": 0.734138,
+      "hospital_gamma": 0.735624,
+      "hospital_delta": 0.724896
+    },
+    "client_prox_penalties": {
+      "hospital_alpha": 0.002297,
+      "hospital_beta": 0.002705,
+      "hospital_gamma": 0.002465,
+      "hospital_delta": 0.002257
+    },
+    "client_timings_sec": {
+      "hospital_alpha": 231.91,
+      "hospital_beta": 230.7,
+      "hospital_gamma": 231.54,
+      "hospital_delta": 231.91
+    },
+    "global_parameter_delta": 2.259405,
+    "client_divergence": 3.824865,
+    "val_loss": 0.70719,
+    "mean_dice": 0.3591,
+    "tc_dice": 0.1611,
+    "wt_dice": 0.7696,
+    "et_dice": 0.1465,
+    "tc_iou": 0.1032,
+    "wt_iou": 0.6414,
+    "et_iou": 0.0908,
+    "val_time_sec": 100.69,
+    "round_total_sec": 1026.89
+  },
+  {
+    "round": 16,
+    "mean_client_total_loss": 0.7234,
+    "mean_client_base_loss": 0.720762,
+    "mean_client_prox_penalty": 0.002638,
+    "client_losses": {
+      "hospital_alpha": 0.730976,
+      "hospital_beta": 0.721391,
+      "hospital_gamma": 0.725963,
+      "hospital_delta": 0.715268
+    },
+    "client_base_losses": {
+      "hospital_alpha": 0.728211,
+      "hospital_beta": 0.718537,
+      "hospital_gamma": 0.723582,
+      "hospital_delta": 0.712717
+    },
+    "client_prox_penalties": {
+      "hospital_alpha": 0.002766,
+      "hospital_beta": 0.002855,
+      "hospital_gamma": 0.002381,
+      "hospital_delta": 0.002551
+    },
+    "client_timings_sec": {
+      "hospital_alpha": 236.02,
+      "hospital_beta": 232.51,
+      "hospital_gamma": 241.11,
+      "hospital_delta": 235.12
+    },
+    "global_parameter_delta": 1.952479,
+    "client_divergence": 3.876328,
+    "val_loss": 0.693603,
+    "mean_dice": 0.3656,
+    "tc_dice": 0.1718,
+    "wt_dice": 0.7678,
+    "et_dice": 0.1571,
+    "tc_iou": 0.1111,
+    "wt_iou": 0.6372,
+    "et_iou": 0.0982,
+    "val_time_sec": 103.68,
+    "round_total_sec": 1048.59
+  },
+  {
+    "round": 17,
+    "mean_client_total_loss": 0.708426,
+    "mean_client_base_loss": 0.705967,
+    "mean_client_prox_penalty": 0.002459,
+    "client_losses": {
+      "hospital_alpha": 0.718776,
+      "hospital_beta": 0.703673,
+      "hospital_gamma": 0.710815,
+      "hospital_delta": 0.70044
+    },
+    "client_base_losses": {
+      "hospital_alpha": 0.716254,
+      "hospital_beta": 0.701223,
+      "hospital_gamma": 0.708558,
+      "hospital_delta": 0.697834
+    },
+    "client_prox_penalties": {
+      "hospital_alpha": 0.002522,
+      "hospital_beta": 0.00245,
+      "hospital_gamma": 0.002257,
+      "hospital_delta": 0.002607
+    },
+    "client_timings_sec": {
+      "hospital_alpha": 238.3,
+      "hospital_beta": 229.66,
+      "hospital_gamma": 237.6,
+      "hospital_delta": 237.79
+    },
+    "global_parameter_delta": 1.837089,
+    "client_divergence": 4.343458,
+    "val_loss": 0.682252,
+    "mean_dice": 0.3629,
+    "tc_dice": 0.1684,
+    "wt_dice": 0.7662,
+    "et_dice": 0.1542,
+    "tc_iou": 0.1089,
+    "wt_iou": 0.6387,
+    "et_iou": 0.0963,
+    "val_time_sec": 103.4,
+    "round_total_sec": 1046.9
+  },
+  {
+    "round": 18,
+    "mean_client_total_loss": 0.69844,
+    "mean_client_base_loss": 0.695859,
+    "mean_client_prox_penalty": 0.002581,
+    "client_losses": {
+      "hospital_alpha": 0.709957,
+      "hospital_beta": 0.693743,
+      "hospital_gamma": 0.70239,
+      "hospital_delta": 0.68767
+    },
+    "client_base_losses": {
+      "hospital_alpha": 0.707251,
+      "hospital_beta": 0.691242,
+      "hospital_gamma": 0.699236,
+      "hospital_delta": 0.685706
+    },
+    "client_prox_penalties": {
+      "hospital_alpha": 0.002706,
+      "hospital_beta": 0.002502,
+      "hospital_gamma": 0.003154,
+      "hospital_delta": 0.001964
+    },
+    "client_timings_sec": {
+      "hospital_alpha": 230.01,
+      "hospital_beta": 230.44,
+      "hospital_gamma": 230.15,
+      "hospital_delta": 231.69
+    },
+    "global_parameter_delta": 1.958309,
+    "client_divergence": 4.362243,
+    "val_loss": 0.670188,
+    "mean_dice": 0.3738,
+    "tc_dice": 0.1864,
+    "wt_dice": 0.7639,
+    "et_dice": 0.1712,
+    "tc_iou": 0.1226,
+    "wt_iou": 0.6307,
+    "et_iou": 0.1089,
+    "val_time_sec": 101.48,
+    "round_total_sec": 1023.91
+  },
+  {
+    "round": 19,
+    "mean_client_total_loss": 0.68846,
+    "mean_client_base_loss": 0.685925,
+    "mean_client_prox_penalty": 0.002535,
+    "client_losses": {
+      "hospital_alpha": 0.695446,
+      "hospital_beta": 0.683378,
+      "hospital_gamma": 0.691136,
+      "hospital_delta": 0.683879
+    },
+    "client_base_losses": {
+      "hospital_alpha": 0.693029,
+      "hospital_beta": 0.680662,
+      "hospital_gamma": 0.688321,
+      "hospital_delta": 0.681687
+    },
+    "client_prox_penalties": {
+      "hospital_alpha": 0.002417,
+      "hospital_beta": 0.002716,
+      "hospital_gamma": 0.002816,
+      "hospital_delta": 0.002193
+    },
+    "client_timings_sec": {
+      "hospital_alpha": 232.35,
+      "hospital_beta": 232.7,
+      "hospital_gamma": 236.13,
+      "hospital_delta": 232.04
+    },
+    "global_parameter_delta": 1.824654,
+    "client_divergence": 3.937707,
+    "val_loss": 0.658601,
+    "mean_dice": 0.3754,
+    "tc_dice": 0.1826,
+    "wt_dice": 0.7753,
+    "et_dice": 0.1684,
+    "tc_iou": 0.12,
+    "wt_iou": 0.6462,
+    "et_iou": 0.1071,
+    "val_time_sec": 102.37,
+    "round_total_sec": 1035.74
+  },
+  {
+    "round": 20,
+    "mean_client_total_loss": 0.680985,
+    "mean_client_base_loss": 0.678435,
+    "mean_client_prox_penalty": 0.00255,
+    "client_losses": {
+      "hospital_alpha": 0.690384,
+      "hospital_beta": 0.674618,
+      "hospital_gamma": 0.684499,
+      "hospital_delta": 0.674438
+    },
+    "client_base_losses": {
+      "hospital_alpha": 0.687923,
+      "hospital_beta": 0.672304,
+      "hospital_gamma": 0.681475,
+      "hospital_delta": 0.672037
+    },
+    "client_prox_penalties": {
+      "hospital_alpha": 0.002461,
+      "hospital_beta": 0.002313,
+      "hospital_gamma": 0.003025,
+      "hospital_delta": 0.002401
+    },
+    "client_timings_sec": {
+      "hospital_alpha": 232.75,
+      "hospital_beta": 235.87,
+      "hospital_gamma": 233.0,
+      "hospital_delta": 232.78
+    },
+    "global_parameter_delta": 1.935429,
+    "client_divergence": 3.776278,
+    "val_loss": 0.648938,
+    "mean_dice": 0.3821,
+    "tc_dice": 0.195,
+    "wt_dice": 0.7685,
+    "et_dice": 0.1829,
+    "tc_iou": 0.1302,
+    "wt_iou": 0.6365,
+    "et_iou": 0.1187,
+    "val_time_sec": 101.51,
+    "round_total_sec": 1036.05
+  }
+]

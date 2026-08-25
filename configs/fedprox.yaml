@@ -1,0 +1,7 @@
+# FedProx Strategy Configuration Override
+# Introduces proximal regularization mu = 0.01 to combat non-IID client drift.
+
+federated:
+  strategy: "FedProx"
+  learning_rate: 0.0001
+  proximal_mu: 0.01

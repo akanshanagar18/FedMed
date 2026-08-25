@@ -1,0 +1,4 @@
+attack:
+  type: "gradient_poison"
+  scale_factor: -10.0
+  affected_clients: 1

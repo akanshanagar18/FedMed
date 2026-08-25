@@ -1,0 +1,2 @@
+Comparison,Test Type,t-statistic,p-value (ttest),Wilcoxon stat,p-value (Wilcoxon),Cohen's d,Cliff's delta,Statistically Significant
+FedAvg vs FedProx,independent_ttest,0.0,1.0,,,0.0,0.0,False

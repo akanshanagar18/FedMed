@@ -1,0 +1,60 @@
+{
+  "algorithm": "FedProx",
+  "proximal_mu": 0.01,
+  "initial_parameter_hash": "5ba650f3408c97c76d3146fd2a31044cc9d4e926add4964ae8b079e6988e1d93",
+  "final_parameter_hash": "ae5a38184ad0456dfab86906237e8002d57922b28f147c560a607649b17a800e",
+  "execution_time_seconds": 0.39644908905029297,
+  "history": [
+    {
+      "round": 1,
+      "training_loss": 1.8780434131622314,
+      "proximal_penalty": 0.0,
+      "total_loss": 1.8780434131622314,
+      "client_losses": {
+        "hospital_alpha": 1.8773961067199707,
+        "hospital_beta": 1.8786907196044922
+      },
+      "client_proximal_penalties": {
+        "hospital_alpha": 0.0,
+        "hospital_beta": 0.0
+      },
+      "validation_dice": {
+        "dice_TC": 0.453364,
+        "dice_WT": 0.625153,
+        "dice_ET": 0.0,
+        "mean_dice": 0.359505
+      },
+      "validation_iou": {
+        "iou_TC": 0.293129,
+        "iou_WT": 0.454707,
+        "iou_ET": 0.0,
+        "mean_iou": 0.249279
+      }
+    }
+  ],
+  "final_validation_dice": {
+    "dice_TC": 0.453364,
+    "dice_WT": 0.625153,
+    "dice_ET": 0.0,
+    "mean_dice": 0.359505
+  },
+  "final_validation_iou": {
+    "iou_TC": 0.293129,
+    "iou_WT": 0.454707,
+    "iou_ET": 0.0,
+    "mean_iou": 0.249279
+  },
+  "final_test_dice": {
+    "dice_TC": 0.452091,
+    "dice_WT": 0.622547,
+    "dice_ET": 0.0,
+    "mean_dice": 0.358213
+  },
+  "final_test_iou": {
+    "iou_TC": 0.292066,
+    "iou_WT": 0.451955,
+    "iou_ET": 0.0,
+    "mean_iou": 0.248007
+  },
+  "checkpoint_path": "/Users/siddhant_patil/Projects/FedMed/checkpoints/fedprox/fedprox_best.pt"
+}

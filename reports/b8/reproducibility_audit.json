@@ -1,0 +1,7 @@
+{
+  "timestamp": "2026-08-15T11:41:27.000639+00:00",
+  "seed": 42,
+  "model_initialization_identical": true,
+  "hardware_determinism_policy": "MPS/CUDA pseudo-random streams seeded via torch.manual_seed(42)",
+  "status": "PASS"
+}

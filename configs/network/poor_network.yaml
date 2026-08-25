@@ -1,0 +1,7 @@
+network:
+  profile: "PoorNetwork"
+  latency_ms: 200.0
+  bandwidth_mbps: 2.0
+  packet_loss_pct: 5.0
+  jitter_ms: 30.0
+  drop_probability: 0.15
