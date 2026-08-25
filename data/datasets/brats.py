@@ -70,7 +70,7 @@ class BraTSDataset:
         image_size: Tuple[int, int, int] = (128, 128, 128),
         cache_type: str = "persistent",
         cache_dir: Optional[Union[str, Path]] = ".cache/monai",
-        num_workers: int = 2,
+        num_workers: int = 0,
         val_split: float = 0.2,
         seed: int = 42,
         allow_synthetic_fallback: bool = True,

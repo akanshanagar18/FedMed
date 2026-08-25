@@ -9,6 +9,8 @@ with FlowerStrategyAdapter for telemetry, gRPC transport, production TLS encrypt
 
 import argparse
 import logging
+import math
+import sys
 from typing import Any, Dict, Optional, Tuple, Union
 
 import flwr as fl
@@ -73,11 +75,12 @@ def _register_experiment_start(
 
 def _register_experiment_complete(api_url: str, experiment_id: str, best_dice: float, best_round: int):
     """Updates experiment status to COMPLETED upon FL training completion."""
+    clean_dice = float(best_dice) if isinstance(best_dice, (int, float)) and math.isfinite(best_dice) else 0.0
     payload = {
         "experiment_id": experiment_id,
         "name": f"Federated Run ({experiment_id})",
         "status": "completed",
-        "best_dice_score": best_dice,
+        "best_dice_score": clean_dice,
         "best_round": best_round,
     }
     try:
@@ -174,6 +177,7 @@ def start_server(
         sys.exit(1)
 
     _register_experiment_complete(api_url, experiment_id, adapter.best_dice_score, adapter.best_round)
+    sys.exit(0)
 
 
 if __name__ == "__main__":

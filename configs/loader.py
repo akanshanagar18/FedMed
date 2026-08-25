@@ -94,7 +94,7 @@ class DataConfig(BaseModel):
     data_dir: str = "data/BraTS2021"
     cache_type: str = "persistent"
     cache_dir: str = ".cache/monai"
-    num_workers: int = Field(2, ge=0)
+    num_workers: int = Field(0, ge=0)
     val_split: float = Field(0.2, ge=0.0, le=0.5)
     modalities: List[str] = Field(default_factory=lambda: ["t1", "t1ce", "t2", "flair"])
     partition_strategy: str = "IID"
@@ -150,11 +150,27 @@ class BenchmarkSubConfig(BaseModel):
     seeds: List[int] = Field(default_factory=lambda: [42, 123, 999])
 
 
+class TrainingConfig(BaseModel):
+    spatial_shape: List[int] = Field(default_factory=lambda: [128, 128, 128])
+    loss: str = "DiceCELoss"
+    loss_function: Optional[str] = None
+    loss_params: Dict[str, Any] = Field(default_factory=dict)
+    optimizer: str = "adam"
+    learning_rate: float = Field(1e-4, gt=0)
+    weight_decay: float = Field(1e-5, ge=0)
+    momentum: Optional[float] = None
+    batch_size: int = Field(2, ge=1)
+    local_epochs: int = Field(1, ge=1)
+    num_workers: int = Field(0, ge=0)
+    device: Optional[str] = None
+
+
 class AppConfig(BaseModel):
     """Canonical aggregated configuration contract for FedMed v2.0."""
     server: ServerConfig = Field(default_factory=ServerConfig)
     federated: FederatedConfig = Field(default_factory=FederatedConfig)
     data: DataConfig = Field(default_factory=DataConfig)
+    training: Optional[TrainingConfig] = None
     privacy: PrivacyConfig = Field(default_factory=PrivacyConfig)
     tls: TlsConfig = Field(default_factory=TlsConfig)
     logging: LoggingConfig = Field(default_factory=LoggingConfig)
@@ -172,6 +188,92 @@ def deep_merge(base: Dict[str, Any], override: Dict[str, Any]) -> Dict[str, Any]
         else:
             merged[key] = value
     return merged
+
+
+def normalize_config_dict(config_dict: Dict[str, Any], override_dict: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    """
+    Normalizes configuration keys across legacy, training, and canonical schemas.
+    Ensures single source of truth for num_workers, batch_size, and optimizer settings.
+    """
+    normalized = config_dict.copy()
+    override = override_dict or {}
+
+    # Normalize 'training' section into 'data' and 'federated'
+    if "training" in normalized and isinstance(normalized["training"], dict):
+        t_dict = normalized["training"]
+        data_dict = normalized.setdefault("data", {})
+        fed_dict = normalized.setdefault("federated", {})
+
+        t_override = override.get("training", {}) if isinstance(override.get("training"), dict) else {}
+        d_override = override.get("data", {}) if isinstance(override.get("data"), dict) else {}
+        f_override = override.get("federated", {}) if isinstance(override.get("federated"), dict) else {}
+
+        # num_workers: single authoritative source of truth
+        if "num_workers" in d_override and "num_workers" not in t_override:
+            t_dict["num_workers"] = d_override["num_workers"]
+            data_dict["num_workers"] = d_override["num_workers"]
+        elif "num_workers" in t_dict:
+            data_dict["num_workers"] = t_dict["num_workers"]
+        elif "num_workers" in data_dict:
+            t_dict["num_workers"] = data_dict["num_workers"]
+
+        # batch_size
+        if "batch_size" in f_override and "batch_size" not in t_override:
+            t_dict["batch_size"] = f_override["batch_size"]
+            fed_dict["batch_size"] = f_override["batch_size"]
+        elif "batch_size" in t_dict:
+            fed_dict["batch_size"] = t_dict["batch_size"]
+        elif "batch_size" in fed_dict:
+            t_dict["batch_size"] = fed_dict["batch_size"]
+
+        # learning_rate
+        if "learning_rate" in f_override and "learning_rate" not in t_override:
+            t_dict["learning_rate"] = f_override["learning_rate"]
+            fed_dict["learning_rate"] = f_override["learning_rate"]
+        elif "learning_rate" in t_dict:
+            fed_dict["learning_rate"] = t_dict["learning_rate"]
+
+        # weight_decay
+        if "weight_decay" in f_override and "weight_decay" not in t_override:
+            t_dict["weight_decay"] = f_override["weight_decay"]
+            fed_dict["weight_decay"] = f_override["weight_decay"]
+        elif "weight_decay" in t_dict:
+            fed_dict["weight_decay"] = t_dict["weight_decay"]
+
+        # local_epochs
+        if "local_epochs" in f_override and "local_epochs" not in t_override:
+            t_dict["local_epochs"] = f_override["local_epochs"]
+            fed_dict["local_epochs"] = f_override["local_epochs"]
+        elif "local_epochs" in t_dict:
+            fed_dict["local_epochs"] = t_dict["local_epochs"]
+
+        # optimizer
+        if "optimizer" in f_override and "optimizer" not in t_override:
+            t_dict["optimizer"] = f_override["optimizer"]
+            fed_dict["optimizer"] = f_override["optimizer"]
+        elif "optimizer" in t_dict:
+            fed_dict["optimizer"] = t_dict["optimizer"]
+
+        # spatial_shape -> image_size
+        if "image_size" in d_override and "spatial_shape" not in t_override:
+            t_dict["spatial_shape"] = d_override["image_size"]
+            data_dict["image_size"] = d_override["image_size"]
+        elif "spatial_shape" in t_dict:
+            data_dict["image_size"] = t_dict["spatial_shape"]
+
+    # Normalize 'data' aliases
+    if "data" in normalized and isinstance(normalized["data"], dict):
+        d_dict = normalized["data"]
+        if "raw_data_dir" in d_dict and "data_dir" not in d_dict:
+            d_dict["data_dir"] = d_dict["raw_data_dir"]
+
+    # Normalize 'federated' aliases
+    if "federated" in normalized and isinstance(normalized["federated"], dict):
+        f_dict = normalized["federated"]
+        if "rounds" in f_dict and "num_rounds" not in f_dict:
+            f_dict["num_rounds"] = f_dict["rounds"]
+
+    return normalized
 
 
 def load_raw_yaml(yaml_path: str) -> Dict[str, Any]:
@@ -201,9 +303,12 @@ def load_config(
     base_path = base_config_path or str(DEFAULT_CONFIG_PATH)
     config_dict = load_raw_yaml(base_path)
 
+    override_dict = None
     if override_config_path:
         override_dict = load_raw_yaml(override_config_path)
         config_dict = deep_merge(config_dict, override_dict)
+
+    config_dict = normalize_config_dict(config_dict, override_dict)
 
     try:
         validated_config = AppConfig(**config_dict)

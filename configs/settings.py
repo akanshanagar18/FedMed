@@ -34,7 +34,7 @@ class Settings(BaseSettings):
     NUM_EPOCHS: int = 50
     LEARNING_RATE: float = 1e-4
     WEIGHT_DECAY: float = 1e-5
-    NUM_WORKERS: int = 2
+    NUM_WORKERS: int = 0
     VALIDATION_INTERVAL: int = 1
     SEED: int = 42
     

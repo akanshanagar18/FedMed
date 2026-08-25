@@ -21,7 +21,7 @@ def build_monai_dataset(
     cache_type: str = "persistent",
     cache_dir: Optional[Union[str, Path]] = ".cache/monai",
     cache_num: int = 16,
-    num_workers: int = 2,
+    num_workers: int = 0,
 ) -> Dataset:
     """
     Factory function instantiating MONAI Dataset, CacheDataset, or PersistentDataset.

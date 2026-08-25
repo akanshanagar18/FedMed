@@ -9,7 +9,7 @@ def create_dataloader(
     dataset,
     batch_size,
     shuffle=True,
-    num_workers=2
+    num_workers=0
 ):
     """
     Creates a PyTorch DataLoader.
@@ -20,5 +20,5 @@ def create_dataloader(
         batch_size=batch_size,
         shuffle=shuffle,
         num_workers=num_workers,
-        pin_memory=True
+        pin_memory=False
     )

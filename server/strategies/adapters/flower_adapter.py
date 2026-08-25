@@ -8,6 +8,7 @@ Handles real-time metric reporting to the FedMed FastAPI Dashboard API and SQLit
 """
 
 import logging
+import math
 import time
 from typing import Any, Dict, List, Optional, Tuple, Union
 
@@ -259,11 +260,13 @@ class FlowerStrategyAdapter(fl.server.strategy.Strategy):
         hospital_ids: List[str],
     ) -> None:
         """Send round metrics to Dashboard backend API and persist directly to fedmed.db."""
+        clean_loss = float(avg_loss) if isinstance(avg_loss, (int, float)) and math.isfinite(avg_loss) else 0.0
+        clean_dice = float(avg_dice) if isinstance(avg_dice, (int, float)) and math.isfinite(avg_dice) else 0.0
         payload = {
             "experiment_id": self.experiment_id,
             "round_number": round_number,
-            "training_loss": avg_loss,
-            "dice_score": avg_dice,
+            "training_loss": clean_loss,
+            "dice_score": clean_dice,
         }
 
         # 1. Post to REST API

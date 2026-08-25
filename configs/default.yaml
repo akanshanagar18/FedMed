@@ -29,7 +29,7 @@ data:
   data_dir: "data/BraTS2021"
   cache_type: "persistent"
   cache_dir: ".cache/monai"
-  num_workers: 2
+  num_workers: 0
   val_split: 0.2
   modalities:
     - "t1"

@@ -55,6 +55,7 @@ federated:
 data:
   dataset_name: "BraTS-GLI"
   data_dir: "data/raw/BraTS2024"
+  num_workers: 0
   modalities:
     - "t1"
     - "t1ce"

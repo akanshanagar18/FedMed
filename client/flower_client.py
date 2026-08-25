@@ -12,11 +12,13 @@ Usage:
 
 import argparse
 import logging
+import sys
 import time
 from collections import OrderedDict
 from typing import Dict, List, Optional, Tuple
 
 import numpy as np
+import requests
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
@@ -35,6 +37,7 @@ from privacy.context import create_ckks_context, get_public_context, serialize_c
 from privacy.dp_engine import DifferentialPrivacyEngine
 from privacy.encrypt import encrypt_model_parameters
 from privacy.communication import serialize_encrypted_payload
+from privacy.tls_cert_gen import ensure_tls_certificates, load_pem_bytes
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger("fedmed_client")
@@ -68,6 +71,7 @@ class FedMedClient(fl.client.NumPyClient):
         self.he_enabled = enable_he or self.config.privacy.he_enabled
         self.dp_enabled = enable_dp or self.config.privacy.dp_enabled
         self.client_control_variates: Optional[NDArrays] = None
+        self.fitted_rounds = 0
 
         # Initialize UNet3D model
         self.model = UNet3D(
@@ -127,6 +131,12 @@ class FedMedClient(fl.client.NumPyClient):
             cache_type=self.config.data.cache_type,
             cache_dir=self.config.data.cache_dir,
             num_workers=self.config.data.num_workers,
+        )
+
+        logger.info(
+            f"[{self.hospital_id}] DataLoader initialized (batch_size={self.config.federated.batch_size}, "
+            f"num_workers={self.config.data.num_workers}, cache_type='{self.config.data.cache_type}', "
+            f"image_size={self.spatial_size})"
         )
 
         self.dataloader = DataLoader(
@@ -256,6 +266,7 @@ class FedMedClient(fl.client.NumPyClient):
         else:
             params_to_return = updated_params
 
+        self.fitted_rounds += 1
         logger.info(
             f"[{self.hospital_id}] Round training complete — "
             f"loss: {metrics['training_loss']:.4f}, dice: {metrics['dice_score']:.4f}"
@@ -359,18 +370,21 @@ def start_client(
             else:
                 fl.client.start_numpy_client(server_address=server_address, client=client)
             _send_node_heartbeat(api_url, hospital_id, "ONLINE", reconnect_count=reconnect_count)
+            logger.info(f"[{hospital_id}] Flower client session completed cleanly.")
             break
         except Exception as e:
             reconnect_count += 1
             if reconnect_count > max_retries:
                 logger.error(f"[{hospital_id}] Client connection failed after {max_retries} retries: {e}")
                 _send_node_heartbeat(api_url, hospital_id, "OFFLINE", reconnect_count=reconnect_count)
-                raise
+                sys.exit(1)
 
-            delay = min(30.0, base_delay * (2 ** (reconnect_count - 1)))
+            delay = min(5.0, base_delay * (2 ** (reconnect_count - 1)))
             logger.warning(f"[{hospital_id}] Connection lost ({e}). Reconnecting in {delay:.1f}s (Attempt {reconnect_count}/{max_retries})...")
             _send_node_heartbeat(api_url, hospital_id, "RECONNECTING", reconnect_count=reconnect_count)
             time.sleep(delay)
+
+    sys.exit(0)
 
 
 if __name__ == "__main__":
